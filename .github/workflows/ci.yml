@@ -2,6 +2,9 @@ name: CI
 
 on: [push, pull_request]
 
+env:
+  CARGO_TERM_COLOR: always
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -9,20 +12,34 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Format
-        run: cargo +stable fmt && git diff --exit-code
+      - uses: actions/cache@v2
+        id: cache
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            ~/.dylint_drivers
+            target/
+            crates/bevy_lint/target
+          key: ${{ runner.os }}-cargo-dylint-${{ hashFiles('**/Cargo.toml') }}
 
-      - name: Install cargo-dylint
-        run: cargo install cargo-dylint
+      - name: Install alsa and udev
+        run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev
 
-      - name: Install dylint-link
-        run: cargo install dylint-link
+      - name: Install dylint
+        run: cargo install cargo-dylint; cargo install dylint-link
+        if: steps.cache.outputs.cache-hit != 'true'
 
-      - name: Build
-        run: cargo build
+      - name: Check Format
+        run: cargo fmt --all -- --check
 
-      - name: List
-        run: DYLINT_LIBRARY_PATH=$PWD/target/debug cargo dylint --list | grep -w fill_me_in
+      - name: Check Clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings -A clippy::type_complexity
 
-      - name: Test
+      - name: Run Tests
         run: cargo test
+        env:
+          # Can be removed once https://github.com/trailofbits/dylint/pull/48 is merged and released
+          CARGO_TERM_COLOR: never

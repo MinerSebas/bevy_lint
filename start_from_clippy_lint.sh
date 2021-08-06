@@ -1,1 +1,0 @@
-scripts/start_from_clippy_lint.sh

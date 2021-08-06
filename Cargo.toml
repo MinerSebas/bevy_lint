@@ -1,8 +1,8 @@
 [package]
-name = "fill_me_in"
+name = "bevy_lint"
 version = "0.1.0"
-authors = ["authors go here"]
-description = "decription goes here"
+authors = ["MinerSebas <scherthan_sebastian@web.de>"]
+description = "Provides Lints for Bevy Code"
 edition = "2018"
 publish = false
 
@@ -16,6 +16,11 @@ if_chain = "1.0.1"
 
 [dev-dependencies]
 dylint_testing = "1.0.1"
+bevy = { git = "https://github.com/bevyengine/bevy.git", default-features = false }
 
 [package.metadata.rust-analyzer]
 rustc_private = true
+
+[[example]]
+name = "unnecessary_with"
+path = "ui/unnecessary_with.rs"

@@ -1,1 +1,0 @@
-scripts/start_new_lint.sh

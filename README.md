@@ -1,29 +1,34 @@
-# Template Dylint library
+# Bevy Lint
 
-[Dylint](https://github.com/trailofbits/dylint) is a tool for running Rust lints from dynamic libraries. This repository is a "blank slate" Dylint library.
+## What is Bevy Lint?
 
-After forking this repository, run the following command, where `NEW_LINT_NAME` is your new lint's name:
-```sh
-./start_new_lint.sh NEW_LINT_NAME
+This crates provides Lints for Bevy Code using [dylint](https://github.com/trailofbits/dylint).
+
+## How to you run Lints
+
+Add this to your Cargo.toml:
+
+```toml
+[workspace.metadata.dylint]
+libraries = [
+    { git = "https://github.com/MinerSebas/bevy_lint", branch = "main" },
+]
 ```
 
-Alternatively, you can try the experimental `start_from_clippy_lint.sh` script described below.
+Instead of a `branch`, you can also provide a `tag` or a `rev` (revision)
 
-**Experimental**
-
-Choose a [Clippy lint](https://rust-lang.github.io/rust-clippy/master/) and run the following two commands:
+Afterwards you need to run these commans:
 
 ```sh
-./start_from_clippy_lint.sh CLIPPY_LINT_NAME NEW_LINT_NAME
-cargo build
+cargo install cargo-dylint dylint-link    # Only neccesary once
+cargo dylint bevy_dylint
 ```
 
-If the first command fails: sorry. Perhaps try another Clippy lint.
+## Lint Creation
 
-If the first command succeeds, but the second fails: you are probably halfway to having a functional Dylint library.
+A Lint is created by implementing the [LateLintPass](https://doc.rust-lang.org/stable/nightly-rustc/rustc_lint/trait.LateLintPass.html) trait and adding to the `register_lints` function.
 
-If both commands succeed: hooray! You might then try the following:
+When creating a UI Test, add the Test as an Example to the [Cargo.toml](Cargo.toml).
+Also make sure that your `.stderr` File uses `LF` Line-endings and not `CRLF`, as otherwise the Test will fail without any explanation.
 
-```sh
-cargo dylint NEW_LINT_NAME -- --manifest-path=PATH_TO_OTHER_PACKAGES_MANIFEST
-```
+For more Resources you can take a look at the [dylint resources](https://github.com/trailofbits/dylint#resources).
