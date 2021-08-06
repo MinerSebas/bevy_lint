@@ -37,10 +37,16 @@ pub fn get_def_id_of_first_generic_arg(path: &Path) -> Option<DefId> {
     if let Some(segment) = path.segments.iter().last() {
         if let Some(generic_args) = segment.args {
             if let Some(GenericArg::Type(component)) = &generic_args.args.get(0) {
-                if let TyKind::Path(QPath::Resolved(_, path)) = component.kind {
-                    if let Res::Def(_, def_id) = path.res {
-                        return Some(def_id);
+                match &component.kind {
+                    TyKind::Path(QPath::Resolved(_, path)) => {
+                        if let Res::Def(_, def_id) = path.res {
+                            return Some(def_id);
+                        }
                     }
+                    TyKind::Rptr(_, mut_type) => {
+                        return get_def_id_of_referenced_type(&mut_type);
+                    }
+                    _ => (),
                 }
             }
         }

@@ -34,9 +34,34 @@ declare_lint! {
     "Detects unnecessary `With` query filters in Bevy query parameters."
 }
 
-declare_lint_pass!(UnnecessaryWith => [UNNECESSARY_WITH]);
+declare_lint! {
+    /// **What it does:**
+    /// Detects unnecessary `Option` queries in Bevy query parameters.
+    /// **Why is this bad?**
+    /// The query will always return the `Some` Variant.
+    ///
+    /// **Known problems:** None.
+    ///
+    /// **Example:**
+    ///
+    /// ```rust
+    /// # use bevy_ecs::system::Query;
+    /// # use bevy_ecs::query::With;
+    /// fn system(query: Query<Option<&A>, With<A>>) {}
+    /// ```
+    /// Use instead:
+    /// ```rust
+    /// # use bevy_ecs::system::Query;
+    /// fn system(query: Query<&A>) {}
+    /// ```
+    pub UNNECESSARY_OPTION,
+    Warn,
+    "Detects unnecessary `Option` queries in Bevy query parameters."
+}
 
-impl<'hir> LateLintPass<'hir> for UnnecessaryWith {
+declare_lint_pass!(QueryParametersLintPass => [UNNECESSARY_WITH, UNNECESSARY_OPTION]);
+
+impl<'hir> LateLintPass<'hir> for QueryParametersLintPass {
     // A list of things you might check can be found here:
     // https://doc.rust-lang.org/stable/nightly-rustc/rustc_lint/trait.LateLintPass.html
 
@@ -105,22 +130,54 @@ fn check_for_unnecesarry_query_parameters<'hir>(ctx: &LateContext<'hir>, query: 
         let mut parameters = QueryParameters::default();
 
         match &world.kind {
+            TyKind::Path(QPath::Resolved(_, path)) => {
+                if bevy_helpers::path_matches_symbol_path(ctx, path, &clippy_utils::paths::OPTION) {
+                    parameters
+                        .data_parameters
+                        .optional_querys
+                        .push(QueryParameter::new(
+                            bevy_helpers::get_def_id_of_first_generic_arg(path).unwrap(),
+                            world.span,
+                        ))
+                }
+            }
             TyKind::Rptr(_, mut_type) => {
                 if let Some(def_id) = bevy_helpers::get_def_id_of_referenced_type(&mut_type) {
                     parameters
+                        .data_parameters
                         .data_querys
                         .push(QueryParameter::new(def_id, world.span));
                 }
             }
             TyKind::Tup(types) => {
                 for typ in *types {
-                    if let TyKind::Rptr(_, mut_type) = &typ.kind {
-                        if let Some(def_id) = bevy_helpers::get_def_id_of_referenced_type(&mut_type)
-                        {
-                            parameters
-                                .data_querys
-                                .push(QueryParameter::new(def_id, typ.span));
+                    match &typ.kind {
+                        TyKind::Path(QPath::Resolved(_, path)) => {
+                            if bevy_helpers::path_matches_symbol_path(
+                                ctx,
+                                path,
+                                &clippy_utils::paths::OPTION,
+                            ) {
+                                parameters.data_parameters.optional_querys.push(
+                                    QueryParameter::new(
+                                        bevy_helpers::get_def_id_of_first_generic_arg(path)
+                                            .unwrap(),
+                                        typ.span,
+                                    ),
+                                )
+                            }
                         }
+                        TyKind::Rptr(_, mut_type) => {
+                            if let Some(def_id) =
+                                bevy_helpers::get_def_id_of_referenced_type(&mut_type)
+                            {
+                                parameters
+                                    .data_parameters
+                                    .data_querys
+                                    .push(QueryParameter::new(def_id, typ.span));
+                            }
+                        }
+                        _ => (),
                     }
                 }
             }
@@ -130,11 +187,22 @@ fn check_for_unnecesarry_query_parameters<'hir>(ctx: &LateContext<'hir>, query: 
         match &filter.kind {
             TyKind::Path(QPath::Resolved(_, path)) => {
                 if bevy_helpers::path_matches_symbol_path(ctx, path, bevy_paths::OR) {
-                    parameters.with_querys.extend(check_or_filter(ctx, path));
+                    parameters.extend_or_filter_parameters(&check_or_filter(ctx, path));
+                }
+                if bevy_helpers::path_matches_symbol_path(ctx, path, bevy_paths::ADDED)
+                    || bevy_helpers::path_matches_symbol_path(ctx, path, bevy_paths::CHANGED)
+                {
+                    if let Some(def_id) = bevy_helpers::get_def_id_of_first_generic_arg(path) {
+                        parameters
+                            .filter_parameters
+                            .change_detection_querys
+                            .push(QueryParameter::new(def_id, filter.span));
+                    }
                 }
                 if bevy_helpers::path_matches_symbol_path(ctx, path, bevy_paths::WITH) {
                     if let Some(def_id) = bevy_helpers::get_def_id_of_first_generic_arg(path) {
                         parameters
+                            .filter_parameters
                             .with_querys
                             .push(QueryParameter::new(def_id, filter.span));
                     }
@@ -144,7 +212,7 @@ fn check_for_unnecesarry_query_parameters<'hir>(ctx: &LateContext<'hir>, query: 
                 for typ in *types {
                     if let TyKind::Path(QPath::Resolved(_, path)) = typ.kind {
                         if bevy_helpers::path_matches_symbol_path(ctx, path, bevy_paths::OR) {
-                            parameters.with_querys.extend(check_or_filter(ctx, path));
+                            parameters.extend_or_filter_parameters(&check_or_filter(ctx, path));
                         }
                         if bevy_helpers::path_matches_symbol_path(ctx, path, bevy_paths::ADDED)
                             || bevy_helpers::path_matches_symbol_path(
@@ -157,6 +225,7 @@ fn check_for_unnecesarry_query_parameters<'hir>(ctx: &LateContext<'hir>, query: 
                                 bevy_helpers::get_def_id_of_first_generic_arg(path)
                             {
                                 parameters
+                                    .filter_parameters
                                     .change_detection_querys
                                     .push(QueryParameter::new(def_id, typ.span));
                             }
@@ -166,6 +235,7 @@ fn check_for_unnecesarry_query_parameters<'hir>(ctx: &LateContext<'hir>, query: 
                                 bevy_helpers::get_def_id_of_first_generic_arg(path)
                             {
                                 parameters
+                                    .filter_parameters
                                     .with_querys
                                     .push(QueryParameter::new(def_id, typ.span));
                             }
@@ -177,11 +247,12 @@ fn check_for_unnecesarry_query_parameters<'hir>(ctx: &LateContext<'hir>, query: 
         }
 
         parameters.check_for_unnecesarry_with(ctx);
+        parameters.check_for_unnecesarry_option(ctx);
     }
 }
 
-fn check_or_filter<'hir>(ctx: &LateContext<'hir>, path: &Path) -> Vec<QueryParameter> {
-    let mut parameters = QueryParameters::default();
+fn check_or_filter<'hir>(ctx: &LateContext<'hir>, path: &Path) -> FilterParameter {
+    let mut parameters = FilterParameter::default();
 
     if let Some(segment) = path.segments.iter().last() {
         if let Some(generic_args) = segment.args {
@@ -216,16 +287,20 @@ fn check_or_filter<'hir>(ctx: &LateContext<'hir>, path: &Path) -> Vec<QueryParam
                         }
                     }
 
-                    parameters.check_for_unnecesarry_with(ctx);
+                    QueryParameters {
+                        filter_parameters: parameters.clone(),
+                        ..Default::default()
+                    }
+                    .check_for_unnecesarry_with(ctx);
                 }
             }
         }
     }
 
-    parameters.with_querys
+    parameters
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct QueryParameter {
     def_id: DefId,
     span: Span,
@@ -242,23 +317,54 @@ impl QueryParameter {
     }
 }
 
-#[derive(Debug, Default)]
-struct QueryParameters {
+#[derive(Debug, Default, Clone)]
+struct DataParameter {
     data_querys: Vec<QueryParameter>,
     optional_querys: Vec<QueryParameter>,
+}
+#[derive(Debug, Default, Clone)]
+struct FilterParameter {
     with_querys: Vec<QueryParameter>,
     without_querys: Vec<QueryParameter>,
     with_bundle_querys: Vec<QueryParameter>,
     change_detection_querys: Vec<QueryParameter>,
 }
 
+#[derive(Debug, Default, Clone)]
+struct QueryParameters {
+    data_parameters: DataParameter,
+    filter_parameters: FilterParameter,
+    or_filter_parameters: FilterParameter,
+}
+
 impl QueryParameters {
+    fn extend_or_filter_parameters(&mut self, or_parameters: &FilterParameter) {
+        self.or_filter_parameters
+            .with_querys
+            .extend(or_parameters.with_querys.clone());
+        self.or_filter_parameters
+            .without_querys
+            .extend(or_parameters.without_querys.clone());
+        self.or_filter_parameters
+            .with_bundle_querys
+            .extend(or_parameters.with_bundle_querys.clone());
+        self.or_filter_parameters
+            .change_detection_querys
+            .extend(or_parameters.change_detection_querys.clone());
+    }
+
     fn check_for_unnecesarry_with<'hir>(&mut self, ctx: &LateContext<'hir>) {
-        let iterator = self.data_querys.iter().chain(&self.change_detection_querys);
+        let iterator = self
+            .data_parameters
+            .data_querys
+            .iter()
+            .chain(&self.filter_parameters.change_detection_querys);
 
         for mut with_query in self
+            .filter_parameters
             .with_querys
             .iter_mut()
+            .chain(&mut self.or_filter_parameters.with_querys)
             .filter(|parameter| !parameter.lint_triggered)
         {
             if iterator
@@ -272,6 +378,35 @@ impl QueryParameters {
                     "Unnecessary `With` Filter",
                 );
                 with_query.lint_triggered = true;
+            }
+        }
+    }
+
+    fn check_for_unnecesarry_option<'hir>(&mut self, ctx: &LateContext<'hir>) {
+        let iterator = self
+            .data_parameters
+            .data_querys
+            .iter()
+            .chain(&self.filter_parameters.change_detection_querys)
+            .chain(&self.filter_parameters.with_querys);
+
+        for mut optional_query in self
+            .data_parameters
+            .optional_querys
+            .iter_mut()
+            .filter(|parameter| !parameter.lint_triggered)
+        {
+            if iterator
+                .clone()
+                .any(|parameter| parameter.def_id == optional_query.def_id)
+            {
+                span_lint(
+                    ctx,
+                    UNNECESSARY_OPTION,
+                    optional_query.span,
+                    "Unnecessary `Option` Query",
+                );
+                optional_query.lint_triggered = true;
             }
         }
     }

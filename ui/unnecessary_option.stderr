@@ -1,0 +1,88 @@
+error: Unnecessary `Option` Query
+  --> $DIR/unnecessary_option.rs:10:30
+   |
+LL | fn test_query1(_query: Query<Option<&A>, With<A>>) {
+   |                              ^^^^^^^^^^
+   |
+   = note: `-D unnecessary-option` implied by `-D warnings`
+
+error: Unnecessary `Option` Query
+  --> $DIR/unnecessary_option.rs:13:30
+   |
+LL | fn test_query2(_query: Query<Option<&mut A>, With<A>>) {
+   |                              ^^^^^^^^^^^^^^
+
+error: Unnecessary `Option` Query
+  --> $DIR/unnecessary_option.rs:16:30
+   |
+LL | fn test_query3(_query: Query<Option<&A>, (With<A>, With<B>)>) {
+   |                              ^^^^^^^^^^
+
+error: Unnecessary `Option` Query
+  --> $DIR/unnecessary_option.rs:19:30
+   |
+LL | fn test_query4(_query: Query<Option<&mut A>, (With<A>, With<B>)>) {
+   |                              ^^^^^^^^^^^^^^
+
+error: Unnecessary `Option` Query
+  --> $DIR/unnecessary_option.rs:22:30
+   |
+LL | fn test_query5(_query: Query<Option<&B>, (With<A>, With<B>)>) {
+   |                              ^^^^^^^^^^
+
+error: Unnecessary `Option` Query
+  --> $DIR/unnecessary_option.rs:25:30
+   |
+LL | fn test_query6(_query: Query<Option<&mut B>, (With<A>, With<B>)>) {
+   |                              ^^^^^^^^^^^^^^
+
+error: Unnecessary `Option` Query
+  --> $DIR/unnecessary_option.rs:29:31
+   |
+LL | fn test_query7(_query: Query<(Option<&A>, &B), With<A>>) {
+   |                               ^^^^^^^^^^
+
+error: Unnecessary `Option` Query
+  --> $DIR/unnecessary_option.rs:32:35
+   |
+LL | fn test_query8(_query: Query<(&A, Option<&B>), With<B>>) {
+   |                                   ^^^^^^^^^^
+
+error: Unnecessary `Option` Query
+  --> $DIR/unnecessary_option.rs:36:31
+   |
+LL | fn test_query9(_query: Query<(Option<&A>, &B), Added<A>>) {
+   |                               ^^^^^^^^^^
+
+error: Unnecessary `Option` Query
+  --> $DIR/unnecessary_option.rs:39:36
+   |
+LL | fn test_query10(_query: Query<(&A, Option<&B>), Changed<B>>) {
+   |                                    ^^^^^^^^^^
+
+error: Unnecessary `Option` Query
+  --> $DIR/unnecessary_option.rs:50:23
+   |
+LL |     query1: Query<'a, Option<&'static A>, With<A>>,
+   |                       ^^^^^^^^^^^^^^^^^^
+
+error: Unnecessary `Option` Query
+  --> $DIR/unnecessary_option.rs:60:30
+   |
+LL | ...                   (Option<&'static mut A>, Option<&'static B>),
+   |                        ^^^^^^^^^^^^^^^^^^^^^^
+
+error: Unnecessary `Option` Query
+  --> $DIR/unnecessary_option.rs:60:54
+   |
+LL | ...                   (Option<&'static mut A>, Option<&'static B>),
+   |                                                ^^^^^^^^^^^^^^^^^^
+
+error: Unnecessary `Option` Query
+  --> $DIR/unnecessary_option.rs:70:50
+   |
+LL |                         (Option<&'static mut A>, Option<&'static C>),
+   |                                                  ^^^^^^^^^^^^^^^^^^
+
+error: aborting due to 14 previous errors
+
