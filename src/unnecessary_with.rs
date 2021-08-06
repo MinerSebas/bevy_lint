@@ -1,6 +1,7 @@
 use clippy_utils::diagnostics::span_lint;
 use rustc_hir::{
     hir_id::HirId, intravisit::FnKind, Body, FnDecl, GenericArg, Path, QPath, Ty, TyKind,
+    VariantData,
 };
 use rustc_lint::{LateContext, LateLintPass};
 use rustc_session::{declare_lint, declare_lint_pass};
@@ -49,25 +50,44 @@ impl<'hir> LateLintPass<'hir> for UnnecessaryWith {
         _: HirId,
     ) {
         for typ in decl.inputs {
-            recursively_search_type(ctx, typ, bevy_paths::QUERY, &check_for_unnecesarry_with);
+            recursively_search_type(ctx, typ, bevy_paths::QUERY, check_for_unnecesarry_with);
+        }
+    }
+
+    fn check_struct_def(&mut self, ctx: &LateContext<'hir>, data: &'hir VariantData<'hir>) {
+        // Todo: Filter out Types that dont implement SystemParam
+        // -> Is it possible to go from rustc_hir::Ty to rustc_middle::Ty?
+        // Required for using clippy_utils::ty::implements_trait.
+        match data {
+            VariantData::Struct(fields, _) => {
+                for field in *fields {
+                    recursively_search_type(
+                        ctx,
+                        field.ty,
+                        bevy_paths::QUERY,
+                        check_for_unnecesarry_with,
+                    )
+                }
+            }
+            _ => (),
         }
     }
 }
 
-fn recursively_search_type<'hir, T: Fn(&LateContext<'hir>, &'hir Ty<'hir>) -> ()>(
+fn recursively_search_type<'hir, T: Fn(&LateContext<'hir>, &'hir Ty<'hir>) + Copy>(
     ctx: &LateContext<'hir>,
     typ: &'hir Ty,
     symbol_path: &[&str],
-    function: &T,
+    function: T,
 ) {
-    match &typ.kind {
+    match typ.kind {
         TyKind::Path(QPath::Resolved(_, path)) => {
             if bevy_helpers::path_matches_symbol_path(ctx, path, symbol_path) {
-                (function)(ctx, &typ)
+                function(ctx, &typ)
             }
         }
         TyKind::Tup(types) => {
-            for tup_typ in *types {
+            for tup_typ in types {
                 // Todo: Filter out Types that dont implement SystemParam
                 // -> Is it possible to go from rustc_hir::Ty to rustc_middle::Ty?
                 // Required for using clippy_utils::ty::implements_trait.

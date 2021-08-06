@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-use bevy::ecs::prelude::*;
+use bevy::ecs::{prelude::*, system::SystemParam};
 
 fn main() {}
 
@@ -100,4 +100,23 @@ fn test_query25(
     ),
 ) {
     test_query25.system();
+}
+
+#[derive(SystemParam)]
+struct SystemParamTest<'a> {
+    query1: Query<'a, &'static A, With<A>>,
+    query2: (
+        (),
+        (((
+            (),
+            (
+                ((((Query<'a, (), (Changed<A>, With<A>)>,), ()),),),
+                (),
+                (
+                    Query<'a, &'static mut A, (Or<(With<A>, With<B>)>, With<C>)>,
+                    (),
+                ),
+            ),
+        ),),),
+    ),
 }
