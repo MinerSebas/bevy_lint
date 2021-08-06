@@ -175,16 +175,16 @@ LL |     query1: Query<'a, &'static A, With<A>>,
    |                                   ^^^^^^^
 
 error: Unnecessary `With` Filter
-  --> $DIR/unnecessary_with.rs:113:47
+  --> $DIR/unnecessary_with.rs:113:48
    |
-LL |                 ((((Query<'a,(), (Changed<A>, With<A>)>,), ()),),),
-   |                                               ^^^^^^^
+LL |                 ((((Query<'a, (), (Changed<A>, With<A>)>,), ()),),),
+   |                                                ^^^^^^^
 
 error: Unnecessary `With` Filter
-  --> $DIR/unnecessary_with.rs:115:49
+  --> $DIR/unnecessary_with.rs:116:52
    |
-LL |                 (Query<'a, &'static mut A, (Or<(With<A>, With<B>)>, With<C>)>, ()),
-   |                                                 ^^^^^^^
+LL |                     Query<'a, &'static mut A, (Or<(With<A>, With<B>)>, With<C>)>,
+   |                                                    ^^^^^^^
 
 error: aborting due to 31 previous errors
 
