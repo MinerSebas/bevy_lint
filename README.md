@@ -21,7 +21,17 @@ Afterwards you need to run these commans:
 
 ```sh
 cargo install cargo-dylint dylint-link    # Only neccesary once
-cargo dylint bevy_dylint
+cargo dylint bevy_lint
+```
+
+If you are using the MSVC Toolchain, you will need to manualy build dylint from Source, until [https://github.com/trailofbits/dylint/pull/45](https://github.com/trailofbits/dylint/pull/45) is merged and released.
+
+```sh
+git clone https://github.com/MinerSebas/dylint
+cd dylint
+git checkout linker
+cargo install --path cargo-dylint
+cargo install --path dylint-link
 ```
 
 ## Lint Creation
