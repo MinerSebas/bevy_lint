@@ -1,0 +1,82 @@
+error: Empty Query
+  --> $DIR/empty_query.rs:10:34
+   |
+LL | fn test_query1(_query: Query<&A, Without<A>>) {
+   |                                  ^^^^^^^^^^
+   |
+   = note: `-D empty-query` implied by `-D warnings`
+
+error: Empty Query
+  --> $DIR/empty_query.rs:13:38
+   |
+LL | fn test_query2(_query: Query<&mut A, Without<A>>) {
+   |                                      ^^^^^^^^^^
+
+error: Empty Query
+  --> $DIR/empty_query.rs:16:35
+   |
+LL | fn test_query3(_query: Query<&A, (Without<A>, With<B>)>) {
+   |                                   ^^^^^^^^^^
+
+error: Empty Query
+  --> $DIR/empty_query.rs:19:44
+   |
+LL | fn test_query4(_query: Query<&B, (With<A>, Without<B>)>) {
+   |                                            ^^^^^^^^^^
+
+error: Empty Query
+  --> $DIR/empty_query.rs:23:42
+   |
+LL | fn test_query5(_query: Query<Option<&A>, Without<A>>) {
+   |                                          ^^^^^^^^^^
+
+error: Empty Query
+  --> $DIR/empty_query.rs:26:46
+   |
+LL | fn test_query6(_query: Query<Option<&mut A>, Without<A>>) {
+   |                                              ^^^^^^^^^^
+
+error: Empty Query
+  --> $DIR/empty_query.rs:29:43
+   |
+LL | fn test_query7(_query: Query<Option<&A>, (Without<A>, With<B>)>) {
+   |                                           ^^^^^^^^^^
+
+error: Empty Query
+  --> $DIR/empty_query.rs:32:52
+   |
+LL | fn test_query8(_query: Query<Option<&B>, (With<A>, Without<B>)>) {
+   |                                                    ^^^^^^^^^^
+
+error: Empty Query
+  --> $DIR/empty_query.rs:36:35
+   |
+LL | fn test_query9(_query: Query<(), (Without<A>, Added<A>)>) {
+   |                                   ^^^^^^^^^^
+
+error: Empty Query
+  --> $DIR/empty_query.rs:39:48
+   |
+LL | fn test_query10(_query: Query<(), (Changed<A>, Without<A>)>) {
+   |                                                ^^^^^^^^^^
+
+error: Empty Query
+  --> $DIR/empty_query.rs:45:35
+   |
+LL |     query1: Query<'a, &'static A, Without<A>>,
+   |                                   ^^^^^^^^^^
+
+error: Empty Query
+  --> $DIR/empty_query.rs:52:71
+   |
+LL |                     (Query<'a, (Option<&'static mut A>, &'static B), (Without<A>, Without<B>)>,),
+   |                                                                       ^^^^^^^^^^
+
+error: Empty Query
+  --> $DIR/empty_query.rs:52:83
+   |
+LL |                     (Query<'a, (Option<&'static mut A>, &'static B), (Without<A>, Without<B>)>,),
+   |                                                                                   ^^^^^^^^^^
+
+error: aborting due to 13 previous errors
+

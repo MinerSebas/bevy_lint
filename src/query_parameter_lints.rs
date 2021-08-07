@@ -59,9 +59,7 @@ declare_lint! {
     /// **Example:**
     ///
     /// ```rust
-    /// # use bevy::ecs::system::IntoSystem;
-    /// # use bevy::ecs::system::Query;
-    /// # use bevy::ecs::query::With;
+    /// # use bevy::ecs::prelude::*;
     ///
     /// # struct A;
     ///
@@ -71,8 +69,7 @@ declare_lint! {
     /// ```
     /// Use instead:
     /// ```rust
-    /// # use bevy::ecs::system::IntoSystem;
-    /// # use bevy::ecs::system::Query;
+    /// # use bevy::ecs::prelude::*;
     ///
     /// # struct A;
     ///
@@ -97,11 +94,7 @@ declare_lint! {
     /// **Example:**
     ///
     /// ```rust
-    /// # use bevy::ecs::system::IntoSystem;
-    /// # use bevy::ecs::system::Query;
-    /// # use bevy::ecs::query::With;
-    /// # use bevy::ecs::query::Or;
-    /// # use bevy::ecs::entity::Entity;
+    /// # use bevy::ecs::prelude::*;
     ///
     /// # struct A;
     ///
@@ -111,10 +104,7 @@ declare_lint! {
     /// ```
     /// Use instead:
     /// ```rust
-    /// # use bevy::ecs::system::IntoSystem;
-    /// # use bevy::ecs::system::Query;
-    /// # use bevy::ecs::query::With;
-    /// # use bevy::ecs::entity::Entity;
+    /// # use bevy::ecs::prelude::*;
     ///
     /// # struct A;
     ///
@@ -127,7 +117,43 @@ declare_lint! {
     "Detects unnecessary `Or` filters in Bevy query parameters."
 }
 
-declare_lint_pass!(QueryParametersLintPass => [UNNECESSARY_WITH, UNNECESSARY_OPTION, UNNECESSARY_OR]);
+declare_lint! {
+    /// **What it does:**
+    /// Detects empty Queries that will never return any Data.
+    /// Also triggered when a `Option` is used, that will always return `None`.
+    ///
+    /// **Why is this bad?**
+    /// These Queries will never return any Data, because no Entity will fullfill the Requirements.
+    ///
+    /// **Known problems:** None.
+    ///
+    /// **Example:**
+    ///
+    /// ```rust
+    /// # use bevy::ecs::prelude::*;
+    ///
+    /// # struct A;
+    ///
+    /// fn system(query: Query<&A, Without<A>>) {}
+    ///
+    /// # system.system();
+    /// ```
+    /// Use instead:
+    /// ```rust
+    /// # use bevy::ecs::prelude::*;
+    ///
+    /// # struct A;
+    ///
+    /// fn system(query: Query<&A>) {}
+    ///
+    /// # system.system();
+    /// ```
+    pub EMPTY_QUERY,
+    Warn,
+    "Detects empty Queries."
+}
+
+declare_lint_pass!(QueryParametersLintPass => [EMPTY_QUERY, UNNECESSARY_OPTION, UNNECESSARY_OR, UNNECESSARY_WITH]);
 
 impl<'hir> LateLintPass<'hir> for QueryParametersLintPass {
     // A list of things you might check can be found here:
@@ -274,6 +300,14 @@ fn check_for_unnecesarry_query_parameters<'hir>(ctx: &LateContext<'hir>, query: 
                             .push(QueryParameter::new(def_id, filter.span));
                     }
                 }
+                if bevy_helpers::path_matches_symbol_path(ctx, path, bevy_paths::WITHOUT) {
+                    if let Some(def_id) = bevy_helpers::get_def_id_of_first_generic_arg(path) {
+                        parameters
+                            .filter_parameters
+                            .without_querys
+                            .push(QueryParameter::new(def_id, filter.span));
+                    }
+                }
             }
             TyKind::Tup(types) => {
                 for typ in *types {
@@ -307,6 +341,16 @@ fn check_for_unnecesarry_query_parameters<'hir>(ctx: &LateContext<'hir>, query: 
                                     .push(QueryParameter::new(def_id, typ.span));
                             }
                         }
+                        if bevy_helpers::path_matches_symbol_path(ctx, path, bevy_paths::WITHOUT) {
+                            if let Some(def_id) =
+                                bevy_helpers::get_def_id_of_first_generic_arg(path)
+                            {
+                                parameters
+                                    .filter_parameters
+                                    .without_querys
+                                    .push(QueryParameter::new(def_id, typ.span));
+                            }
+                        }
                     }
                 }
             }
@@ -315,6 +359,7 @@ fn check_for_unnecesarry_query_parameters<'hir>(ctx: &LateContext<'hir>, query: 
 
         parameters.check_for_unnecesarry_with(ctx);
         parameters.check_for_unnecesarry_option(ctx);
+        parameters.check_for_empty_query(ctx);
     }
 }
 
@@ -358,6 +403,19 @@ fn check_or_filter<'hir>(ctx: &LateContext<'hir>, path: &Path) -> FilterParamete
                                 {
                                     parameters
                                         .with_querys
+                                        .push(QueryParameter::new(def_id, typ.span));
+                                }
+                            }
+                            if bevy_helpers::path_matches_symbol_path(
+                                ctx,
+                                path,
+                                bevy_paths::WITHOUT,
+                            ) {
+                                if let Some(def_id) =
+                                    bevy_helpers::get_def_id_of_first_generic_arg(path)
+                                {
+                                    parameters
+                                        .without_querys
                                         .push(QueryParameter::new(def_id, typ.span));
                                 }
                             }
@@ -484,6 +542,33 @@ impl QueryParameters {
                     "Unnecessary `Option` Query",
                 );
                 optional_query.lint_triggered = true;
+            }
+        }
+    }
+
+    fn check_for_empty_query<'hir>(&mut self, ctx: &LateContext<'hir>) {
+        let iterator = self
+            .data_parameters
+            .data_querys
+            .iter()
+            .chain(&self.data_parameters.optional_querys)
+            .chain(&self.filter_parameters.change_detection_querys)
+            .chain(&self.filter_parameters.with_querys);
+
+        //dbg!(&self);
+
+        for mut without_query in self
+            .filter_parameters
+            .without_querys
+            .iter_mut()
+            .filter(|parameter| !parameter.lint_triggered)
+        {
+            if iterator
+                .clone()
+                .any(|parameter| parameter.def_id == without_query.def_id)
+            {
+                span_lint(ctx, EMPTY_QUERY, without_query.span, "Empty Query");
+                without_query.lint_triggered = true;
             }
         }
     }

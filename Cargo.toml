@@ -23,6 +23,10 @@ bevy = { git = "https://github.com/bevyengine/bevy.git", default-features = fals
 rustc_private = true
 
 [[example]]
+name = "empty_query"
+path = "ui/empty_query.rs"
+
+[[example]]
 name = "unnecessary_option"
 path = "ui/unnecessary_option.rs"
 
