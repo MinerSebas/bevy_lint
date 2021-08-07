@@ -6,7 +6,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  test:
+  ci:
     runs-on: ubuntu-latest
 
     steps:
@@ -43,3 +43,6 @@ jobs:
         env:
           # Can be removed once https://github.com/trailofbits/dylint/pull/48 is merged and released
           CARGO_TERM_COLOR: never
+
+      - name: Run Doc Tests
+        run: sed -i 's/cdylib/lib/g' Cargo.toml; cargo test --doc
