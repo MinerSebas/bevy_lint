@@ -24,9 +24,9 @@ declare_lint! {
     /// # use bevy::ecs::system::IntoSystem;
     /// # use bevy::ecs::system::Query;
     /// # use bevy::ecs::query::With;
-    ///
+    /// #
     /// # struct A;
-    ///
+    /// #
     /// fn system(query: Query<&A, With<A>>) {}
     ///
     /// # system.system();
@@ -35,9 +35,9 @@ declare_lint! {
     /// ```rust
     /// # use bevy::ecs::system::IntoSystem;
     /// # use bevy::ecs::system::Query;
-    ///
+    /// #
     /// # struct A;
-    ///
+    /// #
     /// fn system(query: Query<&A>) {}
     ///
     /// # system.system();
@@ -60,9 +60,9 @@ declare_lint! {
     ///
     /// ```rust
     /// # use bevy::ecs::prelude::*;
-    ///
+    /// #
     /// # struct A;
-    ///
+    /// #
     /// fn system(query: Query<Option<&A>, With<A>>) {}
     ///
     /// # system.system();
@@ -70,9 +70,9 @@ declare_lint! {
     /// Use instead:
     /// ```rust
     /// # use bevy::ecs::prelude::*;
-    ///
+    /// #
     /// # struct A;
-    ///
+    /// #
     /// fn system(query: Query<&A>) {}
     ///
     /// # system.system();
@@ -95,9 +95,9 @@ declare_lint! {
     ///
     /// ```rust
     /// # use bevy::ecs::prelude::*;
-    ///
+    /// #
     /// # struct A;
-    ///
+    /// #
     /// fn system(query: Query<Entity, Or<(With<A>,)>>) {}
     ///
     /// # system.system();
@@ -105,9 +105,9 @@ declare_lint! {
     /// Use instead:
     /// ```rust
     /// # use bevy::ecs::prelude::*;
-    ///
+    /// #
     /// # struct A;
-    ///
+    /// #
     /// fn system(query: Query<Entity, With<A>>) {}
     ///
     /// # system.system();
@@ -131,9 +131,9 @@ declare_lint! {
     ///
     /// ```rust
     /// # use bevy::ecs::prelude::*;
-    ///
+    /// #
     /// # struct A;
-    ///
+    /// #
     /// fn system(query: Query<&A, Without<A>>) {}
     ///
     /// # system.system();
@@ -141,9 +141,9 @@ declare_lint! {
     /// Use instead:
     /// ```rust
     /// # use bevy::ecs::prelude::*;
-    ///
+    /// #
     /// # struct A;
-    ///
+    /// #
     /// fn system(query: Query<&A>) {}
     ///
     /// # system.system();
