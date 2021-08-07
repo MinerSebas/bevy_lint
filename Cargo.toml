@@ -27,5 +27,9 @@ name = "unnecessary_option"
 path = "ui/unnecessary_option.rs"
 
 [[example]]
+name = "unnecessary_or"
+path = "ui/unnecessary_or.rs"
+
+[[example]]
 name = "unnecessary_with"
 path = "ui/unnecessary_with.rs"

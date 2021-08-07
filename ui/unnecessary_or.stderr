@@ -1,0 +1,34 @@
+error: Unnecessary `Or` Filter
+  --> $DIR/unnecessary_or.rs:10:34
+   |
+LL | fn test_query1(_query: Query<&A, Or<()>>) {
+   |                                  ^^^^^^
+   |
+   = note: `-D unnecessary-option` implied by `-D warnings`
+
+error: Unnecessary `Or` Filter
+  --> $DIR/unnecessary_or.rs:13:34
+   |
+LL | fn test_query2(_query: Query<&A, Or<(With<B>,)>>) {
+   |                                  ^^^^^^^^^^^^^^
+
+error: Unnecessary `Or` Filter
+  --> $DIR/unnecessary_or.rs:19:35
+   |
+LL |     query1: Query<'a, &'static A, Or<()>>,
+   |                                   ^^^^^^
+
+error: Unnecessary `Or` Filter
+  --> $DIR/unnecessary_or.rs:25:48
+   |
+LL |                 ((((Query<'a, (), (Changed<A>, Or<(With<A>,)>)>,), ()),),),
+   |                                                ^^^^^^^^^^^^^^
+
+error: Unnecessary `Or` Filter
+  --> $DIR/unnecessary_or.rs:27:45
+   |
+LL |                 (Query<'a, &'static mut A, (Or<(With<B>,)>, With<C>)>, ()),
+   |                                             ^^^^^^^^^^^^^^
+
+error: aborting due to 5 previous errors
+

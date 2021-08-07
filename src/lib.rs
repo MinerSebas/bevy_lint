@@ -30,8 +30,11 @@ mod unnecessary_with;
 
 #[no_mangle]
 pub fn register_lints(_sess: &rustc_session::Session, lint_store: &mut rustc_lint::LintStore) {
-    lint_store.register_lints(&[unnecessary_with::UNNECESSARY_WITH]);
-    lint_store.register_lints(&[unnecessary_with::UNNECESSARY_OPTION]);
+    lint_store.register_lints(&[
+        unnecessary_with::UNNECESSARY_OPTION,
+        unnecessary_with::UNNECESSARY_OR,
+        unnecessary_with::UNNECESSARY_WITH,
+    ]);
     lint_store.register_late_pass(|| Box::new(unnecessary_with::QueryParametersLintPass));
 }
 

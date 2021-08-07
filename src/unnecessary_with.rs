@@ -59,7 +59,32 @@ declare_lint! {
     "Detects unnecessary `Option` queries in Bevy query parameters."
 }
 
-declare_lint_pass!(QueryParametersLintPass => [UNNECESSARY_WITH, UNNECESSARY_OPTION]);
+declare_lint! {
+    /// **What it does:**
+    /// Detects unnecessary `Or` filters in Bevy query parameters.
+    /// **Why is this bad?**
+    /// The `Or` filters can be trivialy removed, without changing the Result of the query.
+    ///
+    /// **Known problems:** None.
+    ///
+    /// **Example:**
+    ///
+    /// ```rust
+    /// # use bevy_ecs::system::Query;
+    /// # use bevy_ecs::query::With;
+    /// fn system(query: Query<Option<&A>, With<A>>) {}
+    /// ```
+    /// Use instead:
+    /// ```rust
+    /// # use bevy_ecs::system::Query;
+    /// fn system(query: Query<&A>) {}
+    /// ```
+    pub UNNECESSARY_OR,
+    Warn,
+    "Detects unnecessary `Or` filters in Bevy query parameters."
+}
+
+declare_lint_pass!(QueryParametersLintPass => [UNNECESSARY_WITH, UNNECESSARY_OPTION, UNNECESSARY_OR]);
 
 impl<'hir> LateLintPass<'hir> for QueryParametersLintPass {
     // A list of things you might check can be found here:
@@ -132,13 +157,12 @@ fn check_for_unnecesarry_query_parameters<'hir>(ctx: &LateContext<'hir>, query: 
         match &world.kind {
             TyKind::Path(QPath::Resolved(_, path)) => {
                 if bevy_helpers::path_matches_symbol_path(ctx, path, &clippy_utils::paths::OPTION) {
-                    parameters
-                        .data_parameters
-                        .optional_querys
-                        .push(QueryParameter::new(
-                            bevy_helpers::get_def_id_of_first_generic_arg(path).unwrap(),
-                            world.span,
-                        ))
+                    if let Some(def_id) = bevy_helpers::get_def_id_of_first_generic_arg(path) {
+                        parameters
+                            .data_parameters
+                            .optional_querys
+                            .push(QueryParameter::new(def_id, world.span))
+                    }
                 }
             }
             TyKind::Rptr(_, mut_type) => {
@@ -258,6 +282,16 @@ fn check_or_filter<'hir>(ctx: &LateContext<'hir>, path: &Path) -> FilterParamete
         if let Some(generic_args) = segment.args {
             if let GenericArg::Type(tuple) = &generic_args.args[0] {
                 if let TyKind::Tup(types) = tuple.kind {
+                    if types.len() < 2 {
+                        span_lint(
+                            ctx,
+                            UNNECESSARY_OPTION,
+                            path.span,
+                            "Unnecessary `Or` Filter",
+                        );
+                        return parameters;
+                    }
+
                     for typ in types {
                         if let TyKind::Path(QPath::Resolved(_, path)) = typ.kind {
                             if bevy_helpers::path_matches_symbol_path(ctx, path, bevy_paths::ADDED)
