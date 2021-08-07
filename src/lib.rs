@@ -26,16 +26,18 @@ extern crate rustc_typeck;
 
 mod bevy_helpers;
 mod bevy_paths;
-mod unnecessary_with;
+mod query_parameter_lints;
+
+pub use query_parameter_lints::{UNNECESSARY_OPTION, UNNECESSARY_OR, UNNECESSARY_WITH};
 
 #[no_mangle]
 pub fn register_lints(_sess: &rustc_session::Session, lint_store: &mut rustc_lint::LintStore) {
     lint_store.register_lints(&[
-        unnecessary_with::UNNECESSARY_OPTION,
-        unnecessary_with::UNNECESSARY_OR,
-        unnecessary_with::UNNECESSARY_WITH,
+        query_parameter_lints::UNNECESSARY_OPTION,
+        query_parameter_lints::UNNECESSARY_OR,
+        query_parameter_lints::UNNECESSARY_WITH,
     ]);
-    lint_store.register_late_pass(|| Box::new(unnecessary_with::QueryParametersLintPass));
+    lint_store.register_late_pass(|| Box::new(query_parameter_lints::QueryParametersLintPass));
 }
 
 #[test]

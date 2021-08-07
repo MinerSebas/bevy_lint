@@ -12,6 +12,7 @@ use crate::{bevy_helpers, bevy_paths};
 declare_lint! {
     /// **What it does:**
     /// Detects unnecessary `With` query filters in Bevy query parameters.
+    ///
     /// **Why is this bad?**
     /// The Filter does not effect the Results of a query, but still wasted space.
     ///
@@ -20,14 +21,26 @@ declare_lint! {
     /// **Example:**
     ///
     /// ```rust
-    /// # use bevy_ecs::system::Query;
-    /// # use bevy_ecs::query::With;
+    /// # use bevy::ecs::system::IntoSystem;
+    /// # use bevy::ecs::system::Query;
+    /// # use bevy::ecs::query::With;
+    ///
+    /// # struct A;
+    ///
     /// fn system(query: Query<&A, With<A>>) {}
+    ///
+    /// # system.system();
     /// ```
     /// Use instead:
     /// ```rust
-    /// # use bevy_ecs::system::Query;
+    /// # use bevy::ecs::system::IntoSystem;
+    /// # use bevy::ecs::system::Query;
+    ///
+    /// # struct A;
+    ///
     /// fn system(query: Query<&A>) {}
+    ///
+    /// # system.system();
     /// ```
     pub UNNECESSARY_WITH,
     Warn,
@@ -37,6 +50,7 @@ declare_lint! {
 declare_lint! {
     /// **What it does:**
     /// Detects unnecessary `Option` queries in Bevy query parameters.
+    ///
     /// **Why is this bad?**
     /// The query will always return the `Some` Variant.
     ///
@@ -45,14 +59,26 @@ declare_lint! {
     /// **Example:**
     ///
     /// ```rust
-    /// # use bevy_ecs::system::Query;
-    /// # use bevy_ecs::query::With;
+    /// # use bevy::ecs::system::IntoSystem;
+    /// # use bevy::ecs::system::Query;
+    /// # use bevy::ecs::query::With;
+    ///
+    /// # struct A;
+    ///
     /// fn system(query: Query<Option<&A>, With<A>>) {}
+    ///
+    /// # system.system();
     /// ```
     /// Use instead:
     /// ```rust
-    /// # use bevy_ecs::system::Query;
+    /// # use bevy::ecs::system::IntoSystem;
+    /// # use bevy::ecs::system::Query;
+    ///
+    /// # struct A;
+    ///
     /// fn system(query: Query<&A>) {}
+    ///
+    /// # system.system();
     /// ```
     pub UNNECESSARY_OPTION,
     Warn,
@@ -61,7 +87,8 @@ declare_lint! {
 
 declare_lint! {
     /// **What it does:**
-    /// Detects unnecessary `Or` filters in Bevy query parameters.
+    /// Detects unnecessary `Or` query filters in Bevy query parameters.
+    ///
     /// **Why is this bad?**
     /// The `Or` filters can be trivialy removed, without changing the Result of the query.
     ///
@@ -70,14 +97,30 @@ declare_lint! {
     /// **Example:**
     ///
     /// ```rust
-    /// # use bevy_ecs::system::Query;
-    /// # use bevy_ecs::query::With;
-    /// fn system(query: Query<Option<&A>, With<A>>) {}
+    /// # use bevy::ecs::system::IntoSystem;
+    /// # use bevy::ecs::system::Query;
+    /// # use bevy::ecs::query::With;
+    /// # use bevy::ecs::query::Or;
+    /// # use bevy::ecs::entity::Entity;
+    ///
+    /// # struct A;
+    ///
+    /// fn system(query: Query<Entity, Or<(With<A>,)>>) {}
+    ///
+    /// # system.system();
     /// ```
     /// Use instead:
     /// ```rust
-    /// # use bevy_ecs::system::Query;
-    /// fn system(query: Query<&A>) {}
+    /// # use bevy::ecs::system::IntoSystem;
+    /// # use bevy::ecs::system::Query;
+    /// # use bevy::ecs::query::With;
+    /// # use bevy::ecs::entity::Entity;
+    ///
+    /// # struct A;
+    ///
+    /// fn system(query: Query<Entity, With<A>>) {}
+    ///
+    /// # system.system();
     /// ```
     pub UNNECESSARY_OR,
     Warn,
