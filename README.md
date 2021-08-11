@@ -24,12 +24,10 @@ cargo install cargo-dylint dylint-link    # Only neccesary once
 cargo dylint bevy_lint
 ```
 
-If you are using the MSVC Toolchain, you will need to manualy build dylint from Source, until [https://github.com/trailofbits/dylint/pull/45](https://github.com/trailofbits/dylint/pull/45) is merged and released.
+If you are using the MSVC Toolchain, you will need to build dylint from Source, until the changes from [https://github.com/trailofbits/dylint/pull/45](https://github.com/trailofbits/dylint/pull/45) are released on crates.io .
 
 ```sh
-git clone https://github.com/MinerSebas/dylint
-cd dylint
-git checkout linker
+git clone https://github.com/trailofbits/dylint
 cargo install --path cargo-dylint
 cargo install --path dylint-link
 ```
