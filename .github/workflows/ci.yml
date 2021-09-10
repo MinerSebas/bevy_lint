@@ -40,9 +40,9 @@ jobs:
 
       - name: Run Tests
         run: cargo test
-        env:
-          # Can be removed once https://github.com/trailofbits/dylint/pull/48 is merged and released
-          CARGO_TERM_COLOR: never
+
+      - name: Run Examples
+        run: for entry in $(grep 'name' Cargo.toml | grep -v bevy_lint | sed 's/name = //g' | sed 's/"//g'); do cargo run --example $entry; done
 
       - name: Run Doc Tests
         run: sed -i 's/cdylib/lib/g' Cargo.toml; cargo test --doc

@@ -1,34 +1,73 @@
 error: Unnecessary `Or` Filter
-  --> $DIR/unnecessary_or.rs:10:34
+  --> $DIR/unnecessary_or.rs:15:33
    |
-LL | fn test_query1(_query: Query<&A, Or<()>>) {
-   |                                  ^^^^^^
+LL | fn test_query1(query: Query<&A, Or<()>>) {
+   |                                 ^^^^^^
    |
    = note: `-D unnecessary-option` implied by `-D warnings`
 
 error: Unnecessary `Or` Filter
-  --> $DIR/unnecessary_or.rs:13:34
+  --> $DIR/unnecessary_or.rs:20:33
    |
-LL | fn test_query2(_query: Query<&A, Or<(With<B>,)>>) {
-   |                                  ^^^^^^^^^^^^^^
+LL | fn test_query2(query: Query<&A, Or<(With<B>,)>>, query_check: Query<&A, With<B>>) {
+   |                                 ^^^^^^^^^^^^^^
 
 error: Unnecessary `Or` Filter
-  --> $DIR/unnecessary_or.rs:19:35
+  --> $DIR/unnecessary_or.rs:25:33
    |
-LL |     query1: Query<'a, &'static A, Or<()>>,
-   |                                   ^^^^^^
+LL | fn test_query3(query: Query<&A, Or<(With<A>, With<B>)>>, query_check: Query<&A>) {
+   |                                 ^^^^^^^^^^^^^^^^^^^^^^
 
 error: Unnecessary `Or` Filter
-  --> $DIR/unnecessary_or.rs:25:48
+  --> $DIR/unnecessary_or.rs:31:28
    |
-LL |                 ((((Query<'a, (), (Changed<A>, Or<(With<A>,)>)>,), ()),),),
-   |                                                ^^^^^^^^^^^^^^
+LL |     query: Query<(&A, &C), Or<((With<A>, With<B>), With<C>)>>,
+   |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 error: Unnecessary `Or` Filter
-  --> $DIR/unnecessary_or.rs:27:45
+  --> $DIR/unnecessary_or.rs:38:33
    |
-LL |                 (Query<'a, &'static mut A, (Or<(With<B>,)>, With<C>)>, ()),
+LL | fn test_query5(query: Query<&A, Or<(Or<(With<A>, With<B>)>, With<C>)>>, query_check: Query<&A>) {
+   |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: Unnecessary `Or` Filter
+  --> $DIR/unnecessary_or.rs:46:9
+   |
+LL | /         Or<(
+LL | |             ((((((((((((Or<(With<A>, With<B>)>,),),),),),),),),),),),),
+LL | |             With<C>,
+LL | |         )>,
+   | |__________^
+
+error: Unnecessary `Or` Filter
+  --> $DIR/unnecessary_or.rs:58:23
+   |
+LL |     query: Query<(), (Or<(With<A>, With<B>)>, Added<A>)>,
+   |                       ^^^^^^^^^^^^^^^^^^^^^^
+
+error: Unnecessary `Or` Filter
+  --> $DIR/unnecessary_or.rs:66:23
+   |
+LL |     query: Query<(), (Or<(Without<A>, With<B>)>, Without<A>)>,
+   |                       ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: Unnecessary `Or` Filter
+  --> $DIR/unnecessary_or.rs:88:39
+   |
+LL |     query1: Query<'w, 's, &'static A, Or<()>>,
+   |                                       ^^^^^^
+
+error: Unnecessary `Or` Filter
+  --> $DIR/unnecessary_or.rs:94:52
+   |
+LL |                 ((((Query<'w, 's, (), (Changed<A>, Or<(With<A>,)>)>,), ()),),),
+   |                                                    ^^^^^^^^^^^^^^
+
+error: Unnecessary `Or` Filter
+  --> $DIR/unnecessary_or.rs:96:45
+   |
+LL |                 (Query<'w, 's, &'static A, (Or<(With<B>,)>, With<C>)>, ()),
    |                                             ^^^^^^^^^^^^^^
 
-error: aborting due to 5 previous errors
+error: aborting due to 11 previous errors
 

@@ -24,14 +24,6 @@ cargo install cargo-dylint dylint-link    # Only neccesary once
 cargo dylint bevy_lint
 ```
 
-If you are using the MSVC Toolchain, you will need to build dylint from Source, until the changes from [https://github.com/trailofbits/dylint/pull/45](https://github.com/trailofbits/dylint/pull/45) are released on crates.io .
-
-```sh
-git clone https://github.com/trailofbits/dylint
-cargo install --path cargo-dylint
-cargo install --path dylint-link
-```
-
 ## Lint Creation
 
 A Lint is created by implementing the [LateLintPass](https://doc.rust-lang.org/stable/nightly-rustc/rustc_lint/trait.LateLintPass.html) trait and adding to the `register_lints` function.

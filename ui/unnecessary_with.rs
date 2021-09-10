@@ -1,93 +1,107 @@
 #![allow(dead_code)]
-use bevy::ecs::{prelude::*, system::SystemParam};
+#![allow(clippy::type_complexity)]
+use bevy::{
+    app::App,
+    ecs::{component::Component, prelude::*, system::SystemParam},
+};
+use std::marker::PhantomData;
 
-fn main() {}
-
+#[derive(Debug, Clone, Copy, Default)]
 struct A;
+#[derive(Debug, Clone, Copy, Default)]
 struct B;
+#[derive(Debug, Clone, Copy, Default)]
 struct C;
+#[derive(Debug, Clone, Copy, Default)]
+struct D<E: Component> {
+    marker: PhantomData<E>,
+}
 
-fn test_query1(_query: Query<&A, With<A>>) {
+fn test_query1(query: Query<&A, With<A>>, query_check: Query<&A>) {
     test_query1.system();
+    assert_eq!(query.iter().count(), query_check.iter().count());
 }
-fn test_query2(_query: Query<(&A, &B), With<A>>) {
+
+fn test_query2(query: Query<(&A, &B), With<A>>, query_check: Query<(&A, &B)>) {
     test_query2.system();
+    assert_eq!(query.iter().count(), query_check.iter().count());
 }
-fn test_query3(_query: Query<(&A, &B), With<B>>) {
+
+fn test_query3(query: Query<(&A, &B), With<B>>, query_check: Query<(&A, &B)>) {
     test_query3.system();
+    assert_eq!(query.iter().count(), query_check.iter().count());
 }
-fn test_query4(_query: Query<(&A, &B), (With<A>, With<B>)>) {
+
+fn test_query4(query: Query<(&A, &B), (With<A>, With<B>)>, query_check: Query<(&A, &B)>) {
     test_query4.system();
+    assert_eq!(query.iter().count(), query_check.iter().count());
 }
-fn test_query5(_query: Query<(&A, &B), (With<A>, With<C>)>) {
+
+fn test_query5(query: Query<(&A, &B), (With<A>, With<C>)>, query_check: Query<(&A, &B), With<C>>) {
     test_query5.system();
+    assert_eq!(query.iter().count(), query_check.iter().count());
 }
-fn test_query6(_query: Query<&A, (With<A>, With<B>)>) {
+
+fn test_query6(query: Query<&A, (With<A>, With<B>)>, query_check: Query<&A, With<B>>) {
     test_query6.system();
+    assert_eq!(query.iter().count(), query_check.iter().count());
 }
 
-fn test_query7(_query: Query<&mut A, With<A>>) {
+fn test_query7(mut query: Query<&mut A, With<A>>) {
     test_query7.system();
+    assert_eq!(query.iter_mut().count(), 8);
 }
-fn test_query8(_query: Query<(&mut A, &B), With<A>>) {
+
+fn test_query8(mut query: Query<(&mut A, &B), With<A>>) {
     test_query8.system();
+    assert_eq!(query.iter_mut().count(), 4);
 }
-fn test_query9(_query: Query<(&mut A, &B), With<B>>) {
+
+fn test_query9(mut query: Query<(&mut A, &B), With<B>>) {
     test_query9.system();
+    assert_eq!(query.iter_mut().count(), 4);
 }
-fn test_query10(_query: Query<(&mut A, &B), (With<A>, With<B>)>) {
+
+fn test_query10(mut query: Query<(&mut A, &B), (With<A>, With<B>)>) {
     test_query10.system();
+    assert_eq!(query.iter_mut().count(), 4);
 }
-fn test_query11(_query: Query<(&mut A, &B), (With<A>, With<C>)>) {
+
+fn test_query11(mut query: Query<(&mut A, &B), (With<A>, With<C>)>) {
     test_query11.system();
+    assert_eq!(query.iter_mut().count(), 2);
 }
-fn test_query12(_query: Query<&mut A, (With<A>, With<B>)>) {
+
+fn test_query12(mut query: Query<&mut A, (With<A>, With<B>)>) {
     test_query12.system();
+    assert_eq!(query.iter_mut().count(), 4);
 }
 
-fn test_query13(_query: Query<(), (Added<A>, With<A>)>) {
+fn test_query13(query: Query<(), (Added<A>, With<A>)>, query_check: Query<(), Added<A>>) {
     test_query13.system();
+    assert_eq!(query.iter().count(), query_check.iter().count());
 }
-fn test_query14(_query: Query<(), (Changed<A>, With<A>)>) {
+
+fn test_query14(query: Query<(), (Changed<A>, With<A>)>, query_check: Query<(), Changed<A>>) {
     test_query14.system();
+    assert_eq!(query.iter().count(), query_check.iter().count());
 }
 
-fn test_query15(_query: Query<&A, Or<(With<A>, With<B>)>>) {
+fn test_query15(query: (Query<&A, With<A>>,), query_check: Query<&A>) {
     test_query15.system();
+    assert_eq!(query.0.iter().count(), query_check.iter().count());
 }
-fn test_query16(_query: Query<&B, Or<(With<A>, With<B>)>>) {
+
+fn test_query16(query: (((((((((Query<&A, With<A>>,),),),),),),),),), query_check: Query<&A>) {
     test_query16.system();
+    assert_eq!(
+        query.0 .0 .0 .0 .0 .0 .0 .0 .0.iter().count(),
+        query_check.iter().count()
+    );
 }
 
-fn test_query17(_query: Query<&mut A, Or<(With<A>, With<B>)>>) {
-    test_query17.system();
-}
-fn test_query18(_query: Query<&mut B, Or<(With<A>, With<B>)>>) {
-    test_query18.system();
-}
-
-fn test_query19(_query: Query<(), Or<(Added<A>, With<A>)>>) {
-    test_query19.system();
-}
-fn test_query20(_query: Query<(), Or<(Changed<A>, With<A>)>>) {
-    test_query20.system();
-}
-
-fn test_query21(_query: Query<&A, (Or<(With<A>, With<B>)>, With<C>)>) {
-    test_query21.system();
-}
-fn test_query22(_query: Query<&mut A, (Or<(With<A>, With<B>)>, With<C>)>) {
-    test_query22.system();
-}
-
-fn test_query23(_query: (Query<&A, With<A>>,)) {
-    test_query23.system();
-}
-fn test_query24(_query: (((((((((Query<&A, With<A>>,),),),),),),),),)) {
-    test_query24.system();
-}
-fn test_query25(
-    _query: (
+fn test_query17(
+    query: (
         (),
         (((
             (),
@@ -98,25 +112,299 @@ fn test_query25(
             ),
         ),),),
     ),
+    query_check: Query<&A>,
 ) {
-    test_query25.system();
+    test_query17.system();
+    assert_eq!(
+        query.1 .0 .0 .1 .0 .0 .0 .0 .0.iter().count(),
+        query_check.iter().count()
+    );
+    assert_eq!(
+        query.1 .0 .0 .1 .2 .0.iter().count(),
+        query_check.iter().count()
+    );
 }
 
-#[derive(SystemParam)]
-struct SystemParamTest<'a> {
-    query1: Query<'a, &'static A, With<A>>,
-    query2: (
+fn test_query18(
+    query: Query<(((((((((((&A,),),),),),),),),),),), (((((((((((With<A>,),),),),),),),),),),)>,
+    query_check: Query<&A>,
+) {
+    test_query18.system();
+    assert_eq!(query.iter().count(), query_check.iter().count());
+}
+
+fn test_query19(
+    query: Query<
+        ((), ((((), (((((&A,), ()),),), (), ((),))),),)),
+        ((), ((((), (((((), ()),),), (), (With<A>,))),),)),
+    >,
+    query_check: Query<&A>,
+) {
+    test_query19.system();
+    assert_eq!(query.iter().count(), query_check.iter().count());
+}
+
+fn test_query20(
+    query: (
         (),
         (((
             (),
             (
-                ((((Query<'a, (), (Changed<A>, With<A>)>,), ()),),),
+                (((
+                    (
+                        Query<
+                            ((), ((((), (((((&A,), ()),),), (), ((),))),),)),
+                            ((), ((((), (((((), ()),),), (), (With<A>,))),),)),
+                        >,
+                    ),
+                    (),
+                ),),),
                 (),
                 (
-                    Query<'a, &'static mut A, (Or<(With<A>, With<B>)>, With<C>)>,
+                    Query<
+                        ((), ((((), (((((&A,), ()),),), (), ((),))),),)),
+                        ((), ((((), (((((), ()),),), (), (With<A>,))),),)),
+                    >,
                     (),
                 ),
             ),
         ),),),
     ),
+    query_check: Query<&A>,
+) {
+    test_query20.system();
+    assert_eq!(
+        query.1 .0 .0 .1 .0 .0 .0 .0 .0.iter().count(),
+        query_check.iter().count()
+    );
+    assert_eq!(
+        query.1 .0 .0 .1 .2 .0.iter().count(),
+        query_check.iter().count()
+    );
+}
+
+fn test_query21<E: Component>(query: Query<&E, With<E>>, query_check: Query<&E>) {
+    test_query21::<B>.system();
+    assert_eq!(query.iter().count(), query_check.iter().count());
+}
+
+fn test_query22(mut query: Query<Option<(&A, With<A>)>>, query_check: Query<&A>) {
+    test_query22.system();
+    assert_eq!(
+        query.iter_mut().filter(|option| option.is_some()).count(),
+        query_check.iter().count()
+    );
+}
+
+#[derive(SystemParam)]
+struct SystemParamTest<'w, 's> {
+    query1: Query<'w, 's, &'static A, With<A>>,
+    query2: (
+        (),
+        (((
+            (),
+            (
+                ((((Query<'w, 's, (), (Changed<A>, With<A>)>,), ()),),),
+                (),
+                (
+                    Query<
+                        'w,
+                        's,
+                        (((((((((((&'static mut A,),),),),),),),),),),),
+                        (((((((((((With<A>,),),),),),),),),),),),
+                    >,
+                    (),
+                ),
+            ),
+        ),),),
+    ),
+}
+
+trait TestTrait1: Component + Sized {
+    type TestType: Component;
+
+    fn test_trait1_query1(query: Query<&Self, With<Self>>, query_check: Query<&Self>) {
+        Self::test_trait1_query1.system();
+        assert_eq!(query.iter().count(), query_check.iter().count());
+    }
+    fn test_trait1_query2(
+        query: Query<&Self::TestType, With<Self::TestType>>,
+        query_check: Query<&Self::TestType>,
+    ) {
+        Self::test_trait1_query2.system();
+        assert_eq!(query.iter().count(), query_check.iter().count());
+    }
+    fn test_trait1_query3(query: Query<&Self, With<Self::TestType>>, query_check: Query<&Self>) {
+        Self::test_trait1_query3.system();
+        let _ = query;
+        let _ = query_check;
+    }
+    fn test_trait1_query4(
+        query: Query<&Self::TestType, With<Self>>,
+        query_check: Query<&Self::TestType>,
+    ) {
+        Self::test_trait1_query4.system();
+        let _ = query;
+        let _ = query_check;
+    }
+}
+
+impl TestTrait1 for A {
+    type TestType = A;
+}
+
+impl TestTrait1 for B {
+    type TestType = Self;
+
+    fn test_trait1_query1(query: Query<&Self, With<Self>>, query_check: Query<&Self>) {
+        Self::test_trait1_query1.system();
+        assert_eq!(query.iter().count(), query_check.iter().count());
+    }
+    fn test_trait1_query2(
+        query: Query<&Self::TestType, With<Self::TestType>>,
+        query_check: Query<&Self::TestType>,
+    ) {
+        Self::test_trait1_query2.system();
+        assert_eq!(query.iter().count(), query_check.iter().count());
+    }
+    fn test_trait1_query3(query: Query<&Self, With<Self::TestType>>, query_check: Query<&Self>) {
+        Self::test_trait1_query3.system();
+        assert_eq!(query.iter().count(), query_check.iter().count());
+    }
+    fn test_trait1_query4(
+        query: Query<&Self::TestType, With<Self>>,
+        query_check: Query<&Self::TestType>,
+    ) {
+        Self::test_trait1_query4.system();
+        assert_eq!(query.iter().count(), query_check.iter().count());
+    }
+}
+
+impl TestTrait1 for C {
+    type TestType = C;
+
+    fn test_trait1_query1(query: Query<&Self, With<Self>>, query_check: Query<&Self>) {
+        Self::test_trait1_query1.system();
+        assert_eq!(query.iter().count(), query_check.iter().count());
+    }
+    fn test_trait1_query2(
+        query: Query<&Self::TestType, With<Self::TestType>>,
+        query_check: Query<&Self::TestType>,
+    ) {
+        Self::test_trait1_query2.system();
+        assert_eq!(query.iter().count(), query_check.iter().count());
+    }
+    fn test_trait1_query3(query: Query<&Self, With<Self::TestType>>, query_check: Query<&Self>) {
+        Self::test_trait1_query3.system();
+        assert_eq!(query.iter().count(), query_check.iter().count());
+    }
+    fn test_trait1_query4(
+        query: Query<&Self::TestType, With<Self>>,
+        query_check: Query<&Self::TestType>,
+    ) {
+        Self::test_trait1_query4.system();
+        assert_eq!(query.iter().count(), query_check.iter().count());
+    }
+}
+
+trait TestTrait2: Component + Sized {
+    type TestType1: Component;
+    type TestType2: Component;
+
+    fn test_trait2_query1(
+        query: Query<&Self::TestType1, With<Self::TestType2>>,
+        query_check: Query<&Self::TestType1>,
+    ) {
+        Self::test_trait2_query1.system();
+        let _ = query;
+        let _ = query_check;
+    }
+}
+
+impl TestTrait2 for A {
+    type TestType1 = Self;
+    type TestType2 = Self::TestType1;
+
+    fn test_trait2_query1(
+        query: Query<&Self::TestType1, With<Self::TestType2>>,
+        query_check: Query<&Self::TestType1>,
+    ) {
+        Self::test_trait2_query1.system();
+        assert_eq!(query.iter().count(), query_check.iter().count());
+    }
+}
+
+impl<T: Component> TestTrait2 for D<T> {
+    type TestType1 = T;
+    type TestType2 = Self::TestType1;
+
+    fn test_trait2_query1(
+        query: Query<&Self::TestType1, With<Self::TestType2>>,
+        query_check: Query<&Self::TestType1>,
+    ) {
+        Self::test_trait2_query1.system();
+        assert_eq!(query.iter().count(), query_check.iter().count());
+    }
+}
+
+fn main() {
+    App::new()
+        .add_startup_system(setup)
+        .add_system(test_query1)
+        .add_system(test_query2)
+        .add_system(test_query3)
+        .add_system(test_query4)
+        .add_system(test_query5)
+        .add_system(test_query6)
+        .add_system(test_query7)
+        .add_system(test_query8)
+        .add_system(test_query9)
+        .add_system(test_query10)
+        .add_system(test_query11)
+        .add_system(test_query12)
+        .add_system(test_query13)
+        .add_system(test_query14)
+        .add_system(test_query15)
+        .add_system(test_query16)
+        .add_system(test_query17)
+        .add_system(test_query18)
+        .add_system(test_query19)
+        .add_system(test_query20)
+        .add_system(test_query21::<A>)
+        .add_system(test_query22)
+        .add_system(A::test_trait1_query1)
+        .add_system(A::test_trait1_query2)
+        .add_system(A::test_trait1_query3)
+        .add_system(A::test_trait1_query4)
+        .add_system(B::test_trait1_query1)
+        .add_system(B::test_trait1_query2)
+        .add_system(B::test_trait1_query3)
+        .add_system(B::test_trait1_query4)
+        .add_system(C::test_trait1_query1)
+        .add_system(C::test_trait1_query2)
+        .add_system(C::test_trait1_query3)
+        .add_system(C::test_trait1_query4)
+        .add_system(A::test_trait2_query1)
+        .add_system(D::<C>::test_trait2_query1)
+        .run();
+}
+
+fn setup(mut commands: Commands) {
+    let d: D<A> = D::default();
+
+    commands.spawn_bundle((A,));
+    commands.spawn_bundle((B,));
+    commands.spawn_bundle((C,));
+    commands.spawn_bundle((d,));
+    commands.spawn_bundle((A, B));
+    commands.spawn_bundle((B, C));
+    commands.spawn_bundle((C, d));
+    commands.spawn_bundle((A, C));
+    commands.spawn_bundle((B, d));
+    commands.spawn_bundle((A, d));
+    commands.spawn_bundle((A, B, C));
+    commands.spawn_bundle((B, C, d));
+    commands.spawn_bundle((A, C, d));
+    commands.spawn_bundle((A, B, d));
+    commands.spawn_bundle((A, B, C, d));
 }

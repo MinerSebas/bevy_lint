@@ -12,11 +12,14 @@ crate-type = ["cdylib"]
 
 [dependencies]
 clippy_utils = { git = "https://github.com/rust-lang/rust-clippy", tag = "rust-1.54.0" }
-dylint_linting = "1.0.2"
-if_chain = "1.0.1"
+dylint_linting = "1.0.3"
+if_chain = "1.0.2"
+either = "1.6.1"
+itertools = "0.10.1"
+
 
 [dev-dependencies]
-dylint_testing = "1.0.2"
+dylint_testing = "1.0.3"
 bevy = { git = "https://github.com/bevyengine/bevy.git", default-features = false }
 
 [package.metadata.rust-analyzer]
