@@ -23,7 +23,7 @@ jobs:
             ~/.dylint_drivers
             target/
             crates/bevy_lint/target
-          key: ${{ runner.os }}-cargo-dylint-${{ hashFiles('**/Cargo.toml') }}
+          key: ${{ runner.os }}-bevy_lint-${{ hashFiles('**/Cargo.toml') }}
 
       - name: Install alsa and udev
         run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev

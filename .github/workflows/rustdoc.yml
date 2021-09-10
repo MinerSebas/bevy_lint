@@ -1,0 +1,45 @@
+name: rustdoc
+
+on:
+  push:
+   branches:
+   - main
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  rustdoc:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - uses: actions/cache@v2
+      id: cache
+      with:
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          ~/.dylint_drivers
+          target/
+          crates/bevy_lint/target
+        key: ${{ runner.os }}-bevy_lint-docs-${{ hashFiles('**/Cargo.toml') }}
+
+    - name: Install dylint
+      run: cargo install cargo-dylint; cargo install dylint-link
+      if: steps.cache.outputs.cache-hit != 'true'
+
+    - name: Build Documentation
+      run: cargo doc --all --no-deps
+
+    - name: Deploy Docs
+      uses: peaceiris/actions-gh-pages@364c31d33bb99327c77b3a5438a83a357a6729ad # v3.4.0
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_branch: gh-pages
+        publish_dir: ./target/doc
+        force_orphan: true
