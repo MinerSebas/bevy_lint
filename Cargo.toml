@@ -30,6 +30,10 @@ name = "empty_query"
 path = "ui/empty_query.rs"
 
 [[example]]
+name = "insert_resource_with_default"
+path = "ui/insert_resource_with_default.rs"
+
+[[example]]
 name = "unnecessary_option"
 path = "ui/unnecessary_option.rs"
 
