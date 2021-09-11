@@ -20,7 +20,7 @@ itertools = "0.10.1"
 
 [dev-dependencies]
 dylint_testing = "1.0.3"
-bevy = { git = "https://github.com/bevyengine/bevy.git", default-features = false }
+bevy = { git = "https://github.com/bevyengine/bevy.git", rev = "51a5070cd2d3d7262616b2efc8a6cd3b1991d7e6", default-features = false }
 
 [package.metadata.rust-analyzer]
 rustc_private = true

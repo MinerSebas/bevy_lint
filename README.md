@@ -4,6 +4,12 @@
 
 This crates provides Lints for Bevy Code using [dylint](https://github.com/trailofbits/dylint).
 
+This crate currently only supports the **main** branch Version of Bevy.
+
+## Provided Lints
+
+The provided Lints can be found at [https://minersebas.github.io/bevy_lint/bevy_lint/](https://minersebas.github.io/bevy_lint/bevy_lint/).
+
 ## How to run Lints
 
 Add this to your Cargo.toml:
