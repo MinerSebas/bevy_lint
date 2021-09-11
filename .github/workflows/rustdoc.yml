@@ -24,13 +24,11 @@ jobs:
           ~/.cargo/registry/index/
           ~/.cargo/registry/cache/
           ~/.cargo/git/db/
-          ~/.dylint_drivers
           target/
-          crates/bevy_lint/target
         key: ${{ runner.os }}-bevy_lint-docs-${{ hashFiles('**/Cargo.toml') }}
 
-    - name: Install dylint
-      run: cargo install cargo-dylint; cargo install dylint-link
+    - name: Install dylint-link
+      run: cargo install dylint-link
       if: steps.cache.outputs.cache-hit != 'true'
 
     - name: Build Documentation

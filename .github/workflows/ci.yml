@@ -22,14 +22,13 @@ jobs:
             ~/.cargo/git/db/
             ~/.dylint_drivers
             target/
-            crates/bevy_lint/target
           key: ${{ runner.os }}-bevy_lint-${{ hashFiles('**/Cargo.toml') }}
 
       - name: Install alsa and udev
         run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev
 
       - name: Install dylint
-        run: cargo install cargo-dylint; cargo install dylint-link
+        run: cargo install cargo-dylint dylint-link
         if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Check Format
