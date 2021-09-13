@@ -11,7 +11,7 @@ license = "MIT OR Apache-2.0"
 crate-type = ["cdylib"]
 
 [dependencies]
-clippy_utils = { git = "https://github.com/rust-lang/rust-clippy", tag = "rust-1.54.0" }
+clippy_utils = { git = "https://github.com/rust-lang/rust-clippy", tag = "rust-1.55.0" }
 dylint_linting = "1.0.3"
 if_chain = "1.0.2"
 either = "1.6.1"
