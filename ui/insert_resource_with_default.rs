@@ -13,6 +13,8 @@ impl Plugin for TestPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(A::default())
             .insert_resource(B::default());
+        app.insert_non_send_resource(A::default())
+            .insert_non_send_resource(B::default());
     }
 }
 
@@ -25,5 +27,21 @@ fn main() {
         .insert_resource(B::default());
     App::new().insert_resource(A::default()).insert_resource(B);
     App::new().insert_resource(A).insert_resource(B::default());
+
+    App::new().insert_non_send_resource(A::default());
+    App::new().insert_non_send_resource(B::default());
+    App::new()
+        .insert_non_send_resource(A)
+        .insert_non_send_resource(B);
+    App::new()
+        .insert_non_send_resource(A::default())
+        .insert_non_send_resource(B::default());
+    App::new()
+        .insert_non_send_resource(A::default())
+        .insert_non_send_resource(B);
+    App::new()
+        .insert_non_send_resource(A)
+        .insert_non_send_resource(B::default());
+
     App::new().add_plugin(TestPlugin);
 }

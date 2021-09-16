@@ -11,7 +11,8 @@ use rustc_span::{sym, Symbol};
 
 declare_lint! {
     /// **What it does:**
-    /// Checks for calls of `bevy::app::App::insert_resource` with `T::default()`.
+    /// Checks for calls of `bevy::app::App::insert_resource` or `bevy::app::App::insert_non_send_resource`
+    /// with `T::default()`.
     ///
     /// **Why is this bad?**
     /// Readability, these can be written as .init_resource<T>(), which is simpler and more concise.
@@ -46,37 +47,55 @@ declare_lint_pass!(AppLintPass => [INSERT_RESOURCE_WITH_DEFAULT]);
 
 impl<'tcx> LateLintPass<'tcx> for AppLintPass {
     fn check_expr(&mut self, cxt: &LateContext<'tcx>, expr: &'tcx Expr<'_>) {
-        if_chain! {
-            if !in_external_macro(cxt.tcx.sess, expr.span);
-            if let ExprKind::MethodCall(segment, _, func_args, expr_span) = expr.kind;
-            if segment.ident.name == Symbol::intern("insert_resource");
-            if let rustc_middle::ty::TyKind::Adt(adt, _) = cxt.typeck_results().expr_ty(&func_args[0]).peel_refs().kind();
-            let variant = adt.variants.iter().next().unwrap();
-            if variant.ident.name == Symbol::intern("App");
-            if let ExprKind::Call(func_expr, _) = &func_args[1].kind;
-            if let ExprKind::Path(ref path) = func_expr.kind;
-            if let Some(repl_def_id) = cxt.qpath_res(path, func_expr.hir_id).opt_def_id();
-            if is_diag_trait_item(cxt, repl_def_id, sym::Default);
-            then {
-                let span = if let QPath::TypeRelative(ty, _) = path { ty.span } else { return; };
-
-                span_lint_and_then(
-                    cxt,
-                    INSERT_RESOURCE_WITH_DEFAULT,
-                    expr_span,
-                    "initializing a Resource of type `T` with `T::default()` is better expressed using `init_resource`",
-                    |diag| {
-                        if !in_macro(expr_span) {
-                            let suggestion = format!("init_resource::<{}>()", snippet(cxt, span, ""));
-                            diag.span_suggestion(
-                                expr_span,
-                                "consider using",
-                                suggestion,
-                                Applicability::MaybeIncorrect
-                            );
-                        }
+        if !in_external_macro(cxt.tcx.sess, expr.span) {
+            if let ExprKind::MethodCall(segment, _, func_args, expr_span) = expr.kind {
+                let is_non_send = {
+                    if segment.ident.name == Symbol::intern("insert_resource") {
+                        false
+                    } else if segment.ident.name == Symbol::intern("insert_non_send_resource") {
+                        true
+                    } else {
+                        return;
                     }
-                );
+                };
+
+                if_chain! {
+                    if let rustc_middle::ty::TyKind::Adt(adt, _) = cxt.typeck_results().expr_ty(&func_args[0]).peel_refs().kind();
+                    if let Some(variant) = adt.variants.iter().next();
+                    if variant.ident.name == Symbol::intern("App");
+                    if let ExprKind::Call(func_expr, _) = &func_args[1].kind;
+                    if let ExprKind::Path(ref path) = func_expr.kind;
+                    if let Some(repl_def_id) = cxt.qpath_res(path, func_expr.hir_id).opt_def_id();
+                    if is_diag_trait_item(cxt, repl_def_id, sym::Default);
+                    then {
+                        let span = if let QPath::TypeRelative(ty, _) = path { ty.span } else { return; };
+
+                        span_lint_and_then(
+                            cxt,
+                            INSERT_RESOURCE_WITH_DEFAULT,
+                            expr_span,
+                            "initializing a Resource of type `T` with `T::default()` is better expressed using `init_resource`",
+                            |diag| {
+                                if !in_macro(expr_span) {
+                                    let suggestion = {
+                                        if is_non_send {
+                                            format!("init_non_send_resource::<{}>()", snippet(cxt, span, ""))}
+                                        else {
+                                            format!("init_resource::<{}>()", snippet(cxt, span, ""))
+                                        }
+                                    };
+
+                                    diag.span_suggestion(
+                                        expr_span,
+                                        "consider using",
+                                        suggestion,
+                                        Applicability::MaybeIncorrect
+                                    );
+                                }
+                            }
+                        );
+                    }
+                }
             }
         }
     }
