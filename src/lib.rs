@@ -36,6 +36,7 @@ pub use system_lints::query_lints::{
 };
 
 #[no_mangle]
+#[doc(hidden)]
 pub fn register_lints(_sess: &rustc_session::Session, lint_store: &mut rustc_lint::LintStore) {
     lint_store.register_lints(&[
         INSERT_RESOURCE_WITH_DEFAULT,

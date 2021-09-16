@@ -21,10 +21,9 @@ declare_lint! {
     /// **Example:**
     ///
     /// ```rust
-    /// # use bevy::ecs::system::IntoSystem;
-    /// # use bevy::ecs::system::Query;
-    /// # use bevy::ecs::query::With;
+    /// # use bevy::ecs::prelude::*;
     /// #
+    /// # #[derive(Component)]
     /// # struct A;
     /// #
     /// fn system(query: Query<&A, With<A>>) {}
@@ -33,9 +32,9 @@ declare_lint! {
     /// ```
     /// Use instead:
     /// ```rust
-    /// # use bevy::ecs::system::IntoSystem;
-    /// # use bevy::ecs::system::Query;
+    /// # use bevy::ecs::prelude::*;
     /// #
+    /// # #[derive(Component)]
     /// # struct A;
     /// #
     /// fn system(query: Query<&A>) {}
@@ -61,6 +60,7 @@ declare_lint! {
     /// ```rust
     /// # use bevy::ecs::prelude::*;
     /// #
+    /// # #[derive(Component)]
     /// # struct A;
     /// #
     /// fn system(query: Query<Option<&A>, With<A>>) {}
@@ -71,6 +71,7 @@ declare_lint! {
     /// ```rust
     /// # use bevy::ecs::prelude::*;
     /// #
+    /// # #[derive(Component)]
     /// # struct A;
     /// #
     /// fn system(query: Query<&A>) {}
@@ -96,6 +97,7 @@ declare_lint! {
     /// ```rust
     /// # use bevy::ecs::prelude::*;
     /// #
+    /// # #[derive(Component)]
     /// # struct A;
     /// #
     /// fn system(query: Query<Entity, Or<(With<A>,)>>) {}
@@ -106,6 +108,7 @@ declare_lint! {
     /// ```rust
     /// # use bevy::ecs::prelude::*;
     /// #
+    /// # #[derive(Component)]
     /// # struct A;
     /// #
     /// fn system(query: Query<Entity, With<A>>) {}
@@ -132,6 +135,7 @@ declare_lint! {
     /// ```rust
     /// # use bevy::ecs::prelude::*;
     /// #
+    /// # #[derive(Component)]
     /// # struct A;
     /// #
     /// fn system(query: Query<&A, Without<A>>) {}
@@ -142,6 +146,7 @@ declare_lint! {
     /// ```rust
     /// # use bevy::ecs::prelude::*;
     /// #
+    /// # #[derive(Component)]
     /// # struct A;
     /// #
     /// fn system(query: Query<&A>) {}

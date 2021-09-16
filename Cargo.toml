@@ -12,15 +12,15 @@ crate-type = ["cdylib"]
 
 [dependencies]
 clippy_utils = { git = "https://github.com/rust-lang/rust-clippy", tag = "rust-1.55.0" }
-dylint_linting = "1.0.3"
+dylint_linting = "1.0.5"
 if_chain = "1.0.2"
 either = "1.6.1"
 itertools = "0.10.1"
 
 
 [dev-dependencies]
-dylint_testing = "1.0.3"
-bevy = { git = "https://github.com/bevyengine/bevy.git", rev = "51a5070cd2d3d7262616b2efc8a6cd3b1991d7e6", default-features = false }
+dylint_testing = "1.0.5"
+bevy = { git = "https://github.com/bevyengine/bevy.git", rev = "997eae61854b362c10810884966ac605121e04d7", default-features = false }
 
 [package.metadata.rust-analyzer]
 rustc_private = true

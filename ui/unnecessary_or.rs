@@ -5,11 +5,11 @@ use bevy::{
     ecs::{prelude::*, system::SystemParam},
 };
 
-#[derive(Debug)]
+#[derive(Debug, Component)]
 struct A;
-#[derive(Debug)]
+#[derive(Debug, Component)]
 struct B;
-#[derive(Debug)]
+#[derive(Debug, Component)]
 struct C;
 
 fn test_query1(query: Query<&A, Or<()>>) {
