@@ -47,7 +47,7 @@ pub enum WorldQuery<'tcx> {
     Tuple(Vec<WorldQuery<'tcx>>, Span),
     Data(rustc_middle::ty::TyKind<'tcx>, rustc_ast::Mutability, Span),
     Option((Box<WorldQuery<'tcx>>, Span), Span),
-    Filter(FilterQuery<'tcx>),
+    Filter(FilterQuery<'tcx>, Span),
 }
 
 impl<'tcx> WorldQuery<'tcx> {
@@ -71,7 +71,7 @@ impl<'tcx> WorldQuery<'tcx> {
                 }
             }
             WorldQuery::Option(world_query, _) => world_query.0.remove_substitutions(),
-            WorldQuery::Filter(filter) => filter.remove_substitutions(),
+            WorldQuery::Filter(filter, _) => filter.remove_substitutions(),
         }
     }
 
@@ -80,7 +80,7 @@ impl<'tcx> WorldQuery<'tcx> {
             WorldQuery::Tuple(_, span)
             | WorldQuery::Data(_, _, span)
             | WorldQuery::Option(_, span) => span,
-            WorldQuery::Filter(filter) => filter.span(),
+            WorldQuery::Filter(filter, _) => filter.span(),
         }
     }
 }

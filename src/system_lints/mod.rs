@@ -7,11 +7,14 @@ pub mod query_lints;
 
 use self::{
     model::{FilterQuery, Query, SystemParamType, WorldQuery},
-    query_lints::{lint_query, EMPTY_QUERY, UNNECESSARY_OPTION, UNNECESSARY_OR, UNNECESSARY_WITH},
+    query_lints::{
+        lint_query, EMPTY_QUERY, FILTER_IN_WORLD_QUERY, UNNECESSARY_OPTION, UNNECESSARY_OR,
+        UNNECESSARY_WITH,
+    },
 };
 use super::{bevy_paths, mixed_ty::MixedTy};
 
-declare_lint_pass!(SystemLintPass => [EMPTY_QUERY, UNNECESSARY_OPTION, UNNECESSARY_OR, UNNECESSARY_WITH]);
+declare_lint_pass!(SystemLintPass => [EMPTY_QUERY, FILTER_IN_WORLD_QUERY, UNNECESSARY_OPTION, UNNECESSARY_OR, UNNECESSARY_WITH]);
 
 impl<'tcx> LateLintPass<'tcx> for SystemLintPass {
     // A list of things you might check can be found here:
@@ -161,7 +164,8 @@ fn recursively_resolve_world_query<'tcx>(
                     || clippy_utils::ty::match_type(ctx, world.middle, bevy_paths::WITH)
                     || clippy_utils::ty::match_type(ctx, world.middle, bevy_paths::WITHOUT)
                 {
-                    recursively_resolve_filter_query(ctx, world).map(WorldQuery::Filter)
+                    recursively_resolve_filter_query(ctx, world)
+                        .map(|filter| WorldQuery::Filter(filter, world.span()))
                 } else {
                     None
                 }
@@ -205,17 +209,15 @@ fn recursively_resolve_filter_query<'tcx>(
 
         Some(FilterQuery::Or(vec, filter.span()))
     } else {
-        let constructor: Option<
-            &dyn Fn(rustc_middle::ty::TyKind<'tcx>, Span) -> FilterQuery<'tcx>,
-        > = {
+        let constructor: Option<fn(rustc_middle::ty::TyKind<'tcx>, Span) -> FilterQuery<'tcx>> = {
             if clippy_utils::ty::match_type(ctx, filter.middle, bevy_paths::ADDED) {
-                Some(&FilterQuery::Added)
+                Some(FilterQuery::Added)
             } else if clippy_utils::ty::match_type(ctx, filter.middle, bevy_paths::CHANGED) {
-                Some(&FilterQuery::Changed)
+                Some(FilterQuery::Changed)
             } else if clippy_utils::ty::match_type(ctx, filter.middle, bevy_paths::WITH) {
-                Some(&FilterQuery::With)
+                Some(FilterQuery::With)
             } else if clippy_utils::ty::match_type(ctx, filter.middle, bevy_paths::WITHOUT) {
-                Some(&FilterQuery::Without)
+                Some(FilterQuery::Without)
             } else {
                 None
             }

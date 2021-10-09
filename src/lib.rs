@@ -32,7 +32,7 @@ mod system_lints;
 
 pub use app_lints::INSERT_RESOURCE_WITH_DEFAULT;
 pub use system_lints::query_lints::{
-    EMPTY_QUERY, UNNECESSARY_OPTION, UNNECESSARY_OR, UNNECESSARY_WITH,
+    EMPTY_QUERY, FILTER_IN_WORLD_QUERY, UNNECESSARY_OPTION, UNNECESSARY_OR, UNNECESSARY_WITH,
 };
 
 #[no_mangle]
@@ -41,6 +41,7 @@ pub fn register_lints(_sess: &rustc_session::Session, lint_store: &mut rustc_lin
     lint_store.register_lints(&[
         INSERT_RESOURCE_WITH_DEFAULT,
         EMPTY_QUERY,
+        FILTER_IN_WORLD_QUERY,
         UNNECESSARY_OPTION,
         UNNECESSARY_OR,
         UNNECESSARY_WITH,

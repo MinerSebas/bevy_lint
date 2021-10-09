@@ -180,7 +180,7 @@ impl<'tcx> MixedTy<'tcx> {
 
         let hir_generics: Vec<_> = match self.hir {
             Either::Left(ty) => match &ty.kind {
-                rustc_hir::TyKind::Path(q_path) => clippy_utils::get_qpath_generic_tys(&q_path)
+                rustc_hir::TyKind::Path(q_path) => clippy_utils::get_qpath_generic_tys(q_path)
                     .map(Either::Left)
                     .collect(),
                 _ => return None,

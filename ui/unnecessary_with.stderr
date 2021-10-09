@@ -150,6 +150,14 @@ error: Unnecessary `With` Filter
 LL | fn test_query21<E: Component>(query: Query<&E, With<E>>, query_check: Query<&E>) {
    |                                                ^^^^^^^
 
+error: Usage of Filter in first Part of Query.
+  --> $DIR/unnecessary_with.rs:191:46
+   |
+LL | fn test_query22(mut query: Query<Option<(&A, With<A>)>>, query_check: Query<&A>) {
+   |                                              ^^^^^^^
+   |
+   = note: `-D filter-in-world-query` implied by `-D warnings`
+
 error: Unnecessary `With` Filter
   --> $DIR/unnecessary_with.rs:191:46
    |
@@ -246,5 +254,5 @@ error: Unnecessary `With` Filter
 LL |         query: Query<&Self::TestType1, With<Self::TestType2>>,
    |                                        ^^^^^^^^^^^^^^^^^^^^^
 
-error: aborting due to 41 previous errors
+error: aborting due to 42 previous errors
 

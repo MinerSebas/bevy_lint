@@ -36,14 +36,28 @@ error: Empty Query
 LL | fn test_query6(query: Query<(), (Changed<A>, Without<A>)>) {
    |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+error: Usage of Filter in first Part of Query.
+  --> $DIR/empty_query.rs:45:38
+   |
+LL | fn test_query7(mut query: Query<(&A, Without<A>)>) {
+   |                                      ^^^^^^^^^^
+   |
+   = note: `-D filter-in-world-query` implied by `-D warnings`
+
 error: Empty Query
-  --> $DIR/empty_query.rs:47:13
+  --> $DIR/empty_query.rs:45:27
+   |
+LL | fn test_query7(mut query: Query<(&A, Without<A>)>) {
+   |                           ^^^^^^^^^^^^^^^^^^^^^^^
+
+error: Empty Query
+  --> $DIR/empty_query.rs:52:13
    |
 LL |     query1: Query<'w, 's, &'static A, Without<A>>,
    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 error: Empty Query
-  --> $DIR/empty_query.rs:55:25
+  --> $DIR/empty_query.rs:60:25
    |
 LL | /                         Query<
 LL | |                             'w,
@@ -54,7 +68,7 @@ LL | |                         >,
    | |_________________________^
 
 error: Empty Query
-  --> $DIR/empty_query.rs:66:21
+  --> $DIR/empty_query.rs:71:21
    |
 LL | /                     Query<
 LL | |                         'w,
@@ -64,5 +78,5 @@ LL | |                         ((), ((((), ((((With<A>,), ()),),), (), (Without<
 LL | |                     >,
    | |_____________________^
 
-error: aborting due to 9 previous errors
+error: aborting due to 11 previous errors
 

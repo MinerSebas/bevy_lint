@@ -51,23 +51,49 @@ error: Unnecessary `Or` Filter
 LL |     query: Query<(), (Or<(Without<A>, With<B>)>, Without<A>)>,
    |                       ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+error: Usage of Filter in first Part of Query.
+  --> $DIR/unnecessary_or.rs:73:38
+   |
+LL | fn test_query9(mut query: Query<(&A, Or<(With<B>,)>)>, query_check: Query<&A, With<B>>) {
+   |                                      ^^^^^^^^^^^^^^
+   |
+   = note: `-D filter-in-world-query` implied by `-D warnings`
+
 error: Unnecessary `Or` Filter
-  --> $DIR/unnecessary_or.rs:88:39
+  --> $DIR/unnecessary_or.rs:73:38
+   |
+LL | fn test_query9(mut query: Query<(&A, Or<(With<B>,)>)>, query_check: Query<&A, With<B>>) {
+   |                                      ^^^^^^^^^^^^^^
+
+error: Usage of Filter in first Part of Query.
+  --> $DIR/unnecessary_or.rs:78:39
+   |
+LL | fn test_query10(mut query: Query<(&A, Or<(With<A>, With<B>)>)>, query_check: Query<&A>) {
+   |                                       ^^^^^^^^^^^^^^^^^^^^^^
+
+error: Unnecessary `Or` Filter
+  --> $DIR/unnecessary_or.rs:78:39
+   |
+LL | fn test_query10(mut query: Query<(&A, Or<(With<A>, With<B>)>)>, query_check: Query<&A>) {
+   |                                       ^^^^^^^^^^^^^^^^^^^^^^
+
+error: Unnecessary `Or` Filter
+  --> $DIR/unnecessary_or.rs:98:39
    |
 LL |     query1: Query<'w, 's, &'static A, Or<()>>,
    |                                       ^^^^^^
 
 error: Unnecessary `Or` Filter
-  --> $DIR/unnecessary_or.rs:94:52
+  --> $DIR/unnecessary_or.rs:104:52
    |
 LL |                 ((((Query<'w, 's, (), (Changed<A>, Or<(With<A>,)>)>,), ()),),),
    |                                                    ^^^^^^^^^^^^^^
 
 error: Unnecessary `Or` Filter
-  --> $DIR/unnecessary_or.rs:96:45
+  --> $DIR/unnecessary_or.rs:106:45
    |
 LL |                 (Query<'w, 's, &'static A, (Or<(With<B>,)>, With<C>)>, ()),
    |                                             ^^^^^^^^^^^^^^
 
-error: aborting due to 11 previous errors
+error: aborting due to 15 previous errors
 

@@ -30,7 +30,7 @@ declare_lint! {
     ///
     /// # system.system();
     /// ```
-    /// Use instead:
+    /// Instead do:
     /// ```rust
     /// # use bevy::ecs::prelude::*;
     /// #
@@ -67,7 +67,7 @@ declare_lint! {
     ///
     /// # system.system();
     /// ```
-    /// Use instead:
+    /// Instead do:
     /// ```rust
     /// # use bevy::ecs::prelude::*;
     /// #
@@ -104,7 +104,7 @@ declare_lint! {
     ///
     /// # system.system();
     /// ```
-    /// Use instead:
+    /// Instead do:
     /// ```rust
     /// # use bevy::ecs::prelude::*;
     /// #
@@ -142,7 +142,7 @@ declare_lint! {
     ///
     /// # system.system();
     /// ```
-    /// Use instead:
+    /// Instead do:
     /// ```rust
     /// # use bevy::ecs::prelude::*;
     /// #
@@ -156,6 +156,51 @@ declare_lint! {
     pub EMPTY_QUERY,
     Warn,
     "Detects empty Queries."
+}
+
+declare_lint! {
+    /// **What it does:**
+    /// Detects Filters in the Data part of a Query.
+    ///
+    /// **Why is this bad?**
+    ///
+    ///
+    /// **Known problems:** None.
+    ///
+    /// **Example:**
+    ///
+    /// ```rust
+    /// # use bevy::ecs::prelude::*;
+    /// #
+    /// # #[derive(Component)]
+    /// # struct A;
+    /// # #[derive(Component)]
+    /// # struct B;
+    /// #
+    /// fn system(mut query: Query<(&A, With<B>)>) {
+    ///     for (component, filter) in query.iter_mut() {}
+    /// }
+    ///
+    /// # system.system();
+    /// ```
+    /// Instead do:
+    /// ```rust
+    /// # use bevy::ecs::prelude::*;
+    /// #
+    /// # #[derive(Component)]
+    /// # struct A;
+    /// # #[derive(Component)]
+    /// # struct B;
+    /// #
+    /// fn system(query: Query<&A, With<B>>) {
+    ///     for component in query.iter() {}
+    /// }
+    ///
+    /// # system.system();
+    /// ```
+    pub FILTER_IN_WORLD_QUERY,
+    Warn,
+    "Detects unnecessary `With` query filters in Bevy query parameters."
 }
 
 #[allow(clippy::type_complexity)]
@@ -172,11 +217,11 @@ struct QueryData<'tcx> {
 }
 
 impl<'tcx> QueryData<'tcx> {
-    fn fill_with_world_query(&mut self, world_query: &WorldQuery<'tcx>) {
+    fn fill_with_world_query(&mut self, ctx: &LateContext, world_query: &WorldQuery<'tcx>) {
         match world_query {
             WorldQuery::Tuple(world_querys, _) => {
                 for world_query in world_querys {
-                    self.fill_with_world_query(world_query);
+                    self.fill_with_world_query(ctx, world_query);
                 }
             }
             WorldQuery::Data(ty_kind, mutbl, span) => {
@@ -191,10 +236,19 @@ impl<'tcx> QueryData<'tcx> {
                     meta: QueryDataMeta::Option,
                     ..Default::default()
                 };
-                world.fill_with_world_query(&*world_query.0);
+                world.fill_with_world_query(ctx, &*world_query.0);
                 self.option.push((world, *span));
             }
-            WorldQuery::Filter(filter_query) => self.fill_with_filter_query(filter_query),
+            WorldQuery::Filter(filter_query, span) => {
+                diagnostics::span_lint(
+                    ctx,
+                    FILTER_IN_WORLD_QUERY,
+                    *span,
+                    "Usage of Filter in first Part of Query.",
+                );
+
+                self.fill_with_filter_query(filter_query)
+            }
         }
     }
 
@@ -305,7 +359,7 @@ impl<'tcx> QueryData<'tcx> {
 
             if !contradiction {
                 for option in &self.option {
-                    QueryData::check_for_unnecessary_option(ctx, option, &[&self]);
+                    QueryData::check_for_unnecessary_option(ctx, option, &[self]);
                 }
             }
         }
@@ -424,15 +478,13 @@ impl<'tcx> QueryData<'tcx> {
                 if !part
                     .with
                     .keys()
-                    .filter(|ty_kind| {
-                        !vec_with.contains(&ty_kind) && !vec_change.contains(&ty_kind)
-                    })
+                    .filter(|ty_kind| !vec_with.contains(ty_kind) && !vec_change.contains(ty_kind))
                     .any(|_| true)
                     && !part
                         .added
                         .keys()
                         .chain(part.changed.keys())
-                        .filter(|ty_kind| !vec_change.contains(&ty_kind))
+                        .filter(|ty_kind| !vec_change.contains(ty_kind))
                         .any(|_| true)
                     && !part
                         .without
@@ -479,7 +531,7 @@ pub(super) fn lint_query(ctx: &LateContext, query: Query) {
     //dbg!(&query);
     let query_data = {
         let mut query_data = QueryData::default();
-        query_data.fill_with_world_query(&query.world_query);
+        query_data.fill_with_world_query(ctx, &query.world_query);
         query_data.fill_with_filter_query(&query.filter_query);
         query_data
     };

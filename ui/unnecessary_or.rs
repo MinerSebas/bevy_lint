@@ -70,6 +70,16 @@ fn test_query8(
     assert_eq!(query.iter().count(), query_check.iter().count());
 }
 
+fn test_query9(mut query: Query<(&A, Or<(With<B>,)>)>, query_check: Query<&A, With<B>>) {
+    test_query9.system();
+    assert_eq!(query.iter_mut().count(), query_check.iter().count());
+}
+
+fn test_query10(mut query: Query<(&A, Or<(With<A>, With<B>)>)>, query_check: Query<&A>) {
+    test_query10.system();
+    assert_eq!(query.iter_mut().count(), query_check.iter().count());
+}
+
 fn negativ_test_query1(
     query: Query<&A, Or<((With<A>, With<B>), With<C>)>>,
     query_check: Query<&A, Or<(With<B>, With<C>)>>,

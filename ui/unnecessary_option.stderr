@@ -126,6 +126,14 @@ error: `Option` Query is always `None`
 LL | fn test_query21(query: Query<(&A, Option<(&A, &B)>), Without<B>>) {
    |                                   ^^^^^^^^^^^^^^^^
 
+error: Usage of Filter in first Part of Query.
+  --> $DIR/unnecessary_option.rs:183:55
+   |
+LL | fn test_query22(mut query: Query<(&A, &B, Option<(&A, Without<B>)>)>) {
+   |                                                       ^^^^^^^^^^
+   |
+   = note: `-D filter-in-world-query` implied by `-D warnings`
+
 error: `Option` Query is always `None`
   --> $DIR/unnecessary_option.rs:183:43
    |
@@ -167,6 +175,12 @@ error: `Option` Query is always `Some`
    |
 LL | fn test_query26(query: Query<(&A, &B, Option<(&A, Option<&B>)>)>) {
    |                                       ^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: Usage of Filter in first Part of Query.
+  --> $DIR/unnecessary_option.rs:225:46
+   |
+LL | fn test_query27(mut query: Query<Option<(&A, Without<A>)>>) {
+   |                                              ^^^^^^^^^^
 
 error: `Option` Query is always `None`
   --> $DIR/unnecessary_option.rs:225:34
@@ -230,5 +244,5 @@ error: `Option` Query is always `Some`
 LL |                         (Option<&'static mut A>, Option<&'static C>),
    |                                                  ^^^^^^^^^^^^^^^^^^
 
-error: aborting due to 38 previous errors
+error: aborting due to 40 previous errors
 
