@@ -1,5 +1,5 @@
 error: Empty Query
-  --> $DIR/empty_query.rs:15:23
+  --> $DIR/empty_query.rs:14:23
    |
 LL | fn test_query1(query: Query<&A, Without<A>>) {
    |                       ^^^^^^^^^^^^^^^^^^^^^
@@ -7,37 +7,37 @@ LL | fn test_query1(query: Query<&A, Without<A>>) {
    = note: `-D empty-query` implied by `-D warnings`
 
 error: Empty Query
-  --> $DIR/empty_query.rs:20:27
+  --> $DIR/empty_query.rs:19:27
    |
 LL | fn test_query2(mut query: Query<&mut A, Without<A>>) {
    |                           ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 error: Empty Query
-  --> $DIR/empty_query.rs:25:23
+  --> $DIR/empty_query.rs:24:23
    |
 LL | fn test_query3(query: Query<&A, (Without<A>, With<B>)>) {
    |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 error: Empty Query
-  --> $DIR/empty_query.rs:30:23
+  --> $DIR/empty_query.rs:29:23
    |
 LL | fn test_query4(query: Query<&B, (With<A>, Without<B>)>) {
    |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 error: Empty Query
-  --> $DIR/empty_query.rs:35:23
+  --> $DIR/empty_query.rs:34:23
    |
 LL | fn test_query5(query: Query<(), (Without<A>, Added<A>)>) {
    |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 error: Empty Query
-  --> $DIR/empty_query.rs:40:23
+  --> $DIR/empty_query.rs:39:23
    |
 LL | fn test_query6(query: Query<(), (Changed<A>, Without<A>)>) {
    |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 error: Usage of Filter in first Part of Query.
-  --> $DIR/empty_query.rs:45:38
+  --> $DIR/empty_query.rs:44:38
    |
 LL | fn test_query7(mut query: Query<(&A, Without<A>)>) {
    |                                      ^^^^^^^^^^
@@ -45,19 +45,19 @@ LL | fn test_query7(mut query: Query<(&A, Without<A>)>) {
    = note: `-D filter-in-world-query` implied by `-D warnings`
 
 error: Empty Query
-  --> $DIR/empty_query.rs:45:27
+  --> $DIR/empty_query.rs:44:27
    |
 LL | fn test_query7(mut query: Query<(&A, Without<A>)>) {
    |                           ^^^^^^^^^^^^^^^^^^^^^^^
 
 error: Empty Query
-  --> $DIR/empty_query.rs:52:13
+  --> $DIR/empty_query.rs:51:13
    |
 LL |     query1: Query<'w, 's, &'static A, Without<A>>,
    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 error: Empty Query
-  --> $DIR/empty_query.rs:60:25
+  --> $DIR/empty_query.rs:59:25
    |
 LL | /                         Query<
 LL | |                             'w,
@@ -68,7 +68,7 @@ LL | |                         >,
    | |_________________________^
 
 error: Empty Query
-  --> $DIR/empty_query.rs:71:21
+  --> $DIR/empty_query.rs:70:21
    |
 LL | /                     Query<
 LL | |                         'w,

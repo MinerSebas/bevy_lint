@@ -1,4 +1,3 @@
-#![allow(dead_code)]
 #![allow(clippy::type_complexity)]
 use bevy::{
     app::App,
@@ -90,7 +89,7 @@ fn negativ_test_query1(
 
 fn negativ_test_query2(query: Query<(), (Or<(Added<A>, With<B>)>, With<A>)>) {
     negativ_test_query2.system();
-    assert_eq!(query.iter().count(), 6);
+    assert_eq!(query.iter().count(), 4);
 }
 
 #[derive(SystemParam)]
@@ -139,6 +138,10 @@ fn main() {
         .add_system(test_query6)
         .add_system(test_query7)
         .add_system(test_query8)
+        .add_system(test_query9)
+        .add_system(test_query10)
+        .add_system(negativ_test_query1)
+        .add_system(negativ_test_query2)
         .add_system(SystemParamTest::system_param_test)
         .run();
 }

@@ -1,4 +1,3 @@
-#![allow(dead_code)]
 #![allow(clippy::type_complexity)]
 use bevy::{
     app::App,
@@ -114,6 +113,7 @@ fn main() {
         .add_system(test_query4)
         .add_system(test_query5)
         .add_system(test_query6)
+        .add_system(test_query7)
         .add_system(SystemParamTest::system_param_test)
         .run();
 }

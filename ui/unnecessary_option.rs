@@ -1,4 +1,3 @@
-#![allow(dead_code)]
 #![allow(clippy::type_complexity)]
 use bevy::{
     app::App,
@@ -326,7 +325,7 @@ struct SystemParamTest<'w, 's> {
                         Query<
                             'w,
                             's,
-                            (Option<&'static mut A>, Option<&'static B>),
+                            (Option<&'static A>, Option<&'static B>),
                             (Changed<A>, With<B>),
                         >,
                     ),
@@ -337,7 +336,7 @@ struct SystemParamTest<'w, 's> {
                     Query<
                         'w,
                         's,
-                        (Option<&'static mut A>, Option<&'static C>),
+                        (Option<&'static A>, Option<&'static C>),
                         (Or<(With<A>, With<B>)>, With<C>),
                     >,
                     (),
@@ -345,6 +344,23 @@ struct SystemParamTest<'w, 's> {
             ),
         ),),),
     ),
+}
+
+impl<'w, 's> SystemParamTest<'w, 's> {
+    fn system_param_test(system_param: SystemParamTest) {
+        Self::system_param_test.system();
+
+        for option in system_param.query1.iter() {
+            assert!(option.is_some());
+        }
+        for (option_a, option_b) in system_param.query2.1 .0 .0 .1 .0 .0 .0 .0 .0.iter() {
+            assert!(option_a.is_some());
+            assert!(option_b.is_some());
+        }
+        for (_, option) in system_param.query2.1 .0 .0 .1 .2 .0.iter() {
+            assert!(option.is_some());
+        }
+    }
 }
 
 fn main() {
@@ -384,6 +400,7 @@ fn main() {
         .add_system(negativ_test_query2)
         .add_system(negativ_test_query3)
         .add_system(negativ_test_query4)
+        .add_system(SystemParamTest::system_param_test)
         .run();
 }
 

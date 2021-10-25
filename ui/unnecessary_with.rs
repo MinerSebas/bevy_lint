@@ -1,4 +1,3 @@
-#![allow(dead_code)]
 #![allow(clippy::type_complexity)]
 use bevy::{
     app::App,
@@ -210,7 +209,7 @@ struct SystemParamTest<'w, 's> {
                     Query<
                         'w,
                         's,
-                        (((((((((((&'static mut A,),),),),),),),),),),),
+                        (((((((((((&'static A,),),),),),),),),),),),
                         (((((((((((With<A>,),),),),),),),),),),),
                     >,
                     (),
@@ -218,6 +217,26 @@ struct SystemParamTest<'w, 's> {
             ),
         ),),),
     ),
+    query_check: Query<'w, 's, &'static A>,
+}
+
+impl<'w, 's> SystemParamTest<'w, 's> {
+    fn system_param_test(system_param: SystemParamTest) {
+        Self::system_param_test.system();
+
+        assert_eq!(
+            system_param.query1.iter().count(),
+            system_param.query_check.iter().count()
+        );
+        assert_eq!(
+            system_param.query2.1 .0 .0 .1 .0 .0 .0 .0 .0.iter().count(),
+            system_param.query_check.iter().count()
+        );
+        assert_eq!(
+            system_param.query2.1 .0 .0 .1 .2 .0.iter().count(),
+            system_param.query_check.iter().count()
+        );
+    }
 }
 
 trait TestTrait1: Component + Sized {
@@ -372,6 +391,7 @@ fn main() {
         .add_system(test_query20)
         .add_system(test_query21::<A>)
         .add_system(test_query22)
+        .add_system(SystemParamTest::system_param_test)
         .add_system(A::test_trait1_query1)
         .add_system(A::test_trait1_query2)
         .add_system(A::test_trait1_query3)

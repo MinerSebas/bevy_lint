@@ -1,5 +1,5 @@
 error: Unnecessary `Or` Filter
-  --> $DIR/unnecessary_or.rs:15:33
+  --> $DIR/unnecessary_or.rs:14:33
    |
 LL | fn test_query1(query: Query<&A, Or<()>>) {
    |                                 ^^^^^^
@@ -7,31 +7,31 @@ LL | fn test_query1(query: Query<&A, Or<()>>) {
    = note: `-D unnecessary-option` implied by `-D warnings`
 
 error: Unnecessary `Or` Filter
-  --> $DIR/unnecessary_or.rs:20:33
+  --> $DIR/unnecessary_or.rs:19:33
    |
 LL | fn test_query2(query: Query<&A, Or<(With<B>,)>>, query_check: Query<&A, With<B>>) {
    |                                 ^^^^^^^^^^^^^^
 
 error: Unnecessary `Or` Filter
-  --> $DIR/unnecessary_or.rs:25:33
+  --> $DIR/unnecessary_or.rs:24:33
    |
 LL | fn test_query3(query: Query<&A, Or<(With<A>, With<B>)>>, query_check: Query<&A>) {
    |                                 ^^^^^^^^^^^^^^^^^^^^^^
 
 error: Unnecessary `Or` Filter
-  --> $DIR/unnecessary_or.rs:31:28
+  --> $DIR/unnecessary_or.rs:30:28
    |
 LL |     query: Query<(&A, &C), Or<((With<A>, With<B>), With<C>)>>,
    |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 error: Unnecessary `Or` Filter
-  --> $DIR/unnecessary_or.rs:38:33
+  --> $DIR/unnecessary_or.rs:37:33
    |
 LL | fn test_query5(query: Query<&A, Or<(Or<(With<A>, With<B>)>, With<C>)>>, query_check: Query<&A>) {
    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 error: Unnecessary `Or` Filter
-  --> $DIR/unnecessary_or.rs:46:9
+  --> $DIR/unnecessary_or.rs:45:9
    |
 LL | /         Or<(
 LL | |             ((((((((((((Or<(With<A>, With<B>)>,),),),),),),),),),),),),
@@ -40,19 +40,19 @@ LL | |         )>,
    | |__________^
 
 error: Unnecessary `Or` Filter
-  --> $DIR/unnecessary_or.rs:58:23
+  --> $DIR/unnecessary_or.rs:57:23
    |
 LL |     query: Query<(), (Or<(With<A>, With<B>)>, Added<A>)>,
    |                       ^^^^^^^^^^^^^^^^^^^^^^
 
 error: Unnecessary `Or` Filter
-  --> $DIR/unnecessary_or.rs:66:23
+  --> $DIR/unnecessary_or.rs:65:23
    |
 LL |     query: Query<(), (Or<(Without<A>, With<B>)>, Without<A>)>,
    |                       ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 error: Usage of Filter in first Part of Query.
-  --> $DIR/unnecessary_or.rs:73:38
+  --> $DIR/unnecessary_or.rs:72:38
    |
 LL | fn test_query9(mut query: Query<(&A, Or<(With<B>,)>)>, query_check: Query<&A, With<B>>) {
    |                                      ^^^^^^^^^^^^^^
@@ -60,37 +60,37 @@ LL | fn test_query9(mut query: Query<(&A, Or<(With<B>,)>)>, query_check: Query<&
    = note: `-D filter-in-world-query` implied by `-D warnings`
 
 error: Unnecessary `Or` Filter
-  --> $DIR/unnecessary_or.rs:73:38
+  --> $DIR/unnecessary_or.rs:72:38
    |
 LL | fn test_query9(mut query: Query<(&A, Or<(With<B>,)>)>, query_check: Query<&A, With<B>>) {
    |                                      ^^^^^^^^^^^^^^
 
 error: Usage of Filter in first Part of Query.
-  --> $DIR/unnecessary_or.rs:78:39
+  --> $DIR/unnecessary_or.rs:77:39
    |
 LL | fn test_query10(mut query: Query<(&A, Or<(With<A>, With<B>)>)>, query_check: Query<&A>) {
    |                                       ^^^^^^^^^^^^^^^^^^^^^^
 
 error: Unnecessary `Or` Filter
-  --> $DIR/unnecessary_or.rs:78:39
+  --> $DIR/unnecessary_or.rs:77:39
    |
 LL | fn test_query10(mut query: Query<(&A, Or<(With<A>, With<B>)>)>, query_check: Query<&A>) {
    |                                       ^^^^^^^^^^^^^^^^^^^^^^
 
 error: Unnecessary `Or` Filter
-  --> $DIR/unnecessary_or.rs:98:39
+  --> $DIR/unnecessary_or.rs:97:39
    |
 LL |     query1: Query<'w, 's, &'static A, Or<()>>,
    |                                       ^^^^^^
 
 error: Unnecessary `Or` Filter
-  --> $DIR/unnecessary_or.rs:104:52
+  --> $DIR/unnecessary_or.rs:103:52
    |
 LL |                 ((((Query<'w, 's, (), (Changed<A>, Or<(With<A>,)>)>,), ()),),),
    |                                                    ^^^^^^^^^^^^^^
 
 error: Unnecessary `Or` Filter
-  --> $DIR/unnecessary_or.rs:106:45
+  --> $DIR/unnecessary_or.rs:105:45
    |
 LL |                 (Query<'w, 's, &'static A, (Or<(With<B>,)>, With<C>)>, ()),
    |                                             ^^^^^^^^^^^^^^
