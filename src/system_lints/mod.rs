@@ -24,9 +24,26 @@ impl<'tcx> LateLintPass<'tcx> for SystemLintPass {
         if let Some(system_params) = match &item.kind {
             rustc_hir::ItemKind::Fn(_, _, _) => MixedTy::fn_inputs_from_fn_item(ctx, item),
             rustc_hir::ItemKind::Struct(rustc_hir::VariantData::Struct(_, _), _) => {
+                let system_param_def_id = if let Some(def_id) =
+                    clippy_utils::get_trait_def_id(ctx, bevy_paths::SYSTEM_PARAM)
+                {
+                    def_id
+                } else {
+                    return;
+                };
+
+                if !clippy_utils::ty::implements_trait(
+                    ctx,
+                    ctx.tcx.type_of(item.def_id),
+                    system_param_def_id,
+                    &[],
+                ) {
+                    return;
+                }
+
                 MixedTy::fields_from_struct_item(ctx, item)
             }
-            _ => None,
+            _ => return,
         } {
             lint_function_signature(ctx, &system_params);
         }
