@@ -11,16 +11,16 @@ license = "MIT OR Apache-2.0"
 crate-type = ["cdylib"]
 
 [dependencies]
-clippy_utils = { git = "https://github.com/rust-lang/rust-clippy", tag = "rust-1.55.0" }
-dylint_linting = "1.0.5"
+clippy_utils = { git = "https://github.com/rust-lang/rust-clippy", tag = "rust-1.56.0" }
+dylint_linting = "1.0.7"
 if_chain = "1.0.2"
 either = "1.6.1"
 itertools = "0.10.1"
 
 
 [dev-dependencies]
-dylint_testing = "1.0.5"
-bevy = { git = "https://github.com/bevyengine/bevy.git", rev = "997eae61854b362c10810884966ac605121e04d7", default-features = false }
+dylint_testing = "1.0.7"
+bevy = { git = "https://github.com/bevyengine/bevy.git", rev = "6a8a8c9d21f32e0e46623db9438813b009f9e014", default-features = false }
 
 [package.metadata.rust-analyzer]
 rustc_private = true

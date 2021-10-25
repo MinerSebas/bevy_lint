@@ -28,7 +28,7 @@ jobs:
         run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev
 
       - name: Install dylint
-        run: cargo install cargo-dylint dylint-link
+        run: cargo install dylint-link
         if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Check Format
