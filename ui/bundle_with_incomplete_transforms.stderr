@@ -1,0 +1,44 @@
+error: This Bundle contains the "GlobalTransform" Component, but is missing the "Transform" Component.
+  --> $DIR/bundle_with_incomplete_transforms.rs:20:1
+   |
+LL | / struct BundleWithoutGlobalTransform {
+LL | |     transform: Transform,
+LL | | }
+   | |_^
+   |
+   = note: `-D bundle-with-incomplete-transforms` implied by `-D warnings`
+
+error: This Bundle contains the "Transform" Component, but is missing the "GlobalTransform" Component.
+  --> $DIR/bundle_with_incomplete_transforms.rs:25:1
+   |
+LL | / struct BundleWithoutTransform {
+LL | |     global_transform: GlobalTransform,
+LL | | }
+   | |_^
+
+error: This Bundle contains the "GlobalTransform" Component, but is missing the "Transform" Component.
+  --> $DIR/bundle_with_incomplete_transforms.rs:36:1
+   |
+LL | / struct ComplexBundleWithoutGlobalTransform {
+LL | |     transform: Transform,
+LL | |     a: A,
+LL | |     b: B,
+LL | |     c: C,
+LL | |     d: D<GlobalTransform>,
+LL | | }
+   | |_^
+
+error: This Bundle contains the "Transform" Component, but is missing the "GlobalTransform" Component.
+  --> $DIR/bundle_with_incomplete_transforms.rs:45:1
+   |
+LL | / struct ComplexBundleWithoutTransform {
+LL | |     d: D<Transform>,
+LL | |     c: C,
+LL | |     global_transform: GlobalTransform,
+LL | |     a: A,
+LL | |     b: B,
+LL | | }
+   | |_^
+
+error: aborting due to 4 previous errors
+

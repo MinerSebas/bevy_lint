@@ -27,10 +27,12 @@ extern crate rustc_span;
 
 mod app_lints;
 mod bevy_paths;
+mod bundle_lints;
 mod mixed_ty;
 mod system_lints;
 
 pub use app_lints::INSERT_RESOURCE_WITH_DEFAULT;
+pub use bundle_lints::BUNDLE_WITH_INCOMPLETE_TRANSFORMS;
 pub use system_lints::query_lints::{
     EMPTY_QUERY, FILTER_IN_WORLD_QUERY, UNNECESSARY_OPTION, UNNECESSARY_OR, UNNECESSARY_WITH,
 };
@@ -40,6 +42,7 @@ pub use system_lints::query_lints::{
 pub fn register_lints(_sess: &rustc_session::Session, lint_store: &mut rustc_lint::LintStore) {
     lint_store.register_lints(&[
         INSERT_RESOURCE_WITH_DEFAULT,
+        BUNDLE_WITH_INCOMPLETE_TRANSFORMS,
         EMPTY_QUERY,
         FILTER_IN_WORLD_QUERY,
         UNNECESSARY_OPTION,
@@ -47,6 +50,7 @@ pub fn register_lints(_sess: &rustc_session::Session, lint_store: &mut rustc_lin
         UNNECESSARY_WITH,
     ]);
     lint_store.register_late_pass(|| Box::new(app_lints::AppLintPass));
+    lint_store.register_late_pass(|| Box::new(bundle_lints::BundleLintPass));
     lint_store.register_late_pass(|| Box::new(system_lints::SystemLintPass));
 }
 

@@ -26,6 +26,10 @@ bevy = { git = "https://github.com/bevyengine/bevy.git", rev = "6a8a8c9d21f32e0e
 rustc_private = true
 
 [[example]]
+name = "bundle_with_incomplete_transforms"
+path = "ui/bundle_with_incomplete_transforms.rs"
+
+[[example]]
 name = "empty_query"
 path = "ui/empty_query.rs"
 
