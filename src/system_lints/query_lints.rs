@@ -223,7 +223,7 @@ declare_lint! {
     /// # #[derive(Component)]
     /// # struct B;
     /// #
-    /// fn system(mut query: Query<&A, Or<(Added<B>, Changed<B>)>) {}
+    /// fn system(mut query: Query<&A, Or<(Added<B>, Changed<B>)>>) {}
     ///
     /// # system.system();
     /// ```
