@@ -8,13 +8,23 @@ pub mod query_lints;
 use self::{
     model::{FilterQuery, Query, SystemParamType, WorldQuery},
     query_lints::{
-        lint_query, EMPTY_QUERY, FILTER_IN_WORLD_QUERY, UNNECESSARY_OPTION, UNNECESSARY_OR,
-        UNNECESSARY_WITH,
+        lint_query, EMPTY_QUERY, FILTER_IN_WORLD_QUERY, UNNECESSARY_ADDED, UNNECESSARY_CHANGED,
+        UNNECESSARY_OPTION, UNNECESSARY_OR, UNNECESSARY_WITH,
     },
 };
 use super::{bevy_paths, mixed_ty::MixedTy};
 
-declare_lint_pass!(SystemLintPass => [EMPTY_QUERY, FILTER_IN_WORLD_QUERY, UNNECESSARY_OPTION, UNNECESSARY_OR, UNNECESSARY_WITH]);
+declare_lint_pass!(SystemLintPass =>
+    [
+        EMPTY_QUERY,
+        FILTER_IN_WORLD_QUERY,
+        UNNECESSARY_ADDED,
+        UNNECESSARY_CHANGED,
+        UNNECESSARY_OPTION,
+        UNNECESSARY_OR,
+        UNNECESSARY_WITH
+    ]
+);
 
 impl<'tcx> LateLintPass<'tcx> for SystemLintPass {
     // A list of things you might check can be found here:

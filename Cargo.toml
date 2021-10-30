@@ -42,6 +42,10 @@ name = "insert_resource_with_default"
 path = "ui/insert_resource_with_default.rs"
 
 [[example]]
+name = "unnecessary_change_detection_filters"
+path = "ui/unnecessary_change_detection_filters.rs"
+
+[[example]]
 name = "unnecessary_option"
 path = "ui/unnecessary_option.rs"
 

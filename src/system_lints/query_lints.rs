@@ -200,7 +200,91 @@ declare_lint! {
     /// ```
     pub FILTER_IN_WORLD_QUERY,
     Warn,
-    "Detects unnecessary `With` query filters in Bevy query parameters."
+    "Detects Filters in the Data part of a Query."
+}
+
+declare_lint! {
+    /// **What it does:**
+    /// Detects unnecessary `Added` filters in Bevy query parameters."
+    ///
+    /// **Why is this bad?**
+    /// The `Changed` Filter also triggers for Component Additions.
+    /// Thus combining them inside an `Or` makes `Added` unnecessary.
+    ///
+    /// **Known problems:** None.
+    ///
+    /// **Example:**
+    ///
+    /// ```rust
+    /// # use bevy::ecs::prelude::*;
+    /// #
+    /// # #[derive(Component)]
+    /// # struct A;
+    /// # #[derive(Component)]
+    /// # struct B;
+    /// #
+    /// fn system(mut query: Query<&A, Or<(Added<B>, Changed<B>)>) {}
+    ///
+    /// # system.system();
+    /// ```
+    /// Instead do:
+    /// ```rust
+    /// # use bevy::ecs::prelude::*;
+    /// #
+    /// # #[derive(Component)]
+    /// # struct A;
+    /// # #[derive(Component)]
+    /// # struct B;
+    /// #
+    /// fn system(mut query: Query<&A, Changed<B>>) {}
+    ///
+    /// # system.system();
+    /// ```
+    pub UNNECESSARY_ADDED,
+    Warn,
+    "Detects unnecessary `Added` filters in Bevy query parameters."
+}
+
+declare_lint! {
+    /// **What it does:**
+    /// Detects unnecessary `Changed` filters in Bevy query parameters."
+    ///
+    /// **Why is this bad?**
+    /// The `Changed` Filter also triggers for Component Additions.
+    /// Thus combining them inside an `Or` makes `Added` unnecessary.
+    ///
+    /// **Known problems:** None.
+    ///
+    /// **Example:**
+    ///
+    /// ```rust
+    /// # use bevy::ecs::prelude::*;
+    /// #
+    /// # #[derive(Component)]
+    /// # struct A;
+    /// # #[derive(Component)]
+    /// # struct B;
+    /// #
+    /// fn system(mut query: Query<&A, (Added<B>, Changed<B>)>) {}
+    ///
+    /// # system.system();
+    /// ```
+    /// Instead do:
+    /// ```rust
+    /// # use bevy::ecs::prelude::*;
+    /// #
+    /// # #[derive(Component)]
+    /// # struct A;
+    /// # #[derive(Component)]
+    /// # struct B;
+    /// #
+    /// fn system(mut query: Query<&A, Added<B>>) {}
+    ///
+    /// # system.system();
+    /// ```
+    pub UNNECESSARY_CHANGED,
+    Warn,
+    "Detects unnecessary `Changed` filters in Bevy query parameters."
 }
 
 #[allow(clippy::type_complexity)]
@@ -340,6 +424,19 @@ impl<'tcx> QueryData<'tcx> {
             }
         }
 
+        for (def_id, data) in self.changed.iter().sorted() {
+            if self.added.contains_key(def_id) {
+                for inst in data {
+                    diagnostics::span_lint(
+                        ctx,
+                        UNNECESSARY_CHANGED,
+                        *inst,
+                        "Unnecessary `Changed` Filter",
+                    );
+                }
+            }
+        }
+
         if let QueryDataMeta::Default = self.meta {
             let mut contradiction = false;
 
@@ -447,7 +544,7 @@ impl<'tcx> QueryData<'tcx> {
     }
 
     fn check_for_unnecessary_or(&self, ctx: &LateContext, facts: &[&QueryData]) {
-        //dbg!(&self.or);
+        // Todo: Also handle nested ANDs `Or<(With<A>, Without<A>), With<B>)>`
         for concrete_or in &self.or {
             //dbg!(concrete_or);
             if concrete_or.0.len() < 2 {
@@ -501,6 +598,52 @@ impl<'tcx> QueryData<'tcx> {
                     break;
                 }
             }
+
+            for (added_index, added) in concrete_or
+                .0
+                .iter()
+                .enumerate()
+                .filter(|(_, data)| !data.added.is_empty())
+                .map(|(index, data)| (index, &data.added))
+            {
+                for changed in concrete_or
+                    .0
+                    .iter()
+                    .enumerate()
+                    .filter(|(index, data)| *index != added_index && !data.changed.is_empty())
+                    .map(|(_, data)| &data.changed)
+                {
+                    for (ty_kind, spans) in added {
+                        if changed.contains_key(ty_kind) {
+                            for span in spans {
+                                diagnostics::span_lint(
+                                    ctx,
+                                    UNNECESSARY_ADDED,
+                                    *span,
+                                    "Unnecessary `Added` Filter",
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            /*
+
+             dbg!(&part.added);
+             dbg!(&part.changed);
+            for added in &part.added {
+                 if part.changed.contains_key(&added.0) {
+                     for span in added.1 {
+                         diagnostics::span_lint(
+                             ctx,
+                             UNNECESSARY_ADDED,
+                             *span,
+                             "Unnecessary `Added` Filter",
+                         )
+                     }
+                 }
+             }*/
         }
     }
 
