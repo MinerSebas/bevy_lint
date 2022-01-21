@@ -3,7 +3,7 @@ name = "bevy_lint"
 version = "0.1.0"
 authors = ["MinerSebas <scherthan_sebastian@web.de>"]
 description = "Provides Lints for Bevy Code"
-edition = "2018"
+edition = "2021"
 publish = false
 license = "MIT OR Apache-2.0"
 
@@ -11,16 +11,16 @@ license = "MIT OR Apache-2.0"
 crate-type = ["cdylib"]
 
 [dependencies]
-clippy_utils = { git = "https://github.com/rust-lang/rust-clippy", tag = "rust-1.56.0" }
-dylint_linting = "1.0.7"
+clippy_utils = { git = "https://github.com/rust-lang/rust-clippy", tag = "rust-1.58.0" }
+dylint_linting = "1.0.11"
 if_chain = "1.0.2"
 either = "1.6.1"
-itertools = "0.10.1"
+itertools = "0.10.3"
 
 
 [dev-dependencies]
-dylint_testing = "1.0.7"
-bevy = { git = "https://github.com/bevyengine/bevy.git", rev = "6a8a8c9d21f32e0e46623db9438813b009f9e014", default-features = false }
+dylint_testing = "1.0.11"
+bevy = { version = "0.6", default-features = false }
 
 [package.metadata.rust-analyzer]
 rustc_private = true
