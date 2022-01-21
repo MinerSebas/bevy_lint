@@ -190,7 +190,7 @@ fn test_query21<E: Component>(query: Query<&E, With<E>>, query_check: Query<&E>)
 fn test_query22(mut query: Query<Option<(&A, With<A>)>>, query_check: Query<&A>) {
     test_query22.system();
     assert_eq!(
-        query.iter_mut().filter(|option| option.is_some()).count(),
+        query.iter_mut().filter(Option::is_some).count(),
         query_check.iter().count()
     );
 }

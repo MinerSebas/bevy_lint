@@ -86,10 +86,10 @@ impl<'tcx> LateLintPass<'tcx> for BundleLintPass {
 
         match (contains_transform, contains_global_transform) {
             (true, false) => {
-                span_missing_transform_lint(ctx, item, MissingTransformVariant::Transform)
+                span_missing_transform_lint(ctx, item, MissingTransformVariant::Transform);
             }
             (false, true) => {
-                span_missing_transform_lint(ctx, item, MissingTransformVariant::GlobalTransform)
+                span_missing_transform_lint(ctx, item, MissingTransformVariant::GlobalTransform);
             }
             _ => (),
         }

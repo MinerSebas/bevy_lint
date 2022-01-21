@@ -331,7 +331,7 @@ impl<'tcx> QueryData<'tcx> {
                     "Usage of Filter in first Part of Query.",
                 );
 
-                self.fill_with_filter_query(filter_query)
+                self.fill_with_filter_query(filter_query);
             }
         }
     }
@@ -344,7 +344,9 @@ impl<'tcx> QueryData<'tcx> {
                 }
             }
             FilterQuery::Or(filter_querys, span) => {
-                if !filter_querys.is_empty() {
+                if filter_querys.is_empty() {
+                    self.or.push((Vec::new(), *span));
+                } else {
                     let mut vec = Vec::new();
                     for filter_query in filter_querys {
                         match filter_query {
@@ -368,8 +370,6 @@ impl<'tcx> QueryData<'tcx> {
                         }
                     }
                     self.or.push((vec, *span));
-                } else {
-                    self.or.push((Vec::new(), *span));
                 }
             }
             FilterQuery::With(ty_kind, span) => {
@@ -621,7 +621,7 @@ impl<'tcx> QueryData<'tcx> {
                                     UNNECESSARY_ADDED,
                                     *span,
                                     "Unnecessary `Added` Filter",
-                                )
+                                );
                             }
                         }
                     }
@@ -666,7 +666,7 @@ enum QueryDataMeta {
 
 impl Default for QueryDataMeta {
     fn default() -> Self {
-        QueryDataMeta::Default
+        Self::Default
     }
 }
 

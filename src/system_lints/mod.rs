@@ -89,8 +89,7 @@ impl<'tcx> LateLintPass<'tcx> for SystemLintPass {
 fn lint_function_signature<'tcx>(ctx: &LateContext<'tcx>, inputs: &[MixedTy<'tcx>]) {
     let system_params: Vec<_> = inputs
         .iter()
-        .map(|mixed_ty| recursively_resolve_system_param(ctx, mixed_ty))
-        .flatten()
+        .filter_map(|mixed_ty| recursively_resolve_system_param(ctx, mixed_ty))
         .map(|mut system_param| {
             system_param.remove_substitutions();
             system_param
@@ -122,8 +121,7 @@ fn recursively_resolve_system_param<'tcx>(
     if let Some(types) = ty.extract_tuple_types() {
         let vec = types
             .iter()
-            .map(|ty| recursively_resolve_system_param(ctx, ty))
-            .flatten()
+            .filter_map(|ty| recursively_resolve_system_param(ctx, ty))
             .collect();
 
         Some(SystemParamType::Tuple(vec, ty.span()))
@@ -135,78 +133,61 @@ fn recursively_resolve_system_param<'tcx>(
 }
 
 fn resolve_query<'tcx>(ctx: &LateContext<'tcx>, ty: &MixedTy<'tcx>) -> Option<Query<'tcx>> {
-    if let Some((world, filter)) = ty.get_generics_of_query(ctx) {
-        let resolved_world = recursively_resolve_world_query(ctx, &world)?;
-        let resolved_filter = {
-            if let Some(resolved_filter) = filter
-                .map(|filter| recursively_resolve_filter_query(ctx, &filter))
-                .flatten()
-            {
-                resolved_filter
-            } else {
-                FilterQuery::Tuple(Vec::new(), ty.span())
-            }
-        };
+    ty.get_generics_of_query(ctx).map(|(world, filter)| {
+        let resolved_world = recursively_resolve_world_query(ctx, &world)
+            .unwrap_or_else(|| WorldQuery::Tuple(Vec::new(), ty.span()));
+        let resolved_filter = filter
+            .and_then(|filter| recursively_resolve_filter_query(ctx, &filter))
+            .map_or_else(
+                || FilterQuery::Tuple(Vec::new(), ty.span()),
+                |resolved_filter| resolved_filter,
+            );
 
-        Some(Query {
+        Query {
             world_query: resolved_world,
             filter_query: resolved_filter,
             span: ty.span(),
-        })
-    } else {
-        None
-    }
+        }
+    })
 }
 
 fn recursively_resolve_world_query<'tcx>(
     ctx: &LateContext<'tcx>,
     world: &MixedTy<'tcx>,
 ) -> Option<WorldQuery<'tcx>> {
-    if let Some(types) = world.extract_tuple_types() {
-        let vec = types
-            .iter()
-            .map(|ty| recursively_resolve_world_query(ctx, ty))
-            .flatten()
-            .collect();
+    match world.middle.kind() {
+        rustc_middle::ty::TyKind::Tuple(_) => world.extract_tuple_types().map(|types| {
+            let vec = types
+                .iter()
+                .filter_map(|ty| recursively_resolve_world_query(ctx, ty))
+                .collect();
 
-        Some(WorldQuery::Tuple(vec, world.span()))
-    } else {
-        match world.middle.kind() {
-            rustc_middle::ty::TyKind::Adt(_, _) => {
-                if clippy_utils::ty::match_type(ctx, world.middle, &clippy_utils::paths::OPTION) {
-                    let generics = world.extract_generics_from_struct().unwrap();
-                    assert_eq!(generics.len(), 1);
-                    if let Some(world_query) = recursively_resolve_world_query(ctx, &generics[0]) {
-                        let span = *world_query.span();
-                        Some(WorldQuery::Option(
-                            (Box::new(world_query), span),
-                            world.span(),
-                        ))
-                    } else {
-                        None
-                    }
-                } else if clippy_utils::ty::match_type(ctx, world.middle, bevy_paths::OR)
-                    || clippy_utils::ty::match_type(ctx, world.middle, bevy_paths::ADDED)
-                    || clippy_utils::ty::match_type(ctx, world.middle, bevy_paths::CHANGED)
-                    || clippy_utils::ty::match_type(ctx, world.middle, bevy_paths::WITH)
-                    || clippy_utils::ty::match_type(ctx, world.middle, bevy_paths::WITHOUT)
-                {
-                    recursively_resolve_filter_query(ctx, world)
-                        .map(|filter| WorldQuery::Filter(filter, world.span()))
-                } else {
-                    None
-                }
+            WorldQuery::Tuple(vec, world.span())
+        }),
+        rustc_middle::ty::TyKind::Adt(_, _) => {
+            if clippy_utils::ty::match_type(ctx, world.middle, &clippy_utils::paths::OPTION) {
+                let generics = world.extract_generics_from_struct().unwrap();
+                assert_eq!(generics.len(), 1);
+                recursively_resolve_world_query(ctx, &generics[0]).map(|world_query| {
+                    let span = *world_query.span();
+                    WorldQuery::Option((Box::new(world_query), span), world.span())
+                })
+            } else if clippy_utils::ty::match_type(ctx, world.middle, bevy_paths::OR)
+                || clippy_utils::ty::match_type(ctx, world.middle, bevy_paths::ADDED)
+                || clippy_utils::ty::match_type(ctx, world.middle, bevy_paths::CHANGED)
+                || clippy_utils::ty::match_type(ctx, world.middle, bevy_paths::WITH)
+                || clippy_utils::ty::match_type(ctx, world.middle, bevy_paths::WITHOUT)
+            {
+                recursively_resolve_filter_query(ctx, world)
+                    .map(|filter| WorldQuery::Filter(filter, world.span()))
+            } else {
+                None
             }
-            rustc_middle::ty::TyKind::Ref(_, _, _) => {
-                let (ty, mutbl) = world.strip_reference().unwrap();
-                Some(WorldQuery::Data(
-                    ty.middle.kind().clone(),
-                    mutbl,
-                    world.span(),
-                ))
-            }
-            _ => None,
         }
+        rustc_middle::ty::TyKind::Ref(_, _, _) => world
+            .strip_reference()
+            .map(|(ty, mutbl)| WorldQuery::Data(ty.middle.kind().clone(), mutbl, world.span())),
+        _ => None,
     }
 }
 
@@ -217,8 +198,7 @@ fn recursively_resolve_filter_query<'tcx>(
     if let Some(types) = filter.extract_tuple_types() {
         let vec = types
             .iter()
-            .map(|ty| recursively_resolve_filter_query(ctx, ty))
-            .flatten()
+            .filter_map(|ty| recursively_resolve_filter_query(ctx, ty))
             .collect();
 
         Some(FilterQuery::Tuple(vec, filter.span()))
@@ -230,8 +210,7 @@ fn recursively_resolve_filter_query<'tcx>(
             .extract_tuple_types()
             .unwrap()
             .iter()
-            .map(|ty| recursively_resolve_filter_query(ctx, ty))
-            .flatten()
+            .filter_map(|ty| recursively_resolve_filter_query(ctx, ty))
             .collect();
 
         Some(FilterQuery::Or(vec, filter.span()))

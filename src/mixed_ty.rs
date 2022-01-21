@@ -1,5 +1,6 @@
 use either::Either;
 use rustc_lint::LateContext;
+use rustc_middle::ty::subst::GenericArg;
 use rustc_span::Span;
 
 use crate::bevy_paths;
@@ -16,8 +17,11 @@ impl<'tcx> MixedTy<'tcx> {
         item: &rustc_hir::Item<'tcx>,
     ) -> Option<Vec<Self>> {
         match item.kind {
-            rustc_hir::ItemKind::Struct(rustc_hir::VariantData::Struct(hir_fields, _), _)
-            | rustc_hir::ItemKind::Struct(rustc_hir::VariantData::Tuple(hir_fields, _), _) => {
+            rustc_hir::ItemKind::Struct(
+                rustc_hir::VariantData::Struct(hir_fields, _)
+                | rustc_hir::VariantData::Tuple(hir_fields, _),
+                _,
+            ) => {
                 let middle: rustc_middle::ty::Ty = ctx.tcx.type_of(item.def_id);
 
                 let middle_fields = match middle.kind() {
@@ -135,7 +139,7 @@ impl<'tcx> MixedTy<'tcx> {
     pub(crate) fn extract_tuple_types(&self) -> Option<Vec<Self>> {
         let middle_types: Vec<_> = match self.middle.kind() {
             rustc_middle::ty::TyKind::Tuple(middle_types) => {
-                middle_types.iter().map(|ty| ty.expect_ty()).collect()
+                middle_types.iter().map(GenericArg::expect_ty).collect()
             }
             _ => return None,
         };
@@ -256,23 +260,17 @@ impl<'tcx> MixedTy<'tcx> {
                     middle: middle.0,
                 };
 
-                let filter = {
-                    match hir {
-                        Either::Left(hir_ty) => {
-                            if let Some(hir) = hir_ty.1 {
-                                middle.1.map(|middle| Self {
-                                    hir: Either::Left(hir),
-                                    middle,
-                                })
-                            } else {
-                                None
-                            }
-                        }
-                        Either::Right(span) => middle.1.map(|middle| Self {
-                            hir: Either::Right(span),
+                let filter = match hir {
+                    Either::Left(hir_ty) => hir_ty.1.and_then(|hir| {
+                        middle.1.map(|middle| Self {
+                            hir: Either::Left(hir),
                             middle,
-                        }),
-                    }
+                        })
+                    }),
+                    Either::Right(span) => middle.1.map(|middle| Self {
+                        hir: Either::Right(span),
+                        middle,
+                    }),
                 };
 
                 return Some((world, filter));
