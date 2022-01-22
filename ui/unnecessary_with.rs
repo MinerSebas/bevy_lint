@@ -366,6 +366,28 @@ impl<T: Component> TestTrait2 for D<T> {
     }
 }
 
+trait TestTrait3: Component + Sized {
+    fn test_trait3_query1(query: Query<&A, With<Self>>, query_check: Query<&A>) {
+        Self::test_trait3_query1.system();
+        let _ = query;
+        let _ = query_check;
+    }
+}
+
+impl TestTrait3 for A {
+    fn test_trait3_query1(query: Query<&A, With<Self>>, query_check: Query<&A>) {
+        Self::test_trait3_query1.system();
+        assert_eq!(query.iter().count(), query_check.iter().count());
+    }
+}
+
+impl TestTrait3 for B {
+    fn test_trait3_query1(query: Query<&A, With<Self>>, query_check: Query<&A>) {
+        Self::test_trait3_query1.system();
+        assert_ne!(query.iter().count(), query_check.iter().count());
+    }
+}
+
 fn main() {
     App::new()
         .add_startup_system(setup)
@@ -405,6 +427,8 @@ fn main() {
         .add_system(C::test_trait1_query3)
         .add_system(C::test_trait1_query4)
         .add_system(A::test_trait2_query1)
+        .add_system(A::test_trait3_query1)
+        .add_system(B::test_trait3_query1)
         .add_system(D::<C>::test_trait2_query1)
         .run();
 }
