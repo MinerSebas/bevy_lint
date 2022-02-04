@@ -26,37 +26,37 @@ bevy = { version = "0.6", default-features = false }
 rustc_private = true
 
 [[example]]
-name = "bundle_with_incomplete_transforms"
-path = "ui/bundle_with_incomplete_transforms.rs"
-
-[[example]]
-name = "empty_query"
-path = "ui/empty_query.rs"
-
-[[example]]
-name = "filter_in_world_query"
-path = "ui/filter_in_world_query.rs"
-
-[[example]]
 name = "insert_resource_with_default"
-path = "ui/insert_resource_with_default.rs"
+path = "ui/app_lints/insert_resource_with_default.rs"
+
+[[example]]
+name = "bundle_with_incomplete_transforms"
+path = "ui/bundle_lints/bundle_with_incomplete_transforms.rs"
 
 [[example]]
 name = "multiple_labels_on_type"
-path = "ui/multiple_labels_on_type.rs"
+path = "ui/label_lints/multiple_labels_on_type.rs"
+
+[[example]]
+name = "empty_query"
+path = "ui/system_lints/empty_query.rs"
+
+[[example]]
+name = "filter_in_world_query"
+path = "ui/system_lints/filter_in_world_query.rs"
 
 [[example]]
 name = "unnecessary_change_detection_filters"
-path = "ui/unnecessary_change_detection_filters.rs"
+path = "ui/system_lints/unnecessary_change_detection_filters.rs"
 
 [[example]]
 name = "unnecessary_option"
-path = "ui/unnecessary_option.rs"
+path = "ui/system_lints/unnecessary_option.rs"
 
 [[example]]
 name = "unnecessary_or"
-path = "ui/unnecessary_or.rs"
+path = "ui/system_lints/unnecessary_or.rs"
 
 [[example]]
 name = "unnecessary_with"
-path = "ui/unnecessary_with.rs"
+path = "ui/system_lints/unnecessary_with.rs"
