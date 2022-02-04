@@ -38,6 +38,10 @@ name = "multiple_labels_on_type"
 path = "ui/label_lints/multiple_labels_on_type.rs"
 
 [[example]]
+name = "str_label"
+path = "ui/label_lints/str_label.rs"
+
+[[example]]
 name = "empty_query"
 path = "ui/system_lints/empty_query.rs"
 

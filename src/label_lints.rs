@@ -1,6 +1,9 @@
+use std::collections::HashMap;
+
 use clippy_utils::{diagnostics::span_lint, get_trait_def_id, ty::implements_trait};
 use rustc_lint::{LateContext, LateLintPass};
 use rustc_session::{declare_lint, declare_lint_pass};
+use rustc_span::Symbol;
 
 use crate::bevy_paths::{
     AMBIGUITY_SET_LABEL, APP_LABEL, RUN_CRITERIA_LABEL, STAGE_LABEL, SYSTEM_LABEL,
@@ -58,9 +61,123 @@ declare_lint! {
     "Checks for types that implement more than one Label."
 }
 
-declare_lint_pass!(LabelLintPass => [MULTIPLE_LABELS_ON_TYPE]);
+declare_lint! {
+    /// **What it does:**
+    /// Checks for cases where a `&str` is used as a Label.
+    ///
+    /// Checked for Lables:
+    /// - [SystemLabel](https://docs.rs/bevy/latest/bevy/ecs/prelude/trait.SystemLabel.html)
+    /// - [RunCriteriaLabel](https://docs.rs/bevy/latest/bevy/ecs/prelude/trait.RunCriteriaLabel.html)
+    /// - [AmbiguitySetLabel](https://docs.rs/bevy/latest/bevy/ecs/prelude/trait.AmbiguitySetLabel.html)
+    ///
+    /// **Why is this bad?**
+    /// Using strings is very suspicalbe to typos that wont be catched at compiletime.
+    ///
+    /// **Known problems:**
+    /// None
+    ///
+    /// **Example:**
+    /// ```rust
+    /// # use bevy::prelude::*;
+    /// # fn some_system() {};
+    /// # fn other_system() {};
+    /// #
+    /// App::new()
+    ///     .add_system(some_system.label("some_label"))
+    ///     .add_system(other_system.after("some_lobel")); // Label with typo
+    /// ```
+    ///
+    /// Instead, a user should use an Enum/Unit Struct that derives the Label:
+    ///
+    /// ```rust
+    /// # use bevy::prelude::*;
+    /// # fn some_system() {};
+    /// # fn other_system() {};
+    /// #
+    /// #[derive(Debug, Hash, PartialEq, Eq, Clone, SystemLabel)]
+    /// struct SomeLabel;
+    ///
+    /// App::new()
+    ///     .add_system(some_system.label(SomeLabel))
+    ///     .add_system(other_system.after(SomeLabel));
+    /// ```
+    pub STR_LABEL,
+    Warn,
+    ""
+}
+
+declare_lint_pass!(LabelLintPass => [MULTIPLE_LABELS_ON_TYPE, STR_LABEL]);
 
 impl<'tcx> LateLintPass<'tcx> for LabelLintPass {
+    fn check_expr(&mut self, ctx: &LateContext<'tcx>, expr: &'tcx rustc_hir::Expr<'tcx>) {
+        match expr.kind {
+            rustc_hir::ExprKind::MethodCall(_, _, _, _) => (),
+            _ => return,
+        }
+
+        let label = Symbol::intern("label");
+        let before = Symbol::intern("before");
+        let after = Symbol::intern("after");
+        let in_ambiguity_set = Symbol::intern("in_ambiguity_set");
+
+        let lookup: HashMap<_, _> = [
+            (
+                Symbol::intern("RunCriteriaDescriptor"),
+                vec![
+                    label,
+                    before,
+                    after,
+                    Symbol::intern("label_discard_if_duplicate"),
+                ],
+            ),
+            (
+                Symbol::intern("BoxedSystem"),
+                vec![
+                    label,
+                    before,
+                    after,
+                    in_ambiguity_set,
+                    Symbol::intern("label_discard_if_duplicate"),
+                ],
+            ),
+            (
+                Symbol::intern("ParallelSystemDescriptor"),
+                vec![label, before, after, in_ambiguity_set],
+            ),
+            (
+                Symbol::intern("ExclusiveSystemDescriptor"),
+                vec![label, before, after, in_ambiguity_set],
+            ),
+            (
+                Symbol::intern("SystemSet"),
+                vec![label, before, after, in_ambiguity_set],
+            ),
+        ]
+        .into();
+
+        let ty = ctx.typeck_results().expr_ty(expr);
+
+        if let rustc_middle::ty::TyKind::Adt(adt_def, _) = ty.kind() {
+            if adt_def.is_enum() {
+                return;
+            }
+
+            let name = adt_def.variants.iter().next().unwrap().ident.name;
+
+            if let Some(funcs) = lookup.get(&name) {
+                if let rustc_hir::ExprKind::MethodCall(segment, _, func_args, _) = expr.kind {
+                    if funcs.contains(&segment.ident.name) {
+                        if let rustc_hir::ExprKind::Lit(lit) = &func_args[1].kind {
+                            if let rustc_ast::LitKind::Str(_, _) = lit.node {
+                                span_lint(ctx, STR_LABEL, lit.span, "String used as Label")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     fn check_item(&mut self, ctx: &LateContext<'tcx>, item: &'tcx rustc_hir::Item<'tcx>) {
         match item.kind {
             rustc_hir::ItemKind::Enum(_, _) | rustc_hir::ItemKind::Struct(_, _) => (),
