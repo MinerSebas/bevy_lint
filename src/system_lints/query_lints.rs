@@ -308,13 +308,14 @@ impl<'tcx> QueryData<'tcx> {
                     self.fill_with_world_query(ctx, world_query);
                 }
             }
-            WorldQuery::Data(ty_kind, mutbl, span) => {
-                if let Entry::Vacant(e) = self.data.entry(ty_kind.clone()) {
+            WorldQuery::Data(ty_kind, mutbl, span) => match self.data.entry(ty_kind.clone()) {
+                Entry::Vacant(e) => {
                     e.insert(vec![(*mutbl, *span)]);
-                } else {
-                    self.data.get_mut(ty_kind).unwrap().push((*mutbl, *span));
                 }
-            }
+                Entry::Occupied(mut e) => {
+                    e.get_mut().push((*mutbl, *span));
+                }
+            },
             WorldQuery::Option(world_query, span) => {
                 let mut world = QueryData {
                     meta: QueryDataMeta::Option,
@@ -344,62 +345,62 @@ impl<'tcx> QueryData<'tcx> {
                 }
             }
             FilterQuery::Or(filter_querys, span) => {
-                if filter_querys.is_empty() {
-                    self.or.push((Vec::new(), *span));
-                } else {
-                    let mut vec = Vec::new();
-                    for filter_query in filter_querys {
-                        match filter_query {
-                            FilterQuery::Or(filter_querys, _) => {
-                                // Todo: Lint here for nested or?
-                                for filter_query in filter_querys {
-                                    let mut data = QueryData::default();
-                                    data.fill_with_filter_query(filter_query);
-                                    vec.push(data);
-                                }
-                            }
-                            FilterQuery::Tuple(_, _)
-                            | FilterQuery::With(_, _)
-                            | FilterQuery::Without(_, _)
-                            | FilterQuery::Added(_, _)
-                            | FilterQuery::Changed(_, _) => {
+                let mut vec = Vec::new();
+                for filter_query in filter_querys {
+                    match filter_query {
+                        FilterQuery::Or(filter_querys, _) => {
+                            // TODO: Lint here for nested or?
+                            for filter_query in filter_querys {
                                 let mut data = QueryData::default();
                                 data.fill_with_filter_query(filter_query);
                                 vec.push(data);
                             }
                         }
+                        FilterQuery::Tuple(_, _)
+                        | FilterQuery::With(_, _)
+                        | FilterQuery::Without(_, _)
+                        | FilterQuery::Added(_, _)
+                        | FilterQuery::Changed(_, _) => {
+                            let mut data = QueryData::default();
+                            data.fill_with_filter_query(filter_query);
+                            vec.push(data);
+                        }
                     }
-                    self.or.push((vec, *span));
                 }
+                self.or.push((vec, *span));
             }
-            FilterQuery::With(ty_kind, span) => {
-                if let Entry::Vacant(e) = self.with.entry(ty_kind.clone()) {
+            FilterQuery::With(ty_kind, span) => match self.with.entry(ty_kind.clone()) {
+                Entry::Vacant(e) => {
                     e.insert(vec![*span]);
-                } else {
-                    self.with.get_mut(ty_kind).unwrap().push(*span);
                 }
-            }
-            FilterQuery::Without(ty_kind, span) => {
-                if let Entry::Vacant(e) = self.without.entry(ty_kind.clone()) {
+                Entry::Occupied(mut e) => {
+                    e.get_mut().push(*span);
+                }
+            },
+            FilterQuery::Without(ty_kind, span) => match self.without.entry(ty_kind.clone()) {
+                Entry::Vacant(e) => {
                     e.insert(vec![*span]);
-                } else {
-                    self.with.get_mut(ty_kind).unwrap().push(*span);
                 }
-            }
-            FilterQuery::Added(ty_kind, span) => {
-                if let Entry::Vacant(e) = self.added.entry(ty_kind.clone()) {
+                Entry::Occupied(mut e) => {
+                    e.get_mut().push(*span);
+                }
+            },
+            FilterQuery::Added(ty_kind, span) => match self.added.entry(ty_kind.clone()) {
+                Entry::Vacant(e) => {
                     e.insert(vec![*span]);
-                } else {
-                    self.with.get_mut(ty_kind).unwrap().push(*span);
                 }
-            }
-            FilterQuery::Changed(ty_kind, span) => {
-                if let Entry::Vacant(e) = self.changed.entry(ty_kind.clone()) {
+                Entry::Occupied(mut e) => {
+                    e.get_mut().push(*span);
+                }
+            },
+            FilterQuery::Changed(ty_kind, span) => match self.changed.entry(ty_kind.clone()) {
+                Entry::Vacant(e) => {
                     e.insert(vec![*span]);
-                } else {
-                    self.with.get_mut(ty_kind).unwrap().push(*span);
                 }
-            }
+                Entry::Occupied(mut e) => {
+                    e.get_mut().push(*span);
+                }
+            },
         }
     }
 
@@ -437,7 +438,7 @@ impl<'tcx> QueryData<'tcx> {
             }
         }
 
-        if let QueryDataMeta::Default = self.meta {
+        if QueryDataMeta::Default == self.meta {
             let mut contradiction = false;
 
             for (def_id, data) in self.without.iter().sorted() {
@@ -501,18 +502,15 @@ impl<'tcx> QueryData<'tcx> {
 
         if (!option_fact
             .iter()
-            .filter(|ty_kind| !vec_with.contains(ty_kind) && !vec_change.contains(ty_kind))
-            .any(|_| true)
+            .any(|ty_kind| !vec_with.contains(ty_kind) && !vec_change.contains(ty_kind))
             && !option_change
                 .iter()
-                .filter(|ty_kind| !vec_change.contains(ty_kind))
-                .any(|_| true)
+                .any(|ty_kind| !vec_change.contains(ty_kind))
             && !option
                 .0
                 .without
                 .keys()
-                .filter(|ty_kind| vec_with.contains(ty_kind))
-                .any(|_| true))
+                .any(|ty_kind| vec_with.contains(&ty_kind)))
             || (option.0.count() - option.0.option.len() == 0)
         {
             diagnostics::span_lint(
@@ -521,18 +519,13 @@ impl<'tcx> QueryData<'tcx> {
                 option.1,
                 "`Option` Query is always `Some`",
             );
-        } else if option_fact
-            .iter()
-            .filter(|ty_kind| {
-                vec_without.contains(*ty_kind) || option.0.without.keys().contains(*ty_kind)
-            })
-            .any(|_| true)
-            || option
-                .0
-                .without
-                .keys()
-                .filter(|ty_kind| vec_with.contains(ty_kind))
-                .any(|_| true)
+        } else if option_fact.iter().any(|ty_kind| {
+            vec_without.contains(ty_kind) || option.0.without.keys().contains(*ty_kind)
+        }) || option
+            .0
+            .without
+            .keys()
+            .any(|ty_kind| vec_with.contains(&ty_kind))
         {
             diagnostics::span_lint(
                 ctx,
@@ -544,9 +537,8 @@ impl<'tcx> QueryData<'tcx> {
     }
 
     fn check_for_unnecessary_or(&self, ctx: &LateContext, facts: &[&QueryData]) {
-        // Todo: Also handle nested ANDs `Or<(With<A>, Without<A>), With<B>)>`
+        // TODO: Also handle nested ANDs `Or<(With<A>, Without<A>), With<B>)>`
         for concrete_or in &self.or {
-            //dbg!(concrete_or);
             if concrete_or.0.len() < 2 {
                 diagnostics::span_lint(
                     ctx,
@@ -567,27 +559,20 @@ impl<'tcx> QueryData<'tcx> {
                 vec_change.extend(fact.added.keys().chain(fact.changed.keys()));
             }
 
-            //dbg!(&vec_with);
-            //dbg!(&concrete_or);
-
             for part in &concrete_or.0 {
-                //dbg!(part);
                 if !part
                     .with
                     .keys()
-                    .filter(|ty_kind| !vec_with.contains(ty_kind) && !vec_change.contains(ty_kind))
-                    .any(|_| true)
+                    .any(|ty_kind| !vec_with.contains(&ty_kind) && !vec_change.contains(&ty_kind))
                     && !part
                         .added
                         .keys()
                         .chain(part.changed.keys())
-                        .filter(|ty_kind| !vec_change.contains(ty_kind))
-                        .any(|_| true)
+                        .any(|ty_kind| !vec_change.contains(&ty_kind))
                     && !part
                         .without
                         .keys()
-                        .filter(|ty_kind| !vec_without.contains(ty_kind))
-                        .any(|_| true)
+                        .any(|ty_kind| !vec_without.contains(&ty_kind))
                 {
                     diagnostics::span_lint(
                         ctx,
@@ -627,23 +612,6 @@ impl<'tcx> QueryData<'tcx> {
                     }
                 }
             }
-
-            /*
-
-             dbg!(&part.added);
-             dbg!(&part.changed);
-            for added in &part.added {
-                 if part.changed.contains_key(&added.0) {
-                     for span in added.1 {
-                         diagnostics::span_lint(
-                             ctx,
-                             UNNECESSARY_ADDED,
-                             *span,
-                             "Unnecessary `Added` Filter",
-                         )
-                     }
-                 }
-             }*/
         }
     }
 
@@ -658,7 +626,7 @@ impl<'tcx> QueryData<'tcx> {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum QueryDataMeta {
     Default,
     Option,
@@ -671,14 +639,12 @@ impl Default for QueryDataMeta {
 }
 
 pub(super) fn lint_query(ctx: &LateContext, query: Query) {
-    //dbg!(&query);
     let query_data = {
         let mut query_data = QueryData::default();
         query_data.fill_with_world_query(ctx, &query.world_query);
         query_data.fill_with_filter_query(&query.filter_query);
         query_data
     };
-    //dbg!(&query_data);
 
     query_data.lint_query_data(ctx, &query.span, &[]);
 }

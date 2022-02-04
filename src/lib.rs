@@ -1,4 +1,5 @@
 #![feature(rustc_private)]
+#![feature(let_else)]
 //#![warn(unused_extern_crates)]
 #![recursion_limit = "1000"]
 

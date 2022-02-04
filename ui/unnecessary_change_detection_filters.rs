@@ -8,7 +8,7 @@ struct B;
 #[derive(Debug, Component)]
 struct C;
 
-// Todo: Actualy test the difference between Added and Changed.
+// TODO: Actualy test the difference between Added and Changed.
 
 fn test_query1(_query: Query<(), (Added<A>, Changed<A>)>) {
     test_query1.system();

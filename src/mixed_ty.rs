@@ -1,6 +1,5 @@
 use either::Either;
 use rustc_lint::LateContext;
-use rustc_middle::ty::subst::GenericArg;
 use rustc_span::Span;
 
 use crate::bevy_paths;
@@ -138,9 +137,7 @@ impl<'tcx> MixedTy<'tcx> {
 
     pub(crate) fn extract_tuple_types(&self) -> Option<Vec<Self>> {
         let middle_types: Vec<_> = match self.middle.kind() {
-            rustc_middle::ty::TyKind::Tuple(middle_types) => {
-                middle_types.iter().map(GenericArg::expect_ty).collect()
-            }
+            rustc_middle::ty::TyKind::Tuple(_) => self.middle.tuple_fields().collect(),
             _ => return None,
         };
 

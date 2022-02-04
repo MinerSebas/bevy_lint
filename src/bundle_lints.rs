@@ -59,9 +59,7 @@ impl<'tcx> LateLintPass<'tcx> for BundleLintPass {
             _ => return,
         };
 
-        let bundle_def_id = if let Some(def_id) = get_trait_def_id(ctx, BUNDLE) {
-            def_id
-        } else {
+        let Some(bundle_def_id) = get_trait_def_id(ctx, BUNDLE) else {
             return;
         };
 
@@ -77,6 +75,8 @@ impl<'tcx> LateLintPass<'tcx> for BundleLintPass {
                 contains_transform = true;
             } else if match_type(ctx, field.middle, GLOBAL_TRANSFORM) {
                 contains_global_transform = true;
+            } else {
+                continue;
             }
 
             if contains_transform && contains_global_transform {
@@ -84,53 +84,16 @@ impl<'tcx> LateLintPass<'tcx> for BundleLintPass {
             }
         }
 
-        match (contains_transform, contains_global_transform) {
+        let msg = match (contains_transform, contains_global_transform) {
             (true, false) => {
-                span_missing_transform_lint(ctx, item, MissingTransformVariant::Transform);
+                "This Bundle contains the \"GlobalTransform\" Component, but is missing the \"Transform\" Component."
             }
             (false, true) => {
-                span_missing_transform_lint(ctx, item, MissingTransformVariant::GlobalTransform);
+                "This Bundle contains the \"Transform\" Component, but is missing the \"GlobalTransform\" Component."
             }
-            _ => (),
-        }
+            _ => return,
+        };
+
+        span_lint(ctx, BUNDLE_WITH_INCOMPLETE_TRANSFORMS, item.span, msg);
     }
-}
-
-enum MissingTransformVariant {
-    Transform,
-    GlobalTransform,
-}
-
-impl MissingTransformVariant {
-    fn missing(&self) -> &'static str {
-        match self {
-            MissingTransformVariant::Transform => "Transform",
-            MissingTransformVariant::GlobalTransform => "GlobalTransform",
-        }
-    }
-
-    fn present(&self) -> &'static str {
-        match self {
-            MissingTransformVariant::Transform => "GlobalTransform",
-            MissingTransformVariant::GlobalTransform => "Transform",
-        }
-    }
-}
-
-fn span_missing_transform_lint(
-    ctx: &LateContext,
-    bundle: &rustc_hir::Item,
-    missing: MissingTransformVariant,
-) {
-    span_lint(
-        ctx,
-        BUNDLE_WITH_INCOMPLETE_TRANSFORMS,
-        bundle.span,
-        format!(
-            "This Bundle contains the \"{}\" Component, but is missing the \"{}\" Component.",
-            missing.present(),
-            missing.missing()
-        )
-        .as_str(),
-    );
 }
