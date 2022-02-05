@@ -6,9 +6,10 @@ use bevy::{
 fn some_system() {}
 
 fn main() {
-    App::new()
-        // SystemLabel
-        .add_system(some_system.label("SomeLabel"))
+    let mut app = App::new();
+
+    // SystemLabel
+    app.add_system(some_system.label("SomeLabel"))
         .add_system(some_system.before("SomeLabel"))
         .add_system(some_system.after("SomeLabel"))
         .add_system(some_system.exclusive_system().label("SomeLabel"))
@@ -64,5 +65,30 @@ fn main() {
                 (Box::new((|| ShouldRun::Yes).system()) as BoxedSystem<(), ShouldRun>)
                     .label_discard_if_duplicate("RunLabel"),
             ),
-        );
+        )
+        /* TODO: "pipe" is a expr of kind "Call" and not "MethodCall"
+        .add_system(some_system.with_run_criteria(RunCriteria::pipe(
+            "RunLabel",
+            (|input: In<ShouldRun>| input.0).system(),
+        )))*/
+        // StageLabel
+        .add_stage("StageLabel", SystemStage::parallel())
+        .add_stage_before("StageLabel", "StageLabel_2", SystemStage::parallel())
+        .add_stage_after("StageLabel", "StageLabel_3", SystemStage::parallel())
+        .add_startup_stage("StageLabel", SystemStage::parallel())
+        .add_startup_stage_before("StageLabel", "StageLabel_2", SystemStage::parallel())
+        .add_startup_stage_after("StageLabel", "StageLabel_3", SystemStage::parallel())
+        .stage("StageLabel", |stage: &mut SystemStage| stage)
+        .add_system_to_stage("StageLabel", some_system)
+        .add_system_set_to_stage("StageLabel", SystemSet::new())
+        .add_startup_system_to_stage("StageLabel", some_system)
+        .add_startup_system_set_to_stage("StageLabel", SystemSet::new())
+        // AppLabel
+        .add_sub_app("AppLabel", App::new(), |_, _| {});
+
+    app.sub_app_mut("AppLabel");
+    app.sub_app("AppLabel");
+    // TODO: Dont work as their return type is Result<App, _>, not App
+    //let _ = app.get_sub_app_mut("AppLabel");
+    //let _ = app.get_sub_app("AppLabel");
 }

@@ -103,7 +103,7 @@ declare_lint! {
     /// ```
     pub STR_LABEL,
     Warn,
-    ""
+    "Checks for cases where a `&str` is used as a Label."
 }
 
 declare_lint_pass!(LabelLintPass => [MULTIPLE_LABELS_ON_TYPE, STR_LABEL]);
@@ -115,67 +115,83 @@ impl<'tcx> LateLintPass<'tcx> for LabelLintPass {
             _ => return,
         }
 
-        let label = Symbol::intern("label");
-        let before = Symbol::intern("before");
-        let after = Symbol::intern("after");
-        let in_ambiguity_set = Symbol::intern("in_ambiguity_set");
+        // Wrap function names in a closure, to avoid unnecessary interning.
+        let lookup: [(_, fn() -> Vec<(Symbol, &'static [usize])>); 6] = [
+            (Symbol::intern("RunCriteriaDescriptor"), || {
+                vec![
+                    (Symbol::intern("label"), &[1]),
+                    (Symbol::intern("before"), &[1]),
+                    (Symbol::intern("after"), &[1]),
+                    (Symbol::intern("label_discard_if_duplicate"), &[1]),
+                    // TODO: "pipe" is a expr of kind "Call" and not "MethodCall"
+                    //(Symbol::intern("pipe"), &[0]),
+                ]
+            }),
+            (Symbol::intern("BoxedSystem"), || {
+                vec![
+                    (Symbol::intern("label"), &[1]),
+                    (Symbol::intern("before"), &[1]),
+                    (Symbol::intern("after"), &[1]),
+                    (Symbol::intern("in_ambiguity_set"), &[1]),
+                    (Symbol::intern("label_discard_if_duplicate"), &[1]),
+                ]
+            }),
+            (Symbol::intern("ParallelSystemDescriptor"), || {
+                vec![
+                    (Symbol::intern("label"), &[1]),
+                    (Symbol::intern("before"), &[1]),
+                    (Symbol::intern("after"), &[1]),
+                    (Symbol::intern("in_ambiguity_set"), &[1]),
+                ]
+            }),
+            (Symbol::intern("ExclusiveSystemDescriptor"), || {
+                vec![
+                    (Symbol::intern("label"), &[1]),
+                    (Symbol::intern("before"), &[1]),
+                    (Symbol::intern("after"), &[1]),
+                    (Symbol::intern("in_ambiguity_set"), &[1]),
+                ]
+            }),
+            (Symbol::intern("SystemSet"), || {
+                vec![
+                    (Symbol::intern("label"), &[1]),
+                    (Symbol::intern("before"), &[1]),
+                    (Symbol::intern("after"), &[1]),
+                    (Symbol::intern("in_ambiguity_set"), &[1]),
+                ]
+            }),
+            (Symbol::intern("App"), || {
+                vec![
+                    (Symbol::intern("add_stage"), &[1]),
+                    (Symbol::intern("add_stage_before"), &[1, 2]),
+                    (Symbol::intern("add_stage_after"), &[1, 2]),
+                    (Symbol::intern("add_startup_stage"), &[1]),
+                    (Symbol::intern("add_startup_stage_before"), &[1, 2]),
+                    (Symbol::intern("add_startup_stage_after"), &[1, 2]),
+                    (Symbol::intern("stage"), &[1]),
+                    (Symbol::intern("add_system_to_stage"), &[1]),
+                    (Symbol::intern("add_system_set_to_stage"), &[1]),
+                    (Symbol::intern("add_startup_system_to_stage"), &[1]),
+                    (Symbol::intern("add_startup_system_set_to_stage"), &[1]),
+                    (Symbol::intern("add_sub_app"), &[1]),
+                    (Symbol::intern("sub_app_mut"), &[1]),
+                    (Symbol::intern("sub_app"), &[1]),
+                    // TODO: Dont work as their return type is Result<App, _>, not App
+                    //(Symbol::intern("get_sub_app_mut"), &[1]),
+                    //(Symbol::intern("get_sub_app"), &[1]),
+                ]
+            }),
+        ];
 
-        let lookup: HashMap<_, _> = [
-            (
-                Symbol::intern("RunCriteriaDescriptor"),
-                vec![
-                    label,
-                    before,
-                    after,
-                    Symbol::intern("label_discard_if_duplicate"),
-                ],
-            ),
-            (
-                Symbol::intern("BoxedSystem"),
-                vec![
-                    label,
-                    before,
-                    after,
-                    in_ambiguity_set,
-                    Symbol::intern("label_discard_if_duplicate"),
-                ],
-            ),
-            (
-                Symbol::intern("ParallelSystemDescriptor"),
-                vec![label, before, after, in_ambiguity_set],
-            ),
-            (
-                Symbol::intern("ExclusiveSystemDescriptor"),
-                vec![label, before, after, in_ambiguity_set],
-            ),
-            (
-                Symbol::intern("SystemSet"),
-                vec![label, before, after, in_ambiguity_set],
-            ),
-        ]
-        .into();
+        let lookup: HashMap<_, _> = lookup.into();
 
         let ty = ctx.typeck_results().expr_ty(expr);
 
-        if let rustc_middle::ty::TyKind::Adt(adt_def, _) = ty.kind() {
-            if adt_def.is_enum() {
-                return;
-            }
+        //dbg!(expr);
+        //dbg!(ty);
+        //dbg!(ty.kind());
 
-            let name = adt_def.variants.iter().next().unwrap().ident.name;
-
-            if let Some(funcs) = lookup.get(&name) {
-                if let rustc_hir::ExprKind::MethodCall(segment, _, func_args, _) = expr.kind {
-                    if funcs.contains(&segment.ident.name) {
-                        if let rustc_hir::ExprKind::Lit(lit) = &func_args[1].kind {
-                            if let rustc_ast::LitKind::Str(_, _) = lit.node {
-                                span_lint(ctx, STR_LABEL, lit.span, "String used as Label")
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        check_for_label(ctx, expr, ty, lookup);
     }
 
     fn check_item(&mut self, ctx: &LateContext<'tcx>, item: &'tcx rustc_hir::Item<'tcx>) {
@@ -258,5 +274,46 @@ impl<'tcx> LateLintPass<'tcx> for LabelLintPass {
                 format!("Type implements the following Labels: {}", labels).as_str(),
             )
         }
+    }
+}
+
+fn check_for_label(
+    ctx: &LateContext,
+    expr: &rustc_hir::Expr,
+    ty: &rustc_middle::ty::TyS,
+    lookup: HashMap<Symbol, fn() -> Vec<(Symbol, &'static [usize])>>,
+) {
+    match ty.kind() {
+        rustc_middle::ty::TyKind::Ref(_, ty, _) => {
+            check_for_label(ctx, expr, ty, lookup);
+        }
+        rustc_middle::ty::TyKind::Adt(adt_def, _) => {
+            if adt_def.is_enum() {
+                return;
+            }
+
+            let name = adt_def.variants.iter().next().unwrap().ident.name;
+
+            if let Some(funcs) = lookup.get(&name) {
+                if let rustc_hir::ExprKind::MethodCall(segment, _, func_args, _) = expr.kind {
+                    if let Some(indexes) = funcs().iter().find_map(|(name, indexes)| {
+                        if *name == segment.ident.name {
+                            Some(*indexes)
+                        } else {
+                            None
+                        }
+                    }) {
+                        for index in indexes {
+                            if let rustc_hir::ExprKind::Lit(lit) = &func_args[*index].kind {
+                                if let rustc_ast::LitKind::Str(_, _) = lit.node {
+                                    span_lint(ctx, STR_LABEL, lit.span, "String used as Label")
+                                }
+                            }
+                        }
+                    };
+                }
+            }
+        }
+        _ => (),
     }
 }

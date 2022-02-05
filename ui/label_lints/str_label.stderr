@@ -1,148 +1,256 @@
 error: String used as Label
-  --> $DIR/str_label.rs:11:39
+  --> $DIR/str_label.rs:87:22
    |
-LL |         .add_system(some_system.label("SomeLabel"))
-   |                                       ^^^^^^^^^^^
+LL |         .add_sub_app("AppLabel", App::new(), |_, _| {});
+   |                      ^^^^^^^^^^
    |
    = note: `-D str-label` implied by `-D warnings`
 
 error: String used as Label
-  --> $DIR/str_label.rs:12:40
+  --> $DIR/str_label.rs:85:42
+   |
+LL |         .add_startup_system_set_to_stage("StageLabel", SystemSet::new())
+   |                                          ^^^^^^^^^^^^
+
+error: String used as Label
+  --> $DIR/str_label.rs:84:38
+   |
+LL |         .add_startup_system_to_stage("StageLabel", some_system)
+   |                                      ^^^^^^^^^^^^
+
+error: String used as Label
+  --> $DIR/str_label.rs:83:34
+   |
+LL |         .add_system_set_to_stage("StageLabel", SystemSet::new())
+   |                                  ^^^^^^^^^^^^
+
+error: String used as Label
+  --> $DIR/str_label.rs:82:30
+   |
+LL |         .add_system_to_stage("StageLabel", some_system)
+   |                              ^^^^^^^^^^^^
+
+error: String used as Label
+  --> $DIR/str_label.rs:81:16
+   |
+LL |         .stage("StageLabel", |stage: &mut SystemStage| stage)
+   |                ^^^^^^^^^^^^
+
+error: String used as Label
+  --> $DIR/str_label.rs:80:34
+   |
+LL |         .add_startup_stage_after("StageLabel", "StageLabel_3", SystemStage::parallel())
+   |                                  ^^^^^^^^^^^^
+
+error: String used as Label
+  --> $DIR/str_label.rs:80:48
+   |
+LL |         .add_startup_stage_after("StageLabel", "StageLabel_3", SystemStage::parallel())
+   |                                                ^^^^^^^^^^^^^^
+
+error: String used as Label
+  --> $DIR/str_label.rs:79:35
+   |
+LL |         .add_startup_stage_before("StageLabel", "StageLabel_2", SystemStage::parallel())
+   |                                   ^^^^^^^^^^^^
+
+error: String used as Label
+  --> $DIR/str_label.rs:79:49
+   |
+LL |         .add_startup_stage_before("StageLabel", "StageLabel_2", SystemStage::parallel())
+   |                                                 ^^^^^^^^^^^^^^
+
+error: String used as Label
+  --> $DIR/str_label.rs:78:28
+   |
+LL |         .add_startup_stage("StageLabel", SystemStage::parallel())
+   |                            ^^^^^^^^^^^^
+
+error: String used as Label
+  --> $DIR/str_label.rs:77:26
+   |
+LL |         .add_stage_after("StageLabel", "StageLabel_3", SystemStage::parallel())
+   |                          ^^^^^^^^^^^^
+
+error: String used as Label
+  --> $DIR/str_label.rs:77:40
+   |
+LL |         .add_stage_after("StageLabel", "StageLabel_3", SystemStage::parallel())
+   |                                        ^^^^^^^^^^^^^^
+
+error: String used as Label
+  --> $DIR/str_label.rs:76:27
+   |
+LL |         .add_stage_before("StageLabel", "StageLabel_2", SystemStage::parallel())
+   |                           ^^^^^^^^^^^^
+
+error: String used as Label
+  --> $DIR/str_label.rs:76:41
+   |
+LL |         .add_stage_before("StageLabel", "StageLabel_2", SystemStage::parallel())
+   |                                         ^^^^^^^^^^^^^^
+
+error: String used as Label
+  --> $DIR/str_label.rs:75:20
+   |
+LL |         .add_stage("StageLabel", SystemStage::parallel())
+   |                    ^^^^^^^^^^^^
+
+error: String used as Label
+  --> $DIR/str_label.rs:12:38
+   |
+LL |     app.add_system(some_system.label("SomeLabel"))
+   |                                      ^^^^^^^^^^^
+
+error: String used as Label
+  --> $DIR/str_label.rs:13:40
    |
 LL |         .add_system(some_system.before("SomeLabel"))
    |                                        ^^^^^^^^^^^
 
 error: String used as Label
-  --> $DIR/str_label.rs:13:39
+  --> $DIR/str_label.rs:14:39
    |
 LL |         .add_system(some_system.after("SomeLabel"))
    |                                       ^^^^^^^^^^^
 
 error: String used as Label
-  --> $DIR/str_label.rs:14:58
+  --> $DIR/str_label.rs:15:58
    |
 LL |         .add_system(some_system.exclusive_system().label("SomeLabel"))
    |                                                          ^^^^^^^^^^^
 
 error: String used as Label
-  --> $DIR/str_label.rs:15:59
+  --> $DIR/str_label.rs:16:59
    |
 LL |         .add_system(some_system.exclusive_system().before("SomeLabel"))
    |                                                           ^^^^^^^^^^^
 
 error: String used as Label
-  --> $DIR/str_label.rs:16:58
+  --> $DIR/str_label.rs:17:58
    |
 LL |         .add_system(some_system.exclusive_system().after("SomeLabel"))
    |                                                          ^^^^^^^^^^^
 
 error: String used as Label
-  --> $DIR/str_label.rs:17:75
+  --> $DIR/str_label.rs:18:75
    |
 LL |         .add_system((Box::new(some_system.system()) as BoxedSystem).label("SomeLabel"))
    |                                                                           ^^^^^^^^^^^
 
 error: String used as Label
-  --> $DIR/str_label.rs:18:76
+  --> $DIR/str_label.rs:19:76
    |
 LL |         .add_system((Box::new(some_system.system()) as BoxedSystem).before("SomeLabel"))
    |                                                                            ^^^^^^^^^^^
 
 error: String used as Label
-  --> $DIR/str_label.rs:19:75
+  --> $DIR/str_label.rs:20:75
    |
 LL |         .add_system((Box::new(some_system.system()) as BoxedSystem).after("SomeLabel"))
    |                                                                           ^^^^^^^^^^^
 
 error: String used as Label
-  --> $DIR/str_label.rs:20:73
+  --> $DIR/str_label.rs:21:73
    |
 LL |         .add_system_set(SystemSet::new().with_system(some_system).label("SomeLabel"))
    |                                                                         ^^^^^^^^^^^
 
 error: String used as Label
-  --> $DIR/str_label.rs:24:25
+  --> $DIR/str_label.rs:25:25
    |
 LL |                 .before("SomeLabel"),
    |                         ^^^^^^^^^^^
 
 error: String used as Label
-  --> $DIR/str_label.rs:26:73
+  --> $DIR/str_label.rs:27:73
    |
 LL |         .add_system_set(SystemSet::new().with_system(some_system).after("SomeLabel"))
    |                                                                         ^^^^^^^^^^^
 
 error: String used as Label
-  --> $DIR/str_label.rs:28:50
+  --> $DIR/str_label.rs:29:50
    |
 LL |         .add_system(some_system.in_ambiguity_set("AmbLabel"))
    |                                                  ^^^^^^^^^^
 
 error: String used as Label
-  --> $DIR/str_label.rs:29:69
+  --> $DIR/str_label.rs:30:69
    |
 LL |         .add_system(some_system.exclusive_system().in_ambiguity_set("AmbLabel"))
    |                                                                     ^^^^^^^^^^
 
 error: String used as Label
-  --> $DIR/str_label.rs:30:86
+  --> $DIR/str_label.rs:31:86
    |
 LL |         .add_system((Box::new(some_system.system()) as BoxedSystem).in_ambiguity_set("AmbLabel"))
    |                                                                                      ^^^^^^^^^^
 
 error: String used as Label
-  --> $DIR/str_label.rs:34:35
+  --> $DIR/str_label.rs:35:35
    |
 LL |                 .in_ambiguity_set("AmbLabel"),
    |                                   ^^^^^^^^^^
 
 error: String used as Label
-  --> $DIR/str_label.rs:37:77
+  --> $DIR/str_label.rs:38:77
    |
 LL |         .add_system(some_system.with_run_criteria((|| ShouldRun::Yes).label("RunLabel")))
    |                                                                             ^^^^^^^^^^
 
 error: String used as Label
-  --> $DIR/str_label.rs:38:78
+  --> $DIR/str_label.rs:39:78
    |
 LL |         .add_system(some_system.with_run_criteria((|| ShouldRun::Yes).before("RunLabel")))
    |                                                                              ^^^^^^^^^^
 
 error: String used as Label
-  --> $DIR/str_label.rs:39:77
+  --> $DIR/str_label.rs:40:77
    |
 LL |         .add_system(some_system.with_run_criteria((|| ShouldRun::Yes).after("RunLabel")))
    |                                                                             ^^^^^^^^^^
 
 error: String used as Label
-  --> $DIR/str_label.rs:42:83
+  --> $DIR/str_label.rs:43:83
    |
 LL |                 .with_run_criteria((|| ShouldRun::Yes).label_discard_if_duplicate("RunLabel")),
    |                                                                                   ^^^^^^^^^^
 
 error: String used as Label
-  --> $DIR/str_label.rs:47:28
+  --> $DIR/str_label.rs:48:28
    |
 LL |                     .label("RunLabel"),
    |                            ^^^^^^^^^^
 
 error: String used as Label
-  --> $DIR/str_label.rs:53:29
+  --> $DIR/str_label.rs:54:29
    |
 LL |                     .before("RunLabel"),
    |                             ^^^^^^^^^^
 
 error: String used as Label
-  --> $DIR/str_label.rs:59:28
+  --> $DIR/str_label.rs:60:28
    |
 LL |                     .after("RunLabel"),
    |                            ^^^^^^^^^^
 
 error: String used as Label
-  --> $DIR/str_label.rs:65:49
+  --> $DIR/str_label.rs:66:49
    |
 LL |                     .label_discard_if_duplicate("RunLabel"),
    |                                                 ^^^^^^^^^^
 
-error: aborting due to 24 previous errors
+error: String used as Label
+  --> $DIR/str_label.rs:89:21
+   |
+LL |     app.sub_app_mut("AppLabel");
+   |                     ^^^^^^^^^^
+
+error: String used as Label
+  --> $DIR/str_label.rs:90:17
+   |
+LL |     app.sub_app("AppLabel");
+   |                 ^^^^^^^^^^
+
+error: aborting due to 42 previous errors
 
