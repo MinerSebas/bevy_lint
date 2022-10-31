@@ -21,25 +21,25 @@ declare_lint! {
     /// **Example:**
     ///
     /// ```rust
-    /// # use bevy::ecs::prelude::*;
+    /// # use bevy::ecs::{prelude::*, system::{assert_is_system, SystemParam}};
     /// #
     /// # #[derive(Component)]
     /// # struct A;
     /// #
     /// fn system(query: Query<&A, With<A>>) {}
     ///
-    /// # system.system();
+    /// # assert_is_system(system);
     /// ```
     /// Instead do:
     /// ```rust
-    /// # use bevy::ecs::prelude::*;
+    /// # use bevy::ecs::{prelude::*, system::{assert_is_system, SystemParam}};
     /// #
     /// # #[derive(Component)]
     /// # struct A;
     /// #
     /// fn system(query: Query<&A>) {}
     ///
-    /// # system.system();
+    /// # assert_is_system(system);
     /// ```
     pub UNNECESSARY_WITH,
     Warn,
@@ -58,25 +58,25 @@ declare_lint! {
     /// **Example:**
     ///
     /// ```rust
-    /// # use bevy::ecs::prelude::*;
+    /// # use bevy::ecs::{prelude::*, system::{assert_is_system, SystemParam}};
     /// #
     /// # #[derive(Component)]
     /// # struct A;
     /// #
     /// fn system(query: Query<Option<&A>, With<A>>) {}
     ///
-    /// # system.system();
+    /// # assert_is_system(system);
     /// ```
     /// Instead do:
     /// ```rust
-    /// # use bevy::ecs::prelude::*;
+    /// # use bevy::ecs::{prelude::*, system::{assert_is_system, SystemParam}};
     /// #
     /// # #[derive(Component)]
     /// # struct A;
     /// #
     /// fn system(query: Query<&A>) {}
     ///
-    /// # system.system();
+    /// # assert_is_system(system);
     /// ```
     pub UNNECESSARY_OPTION,
     Warn,
@@ -95,25 +95,25 @@ declare_lint! {
     /// **Example:**
     ///
     /// ```rust
-    /// # use bevy::ecs::prelude::*;
+    /// # use bevy::ecs::{prelude::*, system::{assert_is_system, SystemParam}};
     /// #
     /// # #[derive(Component)]
     /// # struct A;
     /// #
     /// fn system(query: Query<Entity, Or<(With<A>,)>>) {}
     ///
-    /// # system.system();
+    /// # assert_is_system(system);
     /// ```
     /// Instead do:
     /// ```rust
-    /// # use bevy::ecs::prelude::*;
+    /// # use bevy::ecs::{prelude::*, system::{assert_is_system, SystemParam}};
     /// #
     /// # #[derive(Component)]
     /// # struct A;
     /// #
     /// fn system(query: Query<Entity, With<A>>) {}
     ///
-    /// # system.system();
+    /// # assert_is_system(system);
     /// ```
     pub UNNECESSARY_OR,
     Warn,
@@ -133,25 +133,25 @@ declare_lint! {
     /// **Example:**
     ///
     /// ```rust
-    /// # use bevy::ecs::prelude::*;
+    /// # use bevy::ecs::{prelude::*, system::{assert_is_system, SystemParam}};
     /// #
     /// # #[derive(Component)]
     /// # struct A;
     /// #
     /// fn system(query: Query<&A, Without<A>>) {}
     ///
-    /// # system.system();
+    /// # assert_is_system(system);
     /// ```
     /// Instead do:
     /// ```rust
-    /// # use bevy::ecs::prelude::*;
+    /// # use bevy::ecs::{prelude::*, system::{assert_is_system, SystemParam}};
     /// #
     /// # #[derive(Component)]
     /// # struct A;
     /// #
     /// fn system(query: Query<&A>) {}
     ///
-    /// # system.system();
+    /// # assert_is_system(system);
     /// ```
     pub EMPTY_QUERY,
     Warn,
@@ -170,7 +170,7 @@ declare_lint! {
     /// **Example:**
     ///
     /// ```rust
-    /// # use bevy::ecs::prelude::*;
+    /// # use bevy::ecs::{prelude::*, system::{assert_is_system, SystemParam}};
     /// #
     /// # #[derive(Component)]
     /// # struct A;
@@ -181,11 +181,11 @@ declare_lint! {
     ///     for (component, filter) in query.iter_mut() {}
     /// }
     ///
-    /// # system.system();
+    /// # assert_is_system(system);
     /// ```
     /// Instead do:
     /// ```rust
-    /// # use bevy::ecs::prelude::*;
+    /// # use bevy::ecs::{prelude::*, system::{assert_is_system, SystemParam}};
     /// #
     /// # #[derive(Component)]
     /// # struct A;
@@ -196,7 +196,7 @@ declare_lint! {
     ///     for component in query.iter() {}
     /// }
     ///
-    /// # system.system();
+    /// # assert_is_system(system);
     /// ```
     pub FILTER_IN_WORLD_QUERY,
     Warn,
@@ -216,7 +216,7 @@ declare_lint! {
     /// **Example:**
     ///
     /// ```rust
-    /// # use bevy::ecs::prelude::*;
+    /// # use bevy::ecs::{prelude::*, system::{assert_is_system, SystemParam}};
     /// #
     /// # #[derive(Component)]
     /// # struct A;
@@ -225,11 +225,11 @@ declare_lint! {
     /// #
     /// fn system(mut query: Query<&A, Or<(Added<B>, Changed<B>)>>) {}
     ///
-    /// # system.system();
+    /// # assert_is_system(system);
     /// ```
     /// Instead do:
     /// ```rust
-    /// # use bevy::ecs::prelude::*;
+    /// # use bevy::ecs::{prelude::*, system::{assert_is_system, SystemParam}};
     /// #
     /// # #[derive(Component)]
     /// # struct A;
@@ -238,7 +238,7 @@ declare_lint! {
     /// #
     /// fn system(mut query: Query<&A, Changed<B>>) {}
     ///
-    /// # system.system();
+    /// # assert_is_system(system);
     /// ```
     pub UNNECESSARY_ADDED,
     Warn,
@@ -258,7 +258,7 @@ declare_lint! {
     /// **Example:**
     ///
     /// ```rust
-    /// # use bevy::ecs::prelude::*;
+    /// # use bevy::ecs::{prelude::*, system::{assert_is_system, SystemParam}};
     /// #
     /// # #[derive(Component)]
     /// # struct A;
@@ -267,11 +267,11 @@ declare_lint! {
     /// #
     /// fn system(mut query: Query<&A, (Added<B>, Changed<B>)>) {}
     ///
-    /// # system.system();
+    /// # assert_is_system(system);
     /// ```
     /// Instead do:
     /// ```rust
-    /// # use bevy::ecs::prelude::*;
+    /// # use bevy::ecs::{prelude::*, system::{assert_is_system, SystemParam}};
     /// #
     /// # #[derive(Component)]
     /// # struct A;
@@ -280,7 +280,7 @@ declare_lint! {
     /// #
     /// fn system(mut query: Query<&A, Added<B>>) {}
     ///
-    /// # system.system();
+    /// # assert_is_system(system);
     /// ```
     pub UNNECESSARY_CHANGED,
     Warn,
