@@ -28,7 +28,7 @@ impl<'tcx> MixedTy<'tcx> {
                         if !def.is_struct() {
                             return None;
                         }
-                        def.variants
+                        def.variants()
                             .iter()
                             .flat_map(|variant| &variant.fields)
                             .map(|field_def| ctx.tcx.type_of(field_def.did))
@@ -69,7 +69,7 @@ impl<'tcx> MixedTy<'tcx> {
                     .zip(inputs.iter())
                     .map(|item| Self {
                         hir: Either::Left(item.0),
-                        middle: item.1,
+                        middle: *item.1,
                     })
                     .collect();
 
@@ -97,7 +97,7 @@ impl<'tcx> MixedTy<'tcx> {
                     .zip(inputs.iter())
                     .map(|item| Self {
                         hir: Either::Left(item.0),
-                        middle: item.1,
+                        middle: *item.1,
                     })
                     .collect();
 
@@ -125,7 +125,7 @@ impl<'tcx> MixedTy<'tcx> {
                     .zip(inputs.iter())
                     .map(|item| Self {
                         hir: Either::Left(item.0),
-                        middle: item.1,
+                        middle: *item.1,
                     })
                     .collect();
 
@@ -137,7 +137,7 @@ impl<'tcx> MixedTy<'tcx> {
 
     pub(crate) fn extract_tuple_types(&self) -> Option<Vec<Self>> {
         let middle_types: Vec<_> = match self.middle.kind() {
-            rustc_middle::ty::TyKind::Tuple(_) => self.middle.tuple_fields().collect(),
+            rustc_middle::ty::TyKind::Tuple(_) => self.middle.tuple_fields().iter().collect(),
             _ => return None,
         };
 
@@ -181,7 +181,7 @@ impl<'tcx> MixedTy<'tcx> {
 
         let hir_generics: Vec<_> = match self.hir {
             Either::Left(ty) => match &ty.kind {
-                rustc_hir::TyKind::Path(q_path) => clippy_utils::get_qpath_generic_tys(q_path)
+                rustc_hir::TyKind::Path(q_path) => clippy_utils::qpath_generic_tys(q_path)
                     .map(Either::Left)
                     .collect(),
                 _ => return None,
@@ -198,7 +198,7 @@ impl<'tcx> MixedTy<'tcx> {
             .zip(middle_generics.iter())
             .map(|item| Self {
                 hir: *item.0,
-                middle: item.1,
+                middle: *item.1,
             })
             .collect();
 
@@ -222,7 +222,7 @@ impl<'tcx> MixedTy<'tcx> {
         Some((
             Self {
                 hir: hir_data,
-                middle: middle_data.0,
+                middle: *middle_data.0,
             },
             *middle_data.1,
         ))

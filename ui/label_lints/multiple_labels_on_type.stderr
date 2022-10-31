@@ -26,10 +26,8 @@ LL | | }
 error: Type implements the following Labels: StageLabel and SystemLabel
   --> $DIR/multiple_labels_on_type.rs:42:1
    |
-LL | / struct TwoLabels {
-LL | |     id: usize,
-LL | | }
-   | |_^
+LL | struct TwoLabels;
+   | ^^^^^^^^^^^^^^^^^
 
 error: aborting due to 4 previous errors
 

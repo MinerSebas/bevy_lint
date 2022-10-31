@@ -1,5 +1,8 @@
 #![allow(clippy::type_complexity)]
-use bevy::{app::App, ecs::prelude::*};
+use bevy::{
+    app::App,
+    ecs::{prelude::*, system::assert_is_system},
+};
 
 #[derive(Debug, Component)]
 struct A;
@@ -9,22 +12,22 @@ struct B;
 struct C;
 
 fn test_query1(mut query: Query<(&A, With<A>)>) {
-    test_query1.system();
+    assert_is_system(test_query1);
     assert_eq!(query.iter_mut().count(), 4);
 }
 
 fn test_query2(mut query: Query<(&A, Without<A>)>) {
-    test_query2.system();
+    assert_is_system(test_query2);
     assert_eq!(query.iter_mut().count(), 0);
 }
 
 fn test_query3(mut query: Query<(&A, Added<A>)>) {
-    test_query3.system();
+    assert_is_system(test_query3);
     assert_eq!(query.iter_mut().count(), 4);
 }
 
 fn test_query4(mut query: Query<(&A, Changed<A>)>) {
-    test_query4.system();
+    assert_is_system(test_query4);
     assert_eq!(query.iter_mut().count(), 4);
 }
 

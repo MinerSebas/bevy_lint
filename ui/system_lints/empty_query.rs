@@ -1,7 +1,10 @@
 #![allow(clippy::type_complexity)]
 use bevy::{
     app::App,
-    ecs::{prelude::*, system::SystemParam},
+    ecs::{
+        prelude::*,
+        system::{assert_is_system, SystemParam},
+    },
 };
 
 #[derive(Debug, Component)]
@@ -12,37 +15,37 @@ struct B;
 struct C;
 
 fn test_query1(query: Query<&A, Without<A>>) {
-    test_query1.system();
+    assert_is_system(test_query1);
     assert_eq!(query.iter().count(), 0);
 }
 
 fn test_query2(mut query: Query<&mut A, Without<A>>) {
-    test_query2.system();
+    assert_is_system(test_query2);
     assert_eq!(query.iter_mut().count(), 0);
 }
 
 fn test_query3(query: Query<&A, (Without<A>, With<B>)>) {
-    test_query3.system();
+    assert_is_system(test_query3);
     assert_eq!(query.iter().count(), 0);
 }
 
 fn test_query4(query: Query<&B, (With<A>, Without<B>)>) {
-    test_query4.system();
+    assert_is_system(test_query4);
     assert_eq!(query.iter().count(), 0);
 }
 
 fn test_query5(query: Query<(), (Without<A>, Added<A>)>) {
-    test_query5.system();
+    assert_is_system(test_query5);
     assert_eq!(query.iter().count(), 0);
 }
 
 fn test_query6(query: Query<(), (Changed<A>, Without<A>)>) {
-    test_query6.system();
+    assert_is_system(test_query6);
     assert_eq!(query.iter().count(), 0);
 }
 
 fn test_query7(mut query: Query<(&A, Without<A>)>) {
-    test_query7.system();
+    assert_is_system(test_query7);
     assert_eq!(query.iter_mut().count(), 0);
 }
 
@@ -82,7 +85,7 @@ struct SystemParamTest<'w, 's> {
 
 impl<'w, 's> SystemParamTest<'w, 's> {
     fn system_param_test(mut system_param: SystemParamTest) {
-        Self::system_param_test.system();
+        assert_is_system(Self::system_param_test);
         assert_eq!(system_param.query1.iter().count(), 0);
         assert_eq!(
             system_param

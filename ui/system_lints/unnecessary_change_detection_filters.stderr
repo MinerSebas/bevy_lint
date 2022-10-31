@@ -1,5 +1,5 @@
 error: Unnecessary `Changed` Filter
-  --> $DIR/unnecessary_change_detection_filters.rs:13:45
+  --> $DIR/unnecessary_change_detection_filters.rs:16:45
    |
 LL | fn test_query1(_query: Query<(), (Added<A>, Changed<A>)>) {
    |                                             ^^^^^^^^^^
@@ -7,7 +7,7 @@ LL | fn test_query1(_query: Query<(), (Added<A>, Changed<A>)>) {
    = note: `-D unnecessary-changed` implied by `-D warnings`
 
 error: Unnecessary `Added` Filter
-  --> $DIR/unnecessary_change_detection_filters.rs:17:38
+  --> $DIR/unnecessary_change_detection_filters.rs:20:38
    |
 LL | fn test_query2(_query: Query<(), Or<(Added<A>, Changed<A>)>>) {
    |                                      ^^^^^^^^
@@ -15,7 +15,7 @@ LL | fn test_query2(_query: Query<(), Or<(Added<A>, Changed<A>)>>) {
    = note: `-D unnecessary-added` implied by `-D warnings`
 
 error: Usage of Filter in first Part of Query.
-  --> $DIR/unnecessary_change_detection_filters.rs:21:31
+  --> $DIR/unnecessary_change_detection_filters.rs:24:31
    |
 LL | fn test_query3(_query: Query<(Added<A>, Changed<A>)>) {
    |                               ^^^^^^^^
@@ -23,25 +23,25 @@ LL | fn test_query3(_query: Query<(Added<A>, Changed<A>)>) {
    = note: `-D filter-in-world-query` implied by `-D warnings`
 
 error: Usage of Filter in first Part of Query.
-  --> $DIR/unnecessary_change_detection_filters.rs:21:41
+  --> $DIR/unnecessary_change_detection_filters.rs:24:41
    |
 LL | fn test_query3(_query: Query<(Added<A>, Changed<A>)>) {
    |                                         ^^^^^^^^^^
 
 error: Unnecessary `Changed` Filter
-  --> $DIR/unnecessary_change_detection_filters.rs:21:41
+  --> $DIR/unnecessary_change_detection_filters.rs:24:41
    |
 LL | fn test_query3(_query: Query<(Added<A>, Changed<A>)>) {
    |                                         ^^^^^^^^^^
 
 error: Usage of Filter in first Part of Query.
-  --> $DIR/unnecessary_change_detection_filters.rs:25:30
+  --> $DIR/unnecessary_change_detection_filters.rs:28:30
    |
 LL | fn test_query4(_query: Query<Or<(Added<A>, Changed<A>)>>) {
    |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 error: Unnecessary `Added` Filter
-  --> $DIR/unnecessary_change_detection_filters.rs:25:34
+  --> $DIR/unnecessary_change_detection_filters.rs:28:34
    |
 LL | fn test_query4(_query: Query<Or<(Added<A>, Changed<A>)>>) {
    |                                  ^^^^^^^^

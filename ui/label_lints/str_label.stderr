@@ -133,24 +133,6 @@ LL |         .add_system(some_system.exclusive_system().after("SomeLabel"))
    |                                                          ^^^^^^^^^^^
 
 error: String used as Label
-  --> $DIR/str_label.rs:18:75
-   |
-LL |         .add_system((Box::new(some_system.system()) as BoxedSystem).label("SomeLabel"))
-   |                                                                           ^^^^^^^^^^^
-
-error: String used as Label
-  --> $DIR/str_label.rs:19:76
-   |
-LL |         .add_system((Box::new(some_system.system()) as BoxedSystem).before("SomeLabel"))
-   |                                                                            ^^^^^^^^^^^
-
-error: String used as Label
-  --> $DIR/str_label.rs:20:75
-   |
-LL |         .add_system((Box::new(some_system.system()) as BoxedSystem).after("SomeLabel"))
-   |                                                                           ^^^^^^^^^^^
-
-error: String used as Label
   --> $DIR/str_label.rs:21:73
    |
 LL |         .add_system_set(SystemSet::new().with_system(some_system).label("SomeLabel"))
@@ -179,12 +161,6 @@ error: String used as Label
    |
 LL |         .add_system(some_system.exclusive_system().in_ambiguity_set("AmbLabel"))
    |                                                                     ^^^^^^^^^^
-
-error: String used as Label
-  --> $DIR/str_label.rs:31:86
-   |
-LL |         .add_system((Box::new(some_system.system()) as BoxedSystem).in_ambiguity_set("AmbLabel"))
-   |                                                                                      ^^^^^^^^^^
 
 error: String used as Label
   --> $DIR/str_label.rs:35:35
@@ -217,30 +193,6 @@ LL |                 .with_run_criteria((|| ShouldRun::Yes).label_discard_if_dup
    |                                                                                   ^^^^^^^^^^
 
 error: String used as Label
-  --> $DIR/str_label.rs:48:28
-   |
-LL |                     .label("RunLabel"),
-   |                            ^^^^^^^^^^
-
-error: String used as Label
-  --> $DIR/str_label.rs:54:29
-   |
-LL |                     .before("RunLabel"),
-   |                             ^^^^^^^^^^
-
-error: String used as Label
-  --> $DIR/str_label.rs:60:28
-   |
-LL |                     .after("RunLabel"),
-   |                            ^^^^^^^^^^
-
-error: String used as Label
-  --> $DIR/str_label.rs:66:49
-   |
-LL |                     .label_discard_if_duplicate("RunLabel"),
-   |                                                 ^^^^^^^^^^
-
-error: String used as Label
   --> $DIR/str_label.rs:89:21
    |
 LL |     app.sub_app_mut("AppLabel");
@@ -252,5 +204,5 @@ error: String used as Label
 LL |     app.sub_app("AppLabel");
    |                 ^^^^^^^^^^
 
-error: aborting due to 42 previous errors
+error: aborting due to 34 previous errors
 

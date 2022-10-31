@@ -1,5 +1,5 @@
 error: `Option` Query is always `Some`
-  --> $DIR/unnecessary_option.rs:14:29
+  --> $DIR/unnecessary_option.rs:17:29
    |
 LL | fn test_query1(query: Query<Option<&A>, With<A>>) {
    |                             ^^^^^^^^^^
@@ -7,127 +7,127 @@ LL | fn test_query1(query: Query<Option<&A>, With<A>>) {
    = note: `-D unnecessary-option` implied by `-D warnings`
 
 error: `Option` Query is always `Some`
-  --> $DIR/unnecessary_option.rs:22:33
+  --> $DIR/unnecessary_option.rs:25:33
    |
 LL | fn test_query2(mut query: Query<Option<&mut A>, With<A>>) {
    |                                 ^^^^^^^^^^^^^^
 
 error: `Option` Query is always `Some`
-  --> $DIR/unnecessary_option.rs:30:29
+  --> $DIR/unnecessary_option.rs:33:29
    |
 LL | fn test_query3(query: Query<Option<&A>, (With<A>, With<B>)>) {
    |                             ^^^^^^^^^^
 
 error: `Option` Query is always `Some`
-  --> $DIR/unnecessary_option.rs:38:33
+  --> $DIR/unnecessary_option.rs:41:33
    |
 LL | fn test_query4(mut query: Query<Option<&mut A>, (With<A>, With<B>)>) {
    |                                 ^^^^^^^^^^^^^^
 
 error: `Option` Query is always `Some`
-  --> $DIR/unnecessary_option.rs:46:29
+  --> $DIR/unnecessary_option.rs:49:29
    |
 LL | fn test_query5(query: Query<Option<&B>, (With<A>, With<B>)>) {
    |                             ^^^^^^^^^^
 
 error: `Option` Query is always `Some`
-  --> $DIR/unnecessary_option.rs:54:33
+  --> $DIR/unnecessary_option.rs:57:33
    |
 LL | fn test_query6(mut query: Query<Option<&mut B>, (With<A>, With<B>)>) {
    |                                 ^^^^^^^^^^^^^^
 
 error: `Option` Query is always `Some`
-  --> $DIR/unnecessary_option.rs:62:30
+  --> $DIR/unnecessary_option.rs:65:30
    |
 LL | fn test_query7(query: Query<(Option<&A>, &B), With<A>>) {
    |                              ^^^^^^^^^^
 
 error: `Option` Query is always `Some`
-  --> $DIR/unnecessary_option.rs:70:34
+  --> $DIR/unnecessary_option.rs:73:34
    |
 LL | fn test_query8(query: Query<(&A, Option<&B>), With<B>>) {
    |                                  ^^^^^^^^^^
 
 error: `Option` Query is always `None`
-  --> $DIR/unnecessary_option.rs:78:29
+  --> $DIR/unnecessary_option.rs:81:29
    |
 LL | fn test_query9(query: Query<Option<&A>, Without<A>>) {
    |                             ^^^^^^^^^^
 
 error: `Option` Query is always `None`
-  --> $DIR/unnecessary_option.rs:86:34
+  --> $DIR/unnecessary_option.rs:89:34
    |
 LL | fn test_query10(mut query: Query<Option<&mut A>, Without<A>>) {
    |                                  ^^^^^^^^^^^^^^
 
 error: `Option` Query is always `None`
-  --> $DIR/unnecessary_option.rs:94:30
+  --> $DIR/unnecessary_option.rs:97:30
    |
 LL | fn test_query11(query: Query<Option<&A>, (Without<A>, Without<B>)>) {
    |                              ^^^^^^^^^^
 
 error: `Option` Query is always `None`
-  --> $DIR/unnecessary_option.rs:102:34
+  --> $DIR/unnecessary_option.rs:105:34
    |
 LL | fn test_query12(mut query: Query<Option<&mut A>, (Without<A>, Without<B>)>) {
    |                                  ^^^^^^^^^^^^^^
 
 error: `Option` Query is always `None`
-  --> $DIR/unnecessary_option.rs:110:30
+  --> $DIR/unnecessary_option.rs:113:30
    |
 LL | fn test_query13(query: Query<Option<&B>, (Without<A>, Without<B>)>) {
    |                              ^^^^^^^^^^
 
 error: `Option` Query is always `None`
-  --> $DIR/unnecessary_option.rs:118:34
+  --> $DIR/unnecessary_option.rs:121:34
    |
 LL | fn test_query14(mut query: Query<Option<&mut B>, (Without<A>, Without<B>)>) {
    |                                  ^^^^^^^^^^^^^^
 
 error: `Option` Query is always `Some`
-  --> $DIR/unnecessary_option.rs:126:31
+  --> $DIR/unnecessary_option.rs:129:31
    |
 LL | fn test_query15(query: Query<(Option<&A>, &B), Added<A>>) {
    |                               ^^^^^^^^^^
 
 error: `Option` Query is always `Some`
-  --> $DIR/unnecessary_option.rs:134:35
+  --> $DIR/unnecessary_option.rs:137:35
    |
 LL | fn test_query16(query: Query<(&A, Option<&B>), Changed<B>>) {
    |                                   ^^^^^^^^^^
 
 error: `Option` Query is always `Some`
-  --> $DIR/unnecessary_option.rs:142:39
+  --> $DIR/unnecessary_option.rs:145:39
    |
 LL | fn test_query17(query: Query<(&A, &B, Option<(&A, &B)>)>) {
    |                                       ^^^^^^^^^^^^^^^^
 
 error: `Option` Query is always `Some`
-  --> $DIR/unnecessary_option.rs:150:35
+  --> $DIR/unnecessary_option.rs:153:35
    |
 LL | fn test_query18(query: Query<(&A, Option<(&A, &B)>), With<B>>) {
    |                                   ^^^^^^^^^^^^^^^^
 
 error: `Option` Query is always `Some`
-  --> $DIR/unnecessary_option.rs:158:35
+  --> $DIR/unnecessary_option.rs:161:35
    |
 LL | fn test_query19(query: Query<(&A, Option<(&A, &B)>), Added<B>>) {
    |                                   ^^^^^^^^^^^^^^^^
 
 error: `Option` Query is always `Some`
-  --> $DIR/unnecessary_option.rs:166:35
+  --> $DIR/unnecessary_option.rs:169:35
    |
 LL | fn test_query20(query: Query<(&A, Option<(&A, &B)>), Changed<B>>) {
    |                                   ^^^^^^^^^^^^^^^^
 
 error: `Option` Query is always `None`
-  --> $DIR/unnecessary_option.rs:174:35
+  --> $DIR/unnecessary_option.rs:177:35
    |
 LL | fn test_query21(query: Query<(&A, Option<(&A, &B)>), Without<B>>) {
    |                                   ^^^^^^^^^^^^^^^^
 
 error: Usage of Filter in first Part of Query.
-  --> $DIR/unnecessary_option.rs:182:55
+  --> $DIR/unnecessary_option.rs:185:55
    |
 LL | fn test_query22(mut query: Query<(&A, &B, Option<(&A, Without<B>)>)>) {
    |                                                       ^^^^^^^^^^
@@ -135,85 +135,85 @@ LL | fn test_query22(mut query: Query<(&A, &B, Option<(&A, Without<B>)>)>) {
    = note: `-D filter-in-world-query` implied by `-D warnings`
 
 error: `Option` Query is always `None`
-  --> $DIR/unnecessary_option.rs:182:43
+  --> $DIR/unnecessary_option.rs:185:43
    |
 LL | fn test_query22(mut query: Query<(&A, &B, Option<(&A, Without<B>)>)>) {
    |                                           ^^^^^^^^^^^^^^^^^^^^^^^^
 
 error: `Option` Query is always `Some`
-  --> $DIR/unnecessary_option.rs:190:47
+  --> $DIR/unnecessary_option.rs:193:47
    |
 LL | fn test_query23(query: Query<(&A, Option<(&B, Option<&A>)>)>) {
    |                                               ^^^^^^^^^^
 
 error: `Option` Query is always `None`
-  --> $DIR/unnecessary_option.rs:198:30
+  --> $DIR/unnecessary_option.rs:201:30
    |
 LL | fn test_query24(query: Query<Option<(&A, Option<&B>)>, Without<A>>) {
    |                              ^^^^^^^^^^^^^^^^^^^^^^^^
 
 error: `Option` Query is always `None`
-  --> $DIR/unnecessary_option.rs:206:42
+  --> $DIR/unnecessary_option.rs:209:42
    |
 LL | fn test_query25(query: Query<Option<(&A, Option<&B>)>, (With<A>, Without<B>)>) {
    |                                          ^^^^^^^^^^
 
 error: `Option` Query is always `Some`
-  --> $DIR/unnecessary_option.rs:206:30
+  --> $DIR/unnecessary_option.rs:209:30
    |
 LL | fn test_query25(query: Query<Option<(&A, Option<&B>)>, (With<A>, Without<B>)>) {
    |                              ^^^^^^^^^^^^^^^^^^^^^^^^
 
 error: `Option` Query is always `Some`
-  --> $DIR/unnecessary_option.rs:215:51
+  --> $DIR/unnecessary_option.rs:218:51
    |
 LL | fn test_query26(query: Query<(&A, &B, Option<(&A, Option<&B>)>)>) {
    |                                                   ^^^^^^^^^^
 
 error: `Option` Query is always `Some`
-  --> $DIR/unnecessary_option.rs:215:39
+  --> $DIR/unnecessary_option.rs:218:39
    |
 LL | fn test_query26(query: Query<(&A, &B, Option<(&A, Option<&B>)>)>) {
    |                                       ^^^^^^^^^^^^^^^^^^^^^^^^
 
 error: Usage of Filter in first Part of Query.
-  --> $DIR/unnecessary_option.rs:224:46
+  --> $DIR/unnecessary_option.rs:227:46
    |
 LL | fn test_query27(mut query: Query<Option<(&A, Without<A>)>>) {
    |                                              ^^^^^^^^^^
 
 error: `Option` Query is always `None`
-  --> $DIR/unnecessary_option.rs:224:34
+  --> $DIR/unnecessary_option.rs:227:34
    |
 LL | fn test_query27(mut query: Query<Option<(&A, Without<A>)>>) {
    |                                  ^^^^^^^^^^^^^^^^^^^^^^^^
 
 error: `Option` Query is always `None`
-  --> $DIR/unnecessary_option.rs:232:37
+  --> $DIR/unnecessary_option.rs:235:37
    |
 LL | fn test_query28(query: Query<Option<Option<&A>>, Without<A>>) {
    |                                     ^^^^^^^^^^
 
 error: `Option` Query is always `Some`
-  --> $DIR/unnecessary_option.rs:232:30
+  --> $DIR/unnecessary_option.rs:235:30
    |
 LL | fn test_query28(query: Query<Option<Option<&A>>, Without<A>>) {
    |                              ^^^^^^^^^^^^^^^^^^
 
 error: `Option` Query is always `Some`
-  --> $DIR/unnecessary_option.rs:241:30
+  --> $DIR/unnecessary_option.rs:244:30
    |
 LL | fn test_query29(query: Query<Option<&A>, Added<A>>) {
    |                              ^^^^^^^^^^
 
 error: `Option` Query is always `Some`
-  --> $DIR/unnecessary_option.rs:249:30
+  --> $DIR/unnecessary_option.rs:252:30
    |
 LL | fn test_query30(query: Query<Option<&A>, Changed<A>>) {
    |                              ^^^^^^^^^^
 
 error: Empty Query
-  --> $DIR/unnecessary_option.rs:292:31
+  --> $DIR/unnecessary_option.rs:295:31
    |
 LL | fn negativ_test_query3(query: Query<Option<&A>, (With<A>, Without<A>)>) {
    |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -221,25 +221,25 @@ LL | fn negativ_test_query3(query: Query<Option<&A>, (With<A>, Without<A>)>) {
    = note: `-D empty-query` implied by `-D warnings`
 
 error: `Option` Query is always `Some`
-  --> $DIR/unnecessary_option.rs:317:27
+  --> $DIR/unnecessary_option.rs:320:27
    |
 LL |     query1: Query<'w, 's, Option<&'static A>, With<A>>,
    |                           ^^^^^^^^^^^^^^^^^^
 
 error: `Option` Query is always `Some`
-  --> $DIR/unnecessary_option.rs:328:30
+  --> $DIR/unnecessary_option.rs:331:30
    |
 LL | ...                   (Option<&'static A>, Option<&'static B>),
    |                        ^^^^^^^^^^^^^^^^^^
 
 error: `Option` Query is always `Some`
-  --> $DIR/unnecessary_option.rs:328:50
+  --> $DIR/unnecessary_option.rs:331:50
    |
 LL | ...                   (Option<&'static A>, Option<&'static B>),
    |                                            ^^^^^^^^^^^^^^^^^^
 
 error: `Option` Query is always `Some`
-  --> $DIR/unnecessary_option.rs:339:46
+  --> $DIR/unnecessary_option.rs:342:46
    |
 LL |                         (Option<&'static A>, Option<&'static C>),
    |                                              ^^^^^^^^^^^^^^^^^^

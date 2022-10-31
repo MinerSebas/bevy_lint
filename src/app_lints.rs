@@ -1,6 +1,4 @@
-use clippy_utils::{
-    diagnostics::span_lint_and_then, in_macro, is_diag_trait_item, source::snippet,
-};
+use clippy_utils::{diagnostics::span_lint_and_then, is_diag_trait_item, source::snippet};
 use if_chain::if_chain;
 use rustc_errors::Applicability;
 use rustc_hir::{Expr, ExprKind, QPath};
@@ -48,7 +46,7 @@ declare_lint_pass!(AppLintPass => [INSERT_RESOURCE_WITH_DEFAULT]);
 impl<'tcx> LateLintPass<'tcx> for AppLintPass {
     fn check_expr(&mut self, cxt: &LateContext<'tcx>, expr: &'tcx Expr<'_>) {
         if !in_external_macro(cxt.tcx.sess, expr.span) {
-            if let ExprKind::MethodCall(segment, _, func_args, expr_span) = expr.kind {
+            if let ExprKind::MethodCall(segment, object, func_args, expr_span) = expr.kind {
                 let is_non_send = {
                     if segment.ident.name == Symbol::intern("insert_resource") {
                         false
@@ -60,10 +58,10 @@ impl<'tcx> LateLintPass<'tcx> for AppLintPass {
                 };
 
                 if_chain! {
-                    if let rustc_middle::ty::TyKind::Adt(adt, _) = cxt.typeck_results().expr_ty(&func_args[0]).peel_refs().kind();
-                    if let Some(variant) = adt.variants.iter().next();
-                    if variant.ident.name == Symbol::intern("App");
-                    if let ExprKind::Call(func_expr, _) = &func_args[1].kind;
+                    if let rustc_middle::ty::TyKind::Adt(adt, _) = cxt.typeck_results().expr_ty(&object).peel_refs().kind();
+                    if let Some(variant) = adt.variants().iter().next();
+                    if variant.ident(cxt.tcx).name == Symbol::intern("App");
+                    if let ExprKind::Call(func_expr, _) = &func_args[0].kind;
                     if let ExprKind::Path(ref path) = func_expr.kind;
                     if let Some(repl_def_id) = cxt.qpath_res(path, func_expr.hir_id).opt_def_id();
                     if is_diag_trait_item(cxt, repl_def_id, sym::Default);
@@ -76,22 +74,20 @@ impl<'tcx> LateLintPass<'tcx> for AppLintPass {
                             expr_span,
                             "initializing a Resource of type `T` with `T::default()` is better expressed using `init_resource`",
                             |diag| {
-                                if !in_macro(expr_span) {
-                                    let suggestion = {
-                                        if is_non_send {
-                                            format!("init_non_send_resource::<{}>()", snippet(cxt, span, ""))}
-                                        else {
-                                            format!("init_resource::<{}>()", snippet(cxt, span, ""))
-                                        }
-                                    };
+                                let suggestion = {
+                                    if is_non_send {
+                                        format!("init_non_send_resource::<{}>()", snippet(cxt, span, ""))}
+                                    else {
+                                        format!("init_resource::<{}>()", snippet(cxt, span, ""))
+                                    }
+                                };
 
-                                    diag.span_suggestion(
-                                        expr_span,
-                                        "consider using",
-                                        suggestion,
-                                        Applicability::MaybeIncorrect
-                                    );
-                                }
+                                diag.span_suggestion(
+                                    expr_span,
+                                    "consider using",
+                                    suggestion,
+                                    Applicability::MaybeIncorrect
+                                );
                             }
                         );
                     }

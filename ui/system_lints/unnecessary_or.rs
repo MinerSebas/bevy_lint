@@ -1,7 +1,10 @@
 #![allow(clippy::type_complexity)]
 use bevy::{
     app::App,
-    ecs::{prelude::*, system::SystemParam},
+    ecs::{
+        prelude::*,
+        system::{assert_is_system, SystemParam},
+    },
 };
 
 #[derive(Debug, Component)]
@@ -12,17 +15,17 @@ struct B;
 struct C;
 
 fn test_query1(query: Query<&A, Or<()>>) {
-    test_query1.system();
+    assert_is_system(test_query1);
     assert_eq!(query.iter().count(), 0);
 }
 
 fn test_query2(query: Query<&A, Or<(With<B>,)>>, query_check: Query<&A, With<B>>) {
-    test_query2.system();
+    assert_is_system(test_query2);
     assert_eq!(query.iter().count(), query_check.iter().count());
 }
 
 fn test_query3(query: Query<&A, Or<(With<A>, With<B>)>>, query_check: Query<&A>) {
-    test_query3.system();
+    assert_is_system(test_query3);
     assert_eq!(query.iter().count(), query_check.iter().count());
 }
 
@@ -30,12 +33,12 @@ fn test_query4(
     query: Query<(&A, &C), Or<((With<A>, With<B>), With<C>)>>,
     query_check: Query<(&A, &C)>,
 ) {
-    test_query4.system();
+    assert_is_system(test_query4);
     assert_eq!(query.iter().count(), query_check.iter().count());
 }
 
 fn test_query5(query: Query<&A, Or<(Or<(With<A>, With<B>)>, With<C>)>>, query_check: Query<&A>) {
-    test_query5.system();
+    assert_is_system(test_query5);
     assert_eq!(query.iter().count(), query_check.iter().count());
 }
 
@@ -49,7 +52,7 @@ fn test_query6(
     >,
     query_check: Query<&A>,
 ) {
-    test_query6.system();
+    assert_is_system(test_query6);
     assert_eq!(query.iter().count(), query_check.iter().count());
 }
 
@@ -57,7 +60,7 @@ fn test_query7(
     query: Query<(), (Or<(With<A>, With<B>)>, Added<A>)>,
     query_check: Query<(), Added<A>>,
 ) {
-    test_query7.system();
+    assert_is_system(test_query7);
     assert_eq!(query.iter().count(), query_check.iter().count());
 }
 
@@ -65,17 +68,17 @@ fn test_query8(
     query: Query<(), (Or<(Without<A>, With<B>)>, Without<A>)>,
     query_check: Query<(), Without<A>>,
 ) {
-    test_query8.system();
+    assert_is_system(test_query8);
     assert_eq!(query.iter().count(), query_check.iter().count());
 }
 
 fn test_query9(mut query: Query<(&A, Or<(With<B>,)>)>, query_check: Query<&A, With<B>>) {
-    test_query9.system();
+    assert_is_system(test_query9);
     assert_eq!(query.iter_mut().count(), query_check.iter().count());
 }
 
 fn test_query10(mut query: Query<(&A, Or<(With<A>, With<B>)>)>, query_check: Query<&A>) {
-    test_query10.system();
+    assert_is_system(test_query10);
     assert_eq!(query.iter_mut().count(), query_check.iter().count());
 }
 
@@ -83,12 +86,12 @@ fn negativ_test_query1(
     query: Query<&A, Or<((With<A>, With<B>), With<C>)>>,
     query_check: Query<&A, Or<(With<B>, With<C>)>>,
 ) {
-    negativ_test_query1.system();
+    assert_is_system(negativ_test_query1);
     assert_eq!(query.iter().count(), query_check.iter().count());
 }
 
 fn negativ_test_query2(query: Query<(), (Or<(Added<A>, With<B>)>, With<A>)>) {
-    negativ_test_query2.system();
+    assert_is_system(negativ_test_query2);
     assert_eq!(query.iter().count(), 4);
 }
 
@@ -114,7 +117,7 @@ impl<'w, 's> SystemParamTest<'w, 's> {
         query_check1: Query<(), Changed<A>>,
         query_check2: Query<&A, (With<B>, With<C>)>,
     ) {
-        Self::system_param_test.system();
+        assert_is_system(Self::system_param_test);
         assert_eq!(system_param.query1.iter().count(), 0);
         assert_eq!(
             system_param.query2.1 .0 .0 .1 .0 .0 .0 .0 .0.iter().count(),

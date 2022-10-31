@@ -1,5 +1,4 @@
 #![feature(rustc_private)]
-#![feature(let_else)]
 //#![warn(unused_extern_crates)]
 #![recursion_limit = "1000"]
 
@@ -57,10 +56,10 @@ pub fn register_lints(_sess: &rustc_session::Session, lint_store: &mut rustc_lin
         UNNECESSARY_OR,
         UNNECESSARY_WITH,
     ]);
-    lint_store.register_late_pass(|| Box::new(app_lints::AppLintPass));
-    lint_store.register_late_pass(|| Box::new(bundle_lints::BundleLintPass));
-    lint_store.register_late_pass(|| Box::new(label_lints::LabelLintPass));
-    lint_store.register_late_pass(|| Box::new(system_lints::SystemLintPass));
+    lint_store.register_late_pass(|_| Box::new(app_lints::AppLintPass));
+    lint_store.register_late_pass(|_| Box::new(bundle_lints::BundleLintPass));
+    lint_store.register_late_pass(|_| Box::new(label_lints::LabelLintPass));
+    lint_store.register_late_pass(|_| Box::new(system_lints::SystemLintPass));
 }
 
 #[test]

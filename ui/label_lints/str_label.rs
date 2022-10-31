@@ -1,6 +1,6 @@
 use bevy::{
     app::prelude::*,
-    ecs::{prelude::*, schedule::ShouldRun, system::BoxedSystem},
+    ecs::{prelude::*, schedule::ShouldRun},
 };
 
 fn some_system() {}
@@ -15,9 +15,9 @@ fn main() {
         .add_system(some_system.exclusive_system().label("SomeLabel"))
         .add_system(some_system.exclusive_system().before("SomeLabel"))
         .add_system(some_system.exclusive_system().after("SomeLabel"))
-        .add_system((Box::new(some_system.system()) as BoxedSystem).label("SomeLabel"))
-        .add_system((Box::new(some_system.system()) as BoxedSystem).before("SomeLabel"))
-        .add_system((Box::new(some_system.system()) as BoxedSystem).after("SomeLabel"))
+        //.add_system((Box::new(some_system.system()) as BoxedSystem).label("SomeLabel"))
+        //.add_system((Box::new(some_system.system()) as BoxedSystem).before("SomeLabel"))
+        //.add_system((Box::new(some_system.system()) as BoxedSystem).after("SomeLabel"))
         .add_system_set(SystemSet::new().with_system(some_system).label("SomeLabel"))
         .add_system_set(
             SystemSet::new()
@@ -28,7 +28,7 @@ fn main() {
         // AmbiguitySetLabel
         .add_system(some_system.in_ambiguity_set("AmbLabel"))
         .add_system(some_system.exclusive_system().in_ambiguity_set("AmbLabel"))
-        .add_system((Box::new(some_system.system()) as BoxedSystem).in_ambiguity_set("AmbLabel"))
+        //.add_system((Box::new(some_system.system()) as BoxedSystem).in_ambiguity_set("AmbLabel"))
         .add_system_set(
             SystemSet::new()
                 .with_system(some_system)
@@ -42,34 +42,34 @@ fn main() {
             some_system
                 .with_run_criteria((|| ShouldRun::Yes).label_discard_if_duplicate("RunLabel")),
         )
-        .add_system(
+        /*.add_system(
             some_system.with_run_criteria(
-                (Box::new((|| ShouldRun::Yes).system()) as BoxedSystem<(), ShouldRun>)
+                (Box::new((|| ShouldRun::Yes)) as BoxedSystem<(), ShouldRun>)
                     .label("RunLabel"),
             ),
         )
         .add_system(
             some_system.with_run_criteria(
-                (Box::new((|| ShouldRun::Yes).system()) as BoxedSystem<(), ShouldRun>)
+                (Box::new((|| ShouldRun::Yes)) as BoxedSystem<(), ShouldRun>)
                     .before("RunLabel"),
             ),
         )
         .add_system(
             some_system.with_run_criteria(
-                (Box::new((|| ShouldRun::Yes).system()) as BoxedSystem<(), ShouldRun>)
+                (Box::new((|| ShouldRun::Yes)) as BoxedSystem<(), ShouldRun>)
                     .after("RunLabel"),
             ),
         )
         .add_system(
             some_system.with_run_criteria(
-                (Box::new((|| ShouldRun::Yes).system()) as BoxedSystem<(), ShouldRun>)
+                (Box::new((|| ShouldRun::Yes)) as BoxedSystem<(), ShouldRun>)
                     .label_discard_if_duplicate("RunLabel"),
             ),
-        )
+        )*/
         /* TODO: "pipe" is a expr of kind "Call" and not "MethodCall"
         .add_system(some_system.with_run_criteria(RunCriteria::pipe(
             "RunLabel",
-            (|input: In<ShouldRun>| input.0).system(),
+            (|input: In<ShouldRun>| input.0),
         )))*/
         // StageLabel
         .add_stage("StageLabel", SystemStage::parallel())

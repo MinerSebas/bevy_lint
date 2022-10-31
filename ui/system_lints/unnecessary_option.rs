@@ -1,7 +1,10 @@
 #![allow(clippy::type_complexity)]
 use bevy::{
     app::App,
-    ecs::{prelude::*, system::SystemParam},
+    ecs::{
+        prelude::*,
+        system::{assert_is_system, SystemParam},
+    },
 };
 
 #[derive(Debug, Component)]
@@ -12,7 +15,7 @@ struct B;
 struct C;
 
 fn test_query1(query: Query<Option<&A>, With<A>>) {
-    test_query1.system();
+    assert_is_system(test_query1);
 
     for option in query.iter() {
         assert!(option.is_some());
@@ -20,7 +23,7 @@ fn test_query1(query: Query<Option<&A>, With<A>>) {
 }
 
 fn test_query2(mut query: Query<Option<&mut A>, With<A>>) {
-    test_query2.system();
+    assert_is_system(test_query2);
 
     for option in query.iter_mut() {
         assert!(option.is_some());
@@ -28,7 +31,7 @@ fn test_query2(mut query: Query<Option<&mut A>, With<A>>) {
 }
 
 fn test_query3(query: Query<Option<&A>, (With<A>, With<B>)>) {
-    test_query3.system();
+    assert_is_system(test_query3);
 
     for option in query.iter() {
         assert!(option.is_some());
@@ -36,7 +39,7 @@ fn test_query3(query: Query<Option<&A>, (With<A>, With<B>)>) {
 }
 
 fn test_query4(mut query: Query<Option<&mut A>, (With<A>, With<B>)>) {
-    test_query4.system();
+    assert_is_system(test_query4);
 
     for option in query.iter_mut() {
         assert!(option.is_some());
@@ -44,7 +47,7 @@ fn test_query4(mut query: Query<Option<&mut A>, (With<A>, With<B>)>) {
 }
 
 fn test_query5(query: Query<Option<&B>, (With<A>, With<B>)>) {
-    test_query5.system();
+    assert_is_system(test_query5);
 
     for option in query.iter() {
         assert!(option.is_some());
@@ -52,7 +55,7 @@ fn test_query5(query: Query<Option<&B>, (With<A>, With<B>)>) {
 }
 
 fn test_query6(mut query: Query<Option<&mut B>, (With<A>, With<B>)>) {
-    test_query6.system();
+    assert_is_system(test_query6);
 
     for option in query.iter_mut() {
         assert!(option.is_some());
@@ -60,7 +63,7 @@ fn test_query6(mut query: Query<Option<&mut B>, (With<A>, With<B>)>) {
 }
 
 fn test_query7(query: Query<(Option<&A>, &B), With<A>>) {
-    test_query7.system();
+    assert_is_system(test_query7);
 
     for (option, _) in query.iter() {
         assert!(option.is_some());
@@ -68,7 +71,7 @@ fn test_query7(query: Query<(Option<&A>, &B), With<A>>) {
 }
 
 fn test_query8(query: Query<(&A, Option<&B>), With<B>>) {
-    test_query8.system();
+    assert_is_system(test_query8);
 
     for (_, option) in query.iter() {
         assert!(option.is_some());
@@ -76,7 +79,7 @@ fn test_query8(query: Query<(&A, Option<&B>), With<B>>) {
 }
 
 fn test_query9(query: Query<Option<&A>, Without<A>>) {
-    test_query9.system();
+    assert_is_system(test_query9);
 
     for option in query.iter() {
         assert!(option.is_none());
@@ -84,7 +87,7 @@ fn test_query9(query: Query<Option<&A>, Without<A>>) {
 }
 
 fn test_query10(mut query: Query<Option<&mut A>, Without<A>>) {
-    test_query10.system();
+    assert_is_system(test_query10);
 
     for option in query.iter_mut() {
         assert!(option.is_none());
@@ -92,7 +95,7 @@ fn test_query10(mut query: Query<Option<&mut A>, Without<A>>) {
 }
 
 fn test_query11(query: Query<Option<&A>, (Without<A>, Without<B>)>) {
-    test_query11.system();
+    assert_is_system(test_query11);
 
     for option in query.iter() {
         assert!(option.is_none());
@@ -100,7 +103,7 @@ fn test_query11(query: Query<Option<&A>, (Without<A>, Without<B>)>) {
 }
 
 fn test_query12(mut query: Query<Option<&mut A>, (Without<A>, Without<B>)>) {
-    test_query12.system();
+    assert_is_system(test_query12);
 
     for option in query.iter_mut() {
         assert!(option.is_none());
@@ -108,7 +111,7 @@ fn test_query12(mut query: Query<Option<&mut A>, (Without<A>, Without<B>)>) {
 }
 
 fn test_query13(query: Query<Option<&B>, (Without<A>, Without<B>)>) {
-    test_query13.system();
+    assert_is_system(test_query13);
 
     for option in query.iter() {
         assert!(option.is_none());
@@ -116,7 +119,7 @@ fn test_query13(query: Query<Option<&B>, (Without<A>, Without<B>)>) {
 }
 
 fn test_query14(mut query: Query<Option<&mut B>, (Without<A>, Without<B>)>) {
-    test_query14.system();
+    assert_is_system(test_query14);
 
     for option in query.iter_mut() {
         assert!(option.is_none());
@@ -124,7 +127,7 @@ fn test_query14(mut query: Query<Option<&mut B>, (Without<A>, Without<B>)>) {
 }
 
 fn test_query15(query: Query<(Option<&A>, &B), Added<A>>) {
-    test_query15.system();
+    assert_is_system(test_query15);
 
     for (option, _) in query.iter() {
         assert!(option.is_some());
@@ -132,7 +135,7 @@ fn test_query15(query: Query<(Option<&A>, &B), Added<A>>) {
 }
 
 fn test_query16(query: Query<(&A, Option<&B>), Changed<B>>) {
-    test_query16.system();
+    assert_is_system(test_query16);
 
     for (_, option) in query.iter() {
         assert!(option.is_some());
@@ -140,7 +143,7 @@ fn test_query16(query: Query<(&A, Option<&B>), Changed<B>>) {
 }
 
 fn test_query17(query: Query<(&A, &B, Option<(&A, &B)>)>) {
-    test_query17.system();
+    assert_is_system(test_query17);
 
     for (_, _, option) in query.iter() {
         assert!(option.is_some());
@@ -148,7 +151,7 @@ fn test_query17(query: Query<(&A, &B, Option<(&A, &B)>)>) {
 }
 
 fn test_query18(query: Query<(&A, Option<(&A, &B)>), With<B>>) {
-    test_query18.system();
+    assert_is_system(test_query18);
 
     for (_, option) in query.iter() {
         assert!(option.is_some());
@@ -156,7 +159,7 @@ fn test_query18(query: Query<(&A, Option<(&A, &B)>), With<B>>) {
 }
 
 fn test_query19(query: Query<(&A, Option<(&A, &B)>), Added<B>>) {
-    test_query19.system();
+    assert_is_system(test_query19);
 
     for (_, option) in query.iter() {
         assert!(option.is_some());
@@ -164,7 +167,7 @@ fn test_query19(query: Query<(&A, Option<(&A, &B)>), Added<B>>) {
 }
 
 fn test_query20(query: Query<(&A, Option<(&A, &B)>), Changed<B>>) {
-    test_query20.system();
+    assert_is_system(test_query20);
 
     for (_, option) in query.iter() {
         assert!(option.is_some());
@@ -172,7 +175,7 @@ fn test_query20(query: Query<(&A, Option<(&A, &B)>), Changed<B>>) {
 }
 
 fn test_query21(query: Query<(&A, Option<(&A, &B)>), Without<B>>) {
-    test_query21.system();
+    assert_is_system(test_query21);
 
     for (_, option) in query.iter() {
         assert!(option.is_none());
@@ -180,7 +183,7 @@ fn test_query21(query: Query<(&A, Option<(&A, &B)>), Without<B>>) {
 }
 
 fn test_query22(mut query: Query<(&A, &B, Option<(&A, Without<B>)>)>) {
-    test_query22.system();
+    assert_is_system(test_query22);
 
     for (_, _, option) in query.iter_mut() {
         assert!(option.is_none());
@@ -188,7 +191,7 @@ fn test_query22(mut query: Query<(&A, &B, Option<(&A, Without<B>)>)>) {
 }
 
 fn test_query23(query: Query<(&A, Option<(&B, Option<&A>)>)>) {
-    test_query23.system();
+    assert_is_system(test_query23);
 
     for (_, option) in query.iter().filter(|result| result.1.is_some()) {
         assert!(option.unwrap().1.is_some());
@@ -196,7 +199,7 @@ fn test_query23(query: Query<(&A, Option<(&B, Option<&A>)>)>) {
 }
 
 fn test_query24(query: Query<Option<(&A, Option<&B>)>, Without<A>>) {
-    test_query24.system();
+    assert_is_system(test_query24);
 
     for option in query.iter() {
         assert!(option.is_none());
@@ -204,7 +207,7 @@ fn test_query24(query: Query<Option<(&A, Option<&B>)>, Without<A>>) {
 }
 
 fn test_query25(query: Query<Option<(&A, Option<&B>)>, (With<A>, Without<B>)>) {
-    test_query25.system();
+    assert_is_system(test_query25);
 
     for option in query.iter() {
         assert!(option.is_some());
@@ -213,7 +216,7 @@ fn test_query25(query: Query<Option<(&A, Option<&B>)>, (With<A>, Without<B>)>) {
 }
 
 fn test_query26(query: Query<(&A, &B, Option<(&A, Option<&B>)>)>) {
-    test_query26.system();
+    assert_is_system(test_query26);
 
     for (_, _, option) in query.iter() {
         assert!(option.is_some());
@@ -222,7 +225,7 @@ fn test_query26(query: Query<(&A, &B, Option<(&A, Option<&B>)>)>) {
 }
 
 fn test_query27(mut query: Query<Option<(&A, Without<A>)>>) {
-    test_query27.system();
+    assert_is_system(test_query27);
 
     for option in query.iter_mut() {
         assert!(option.is_none());
@@ -230,7 +233,7 @@ fn test_query27(mut query: Query<Option<(&A, Without<A>)>>) {
 }
 
 fn test_query28(query: Query<Option<Option<&A>>, Without<A>>) {
-    test_query28.system();
+    assert_is_system(test_query28);
 
     for option in query.iter() {
         assert!(option.is_some());
@@ -239,7 +242,7 @@ fn test_query28(query: Query<Option<Option<&A>>, Without<A>>) {
 }
 
 fn test_query29(query: Query<Option<&A>, Added<A>>) {
-    test_query29.system();
+    assert_is_system(test_query29);
 
     for option in query.iter() {
         assert!(option.is_some());
@@ -247,7 +250,7 @@ fn test_query29(query: Query<Option<&A>, Added<A>>) {
 }
 
 fn test_query30(query: Query<Option<&A>, Changed<A>>) {
-    test_query30.system();
+    assert_is_system(test_query30);
 
     for option in query.iter() {
         assert!(option.is_some());
@@ -256,7 +259,7 @@ fn test_query30(query: Query<Option<&A>, Changed<A>>) {
 
 // This may not trigger the Lint
 fn negativ_test_query1(query: Query<Option<&A>, Or<(With<A>, With<B>)>>) {
-    negativ_test_query1.system();
+    assert_is_system(negativ_test_query1);
 
     let mut is_some = false;
     let mut is_none = false;
@@ -273,7 +276,7 @@ fn negativ_test_query1(query: Query<Option<&A>, Or<(With<A>, With<B>)>>) {
 }
 // This may not trigger the Lint
 fn negativ_test_query2(query: Query<Option<&A>, Or<(Without<A>, Without<B>)>>) {
-    negativ_test_query2.system();
+    assert_is_system(negativ_test_query2);
 
     let mut is_some = false;
     let mut is_none = false;
@@ -290,13 +293,13 @@ fn negativ_test_query2(query: Query<Option<&A>, Or<(Without<A>, Without<B>)>>) {
 }
 // This may not trigger the Lint (but should trigger the empty-query lint)
 fn negativ_test_query3(query: Query<Option<&A>, (With<A>, Without<A>)>) {
-    negativ_test_query3.system();
+    assert_is_system(negativ_test_query3);
 
     assert_eq!(query.iter().count(), 0);
 }
 // This may not trigger the Lint
 fn negativ_test_query4(query: Query<Option<&A>>) {
-    negativ_test_query4.system();
+    assert_is_system(negativ_test_query4);
 
     let mut is_some = false;
     let mut is_none = false;
@@ -348,7 +351,7 @@ struct SystemParamTest<'w, 's> {
 
 impl<'w, 's> SystemParamTest<'w, 's> {
     fn system_param_test(system_param: SystemParamTest) {
-        Self::system_param_test.system();
+        assert_is_system(Self::system_param_test);
 
         for option in system_param.query1.iter() {
             assert!(option.is_some());

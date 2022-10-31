@@ -111,12 +111,12 @@ declare_lint_pass!(LabelLintPass => [MULTIPLE_LABELS_ON_TYPE, STR_LABEL]);
 impl<'tcx> LateLintPass<'tcx> for LabelLintPass {
     fn check_expr(&mut self, ctx: &LateContext<'tcx>, expr: &'tcx rustc_hir::Expr<'tcx>) {
         match expr.kind {
-            rustc_hir::ExprKind::MethodCall(_, _, _, _) => (),
+            rustc_hir::ExprKind::MethodCall(..) => (),
             _ => return,
         }
 
         // Wrap function names in a closure, to avoid unnecessary interning.
-        let lookup: [(_, fn() -> Vec<(Symbol, &'static [usize])>); 6] = [
+        let lookup: [(_, fn() -> Vec<(Symbol, &'static [usize])>); 5] = [
             (Symbol::intern("RunCriteriaDescriptor"), || {
                 vec![
                     (Symbol::intern("label"), &[1]),
@@ -127,7 +127,7 @@ impl<'tcx> LateLintPass<'tcx> for LabelLintPass {
                     //(Symbol::intern("pipe"), &[0]),
                 ]
             }),
-            (Symbol::intern("BoxedSystem"), || {
+            /*(Symbol::intern("BoxedSystem"), || {
                 vec![
                     (Symbol::intern("label"), &[1]),
                     (Symbol::intern("before"), &[1]),
@@ -135,7 +135,7 @@ impl<'tcx> LateLintPass<'tcx> for LabelLintPass {
                     (Symbol::intern("in_ambiguity_set"), &[1]),
                     (Symbol::intern("label_discard_if_duplicate"), &[1]),
                 ]
-            }),
+            }),*/
             (Symbol::intern("ParallelSystemDescriptor"), || {
                 vec![
                     (Symbol::intern("label"), &[1]),
@@ -191,7 +191,7 @@ impl<'tcx> LateLintPass<'tcx> for LabelLintPass {
         //dbg!(ty);
         //dbg!(ty.kind());
 
-        check_for_label(ctx, expr, ty, lookup);
+        check_for_label(ctx, expr, &ty, lookup);
     }
 
     fn check_item(&mut self, ctx: &LateContext<'tcx>, item: &'tcx rustc_hir::Item<'tcx>) {
@@ -204,6 +204,7 @@ impl<'tcx> LateLintPass<'tcx> for LabelLintPass {
             return;
         };
         let Some(system_def_id) = get_trait_def_id(ctx, SYSTEM_LABEL) else {
+            // If the "STAGE_LABEL" trait exits then all other traits must also exist.
             unreachable!()
         };
         let Some(criteria_def_id) = get_trait_def_id(ctx, RUN_CRITERIA_LABEL) else {
@@ -280,7 +281,7 @@ impl<'tcx> LateLintPass<'tcx> for LabelLintPass {
 fn check_for_label(
     ctx: &LateContext,
     expr: &rustc_hir::Expr,
-    ty: &rustc_middle::ty::TyS,
+    ty: &rustc_middle::ty::Ty,
     lookup: HashMap<Symbol, fn() -> Vec<(Symbol, &'static [usize])>>,
 ) {
     match ty.kind() {
@@ -292,25 +293,42 @@ fn check_for_label(
                 return;
             }
 
-            let name = adt_def.variants.iter().next().unwrap().ident.name;
+            let struct_name = adt_def
+                .variants()
+                .iter()
+                .next()
+                .unwrap()
+                .ident(ctx.tcx)
+                .name;
 
-            if let Some(funcs) = lookup.get(&name) {
-                if let rustc_hir::ExprKind::MethodCall(segment, _, func_args, _) = expr.kind {
-                    if let Some(indexes) = funcs().iter().find_map(|(name, indexes)| {
-                        if *name == segment.ident.name {
-                            Some(*indexes)
-                        } else {
-                            None
-                        }
-                    }) {
-                        for index in indexes {
-                            if let rustc_hir::ExprKind::Lit(lit) = &func_args[*index].kind {
-                                if let rustc_ast::LitKind::Str(_, _) = lit.node {
-                                    span_lint(ctx, STR_LABEL, lit.span, "String used as Label")
-                                }
+            if let Some(funcs) = lookup.get(&struct_name) {
+                if let rustc_hir::ExprKind::MethodCall(segment, object, func_args, _) = expr.kind {
+                    let expressions = funcs()
+                        .iter()
+                        .find_map(|(method_name, indexes)| {
+                            if *method_name == segment.ident.name {
+                                Some(*indexes)
+                            } else {
+                                None
+                            }
+                        })
+                        .into_iter()
+                        .flatten()
+                        .map(|index| {
+                            if *index == 0 {
+                                object
+                            } else {
+                                &func_args[index - 1]
+                            }
+                        });
+
+                    for expr in expressions {
+                        if let rustc_hir::ExprKind::Lit(ref lit) = expr.kind {
+                            if let rustc_ast::LitKind::Str(_, _) = lit.node {
+                                span_lint(ctx, STR_LABEL, lit.span, "String used as Label")
                             }
                         }
-                    };
+                    }
                 }
             }
         }

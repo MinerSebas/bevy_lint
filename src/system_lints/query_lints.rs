@@ -404,7 +404,7 @@ impl<'tcx> QueryData<'tcx> {
         }
     }
 
-    fn lint_query_data(&self, ctx: &LateContext, span: &Span, facts: &[&QueryData]) {
+    fn lint_query_data(&self, ctx: &LateContext, span: &Span, facts: &[&QueryData<'tcx>]) {
         let mut new_facts = Vec::from(facts);
         new_facts.push(self);
         self.check_for_unnecessary_or(ctx, &new_facts);
@@ -465,8 +465,8 @@ impl<'tcx> QueryData<'tcx> {
 
     fn check_for_unnecessary_option(
         ctx: &LateContext,
-        option: &(QueryData, Span),
-        facts: &[&QueryData],
+        option: &(QueryData<'tcx>, Span),
+        facts: &[&QueryData<'tcx>],
     ) {
         if option.0.count() >= 2 {
             option.0.lint_query_data(ctx, &option.1, facts);
@@ -536,7 +536,7 @@ impl<'tcx> QueryData<'tcx> {
         }
     }
 
-    fn check_for_unnecessary_or(&self, ctx: &LateContext, facts: &[&QueryData]) {
+    fn check_for_unnecessary_or(&self, ctx: &LateContext, facts: &[&QueryData<'tcx>]) {
         // TODO: Also handle nested ANDs `Or<(With<A>, Without<A>), With<B>)>`
         for concrete_or in &self.or {
             if concrete_or.0.len() < 2 {

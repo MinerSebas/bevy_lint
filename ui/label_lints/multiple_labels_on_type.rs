@@ -39,9 +39,7 @@ enum ThreeLabels {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, StageLabel, SystemLabel)]
-struct TwoLabels {
-    id: usize,
-}
+struct TwoLabels;
 
 // Should not trigger Lint.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, StageLabel)]

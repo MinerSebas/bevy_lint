@@ -1,7 +1,11 @@
 #![allow(clippy::type_complexity)]
 use bevy::{
     app::App,
-    ecs::{component::Component, prelude::*, system::SystemParam},
+    ecs::{
+        component::Component,
+        prelude::*,
+        system::{assert_is_system, SystemParam},
+    },
 };
 use std::marker::PhantomData;
 
@@ -17,82 +21,82 @@ struct D<E: Component> {
 }
 
 fn test_query1(query: Query<&A, With<A>>, query_check: Query<&A>) {
-    test_query1.system();
+    assert_is_system(test_query1);
     assert_eq!(query.iter().count(), query_check.iter().count());
 }
 
 fn test_query2(query: Query<(&A, &B), With<A>>, query_check: Query<(&A, &B)>) {
-    test_query2.system();
+    assert_is_system(test_query2);
     assert_eq!(query.iter().count(), query_check.iter().count());
 }
 
 fn test_query3(query: Query<(&A, &B), With<B>>, query_check: Query<(&A, &B)>) {
-    test_query3.system();
+    assert_is_system(test_query3);
     assert_eq!(query.iter().count(), query_check.iter().count());
 }
 
 fn test_query4(query: Query<(&A, &B), (With<A>, With<B>)>, query_check: Query<(&A, &B)>) {
-    test_query4.system();
+    assert_is_system(test_query4);
     assert_eq!(query.iter().count(), query_check.iter().count());
 }
 
 fn test_query5(query: Query<(&A, &B), (With<A>, With<C>)>, query_check: Query<(&A, &B), With<C>>) {
-    test_query5.system();
+    assert_is_system(test_query5);
     assert_eq!(query.iter().count(), query_check.iter().count());
 }
 
 fn test_query6(query: Query<&A, (With<A>, With<B>)>, query_check: Query<&A, With<B>>) {
-    test_query6.system();
+    assert_is_system(test_query6);
     assert_eq!(query.iter().count(), query_check.iter().count());
 }
 
 fn test_query7(mut query: Query<&mut A, With<A>>) {
-    test_query7.system();
+    assert_is_system(test_query7);
     assert_eq!(query.iter_mut().count(), 8);
 }
 
 fn test_query8(mut query: Query<(&mut A, &B), With<A>>) {
-    test_query8.system();
+    assert_is_system(test_query8);
     assert_eq!(query.iter_mut().count(), 4);
 }
 
 fn test_query9(mut query: Query<(&mut A, &B), With<B>>) {
-    test_query9.system();
+    assert_is_system(test_query9);
     assert_eq!(query.iter_mut().count(), 4);
 }
 
 fn test_query10(mut query: Query<(&mut A, &B), (With<A>, With<B>)>) {
-    test_query10.system();
+    assert_is_system(test_query10);
     assert_eq!(query.iter_mut().count(), 4);
 }
 
 fn test_query11(mut query: Query<(&mut A, &B), (With<A>, With<C>)>) {
-    test_query11.system();
+    assert_is_system(test_query11);
     assert_eq!(query.iter_mut().count(), 2);
 }
 
 fn test_query12(mut query: Query<&mut A, (With<A>, With<B>)>) {
-    test_query12.system();
+    assert_is_system(test_query12);
     assert_eq!(query.iter_mut().count(), 4);
 }
 
 fn test_query13(query: Query<(), (Added<A>, With<A>)>, query_check: Query<(), Added<A>>) {
-    test_query13.system();
+    assert_is_system(test_query13);
     assert_eq!(query.iter().count(), query_check.iter().count());
 }
 
 fn test_query14(query: Query<(), (Changed<A>, With<A>)>, query_check: Query<(), Changed<A>>) {
-    test_query14.system();
+    assert_is_system(test_query14);
     assert_eq!(query.iter().count(), query_check.iter().count());
 }
 
 fn test_query15(query: (Query<&A, With<A>>,), query_check: Query<&A>) {
-    test_query15.system();
+    assert_is_system(test_query15);
     assert_eq!(query.0.iter().count(), query_check.iter().count());
 }
 
 fn test_query16(query: (((((((((Query<&A, With<A>>,),),),),),),),),), query_check: Query<&A>) {
-    test_query16.system();
+    assert_is_system(test_query16);
     assert_eq!(
         query.0 .0 .0 .0 .0 .0 .0 .0 .0.iter().count(),
         query_check.iter().count()
@@ -113,7 +117,7 @@ fn test_query17(
     ),
     query_check: Query<&A>,
 ) {
-    test_query17.system();
+    assert_is_system(test_query17);
     assert_eq!(
         query.1 .0 .0 .1 .0 .0 .0 .0 .0.iter().count(),
         query_check.iter().count()
@@ -128,7 +132,7 @@ fn test_query18(
     query: Query<(((((((((((&A,),),),),),),),),),),), (((((((((((With<A>,),),),),),),),),),),)>,
     query_check: Query<&A>,
 ) {
-    test_query18.system();
+    assert_is_system(test_query18);
     assert_eq!(query.iter().count(), query_check.iter().count());
 }
 
@@ -139,7 +143,7 @@ fn test_query19(
     >,
     query_check: Query<&A>,
 ) {
-    test_query19.system();
+    assert_is_system(test_query19);
     assert_eq!(query.iter().count(), query_check.iter().count());
 }
 
@@ -171,7 +175,7 @@ fn test_query20(
     ),
     query_check: Query<&A>,
 ) {
-    test_query20.system();
+    assert_is_system(test_query20);
     assert_eq!(
         query.1 .0 .0 .1 .0 .0 .0 .0 .0.iter().count(),
         query_check.iter().count()
@@ -183,12 +187,12 @@ fn test_query20(
 }
 
 fn test_query21<E: Component>(query: Query<&E, With<E>>, query_check: Query<&E>) {
-    test_query21::<B>.system();
+    assert_is_system(test_query21::<B>);
     assert_eq!(query.iter().count(), query_check.iter().count());
 }
 
 fn test_query22(mut query: Query<Option<(&A, With<A>)>>, query_check: Query<&A>) {
-    test_query22.system();
+    assert_is_system(test_query22);
     assert_eq!(
         query.iter_mut().filter(Option::is_some).count(),
         query_check.iter().count()
@@ -222,7 +226,7 @@ struct SystemParamTest<'w, 's> {
 
 impl<'w, 's> SystemParamTest<'w, 's> {
     fn system_param_test(system_param: SystemParamTest) {
-        Self::system_param_test.system();
+        assert_is_system(Self::system_param_test);
 
         assert_eq!(
             system_param.query1.iter().count(),
@@ -243,18 +247,18 @@ trait TestTrait1: Component + Sized {
     type TestType: Component;
 
     fn test_trait1_query1(query: Query<&Self, With<Self>>, query_check: Query<&Self>) {
-        Self::test_trait1_query1.system();
+        assert_is_system(Self::test_trait1_query1);
         assert_eq!(query.iter().count(), query_check.iter().count());
     }
     fn test_trait1_query2(
         query: Query<&Self::TestType, With<Self::TestType>>,
         query_check: Query<&Self::TestType>,
     ) {
-        Self::test_trait1_query2.system();
+        assert_is_system(Self::test_trait1_query2);
         assert_eq!(query.iter().count(), query_check.iter().count());
     }
     fn test_trait1_query3(query: Query<&Self, With<Self::TestType>>, query_check: Query<&Self>) {
-        Self::test_trait1_query3.system();
+        assert_is_system(Self::test_trait1_query3);
         let _ = query;
         let _ = query_check;
     }
@@ -262,7 +266,7 @@ trait TestTrait1: Component + Sized {
         query: Query<&Self::TestType, With<Self>>,
         query_check: Query<&Self::TestType>,
     ) {
-        Self::test_trait1_query4.system();
+        assert_is_system(Self::test_trait1_query4);
         let _ = query;
         let _ = query_check;
     }
@@ -276,25 +280,25 @@ impl TestTrait1 for B {
     type TestType = Self;
 
     fn test_trait1_query1(query: Query<&Self, With<Self>>, query_check: Query<&Self>) {
-        Self::test_trait1_query1.system();
+        assert_is_system(Self::test_trait1_query1);
         assert_eq!(query.iter().count(), query_check.iter().count());
     }
     fn test_trait1_query2(
         query: Query<&Self::TestType, With<Self::TestType>>,
         query_check: Query<&Self::TestType>,
     ) {
-        Self::test_trait1_query2.system();
+        assert_is_system(Self::test_trait1_query2);
         assert_eq!(query.iter().count(), query_check.iter().count());
     }
     fn test_trait1_query3(query: Query<&Self, With<Self::TestType>>, query_check: Query<&Self>) {
-        Self::test_trait1_query3.system();
+        assert_is_system(Self::test_trait1_query3);
         assert_eq!(query.iter().count(), query_check.iter().count());
     }
     fn test_trait1_query4(
         query: Query<&Self::TestType, With<Self>>,
         query_check: Query<&Self::TestType>,
     ) {
-        Self::test_trait1_query4.system();
+        assert_is_system(Self::test_trait1_query4);
         assert_eq!(query.iter().count(), query_check.iter().count());
     }
 }
@@ -303,25 +307,25 @@ impl TestTrait1 for C {
     type TestType = C;
 
     fn test_trait1_query1(query: Query<&Self, With<Self>>, query_check: Query<&Self>) {
-        Self::test_trait1_query1.system();
+        assert_is_system(Self::test_trait1_query1);
         assert_eq!(query.iter().count(), query_check.iter().count());
     }
     fn test_trait1_query2(
         query: Query<&Self::TestType, With<Self::TestType>>,
         query_check: Query<&Self::TestType>,
     ) {
-        Self::test_trait1_query2.system();
+        assert_is_system(Self::test_trait1_query2);
         assert_eq!(query.iter().count(), query_check.iter().count());
     }
     fn test_trait1_query3(query: Query<&Self, With<Self::TestType>>, query_check: Query<&Self>) {
-        Self::test_trait1_query3.system();
+        assert_is_system(Self::test_trait1_query3);
         assert_eq!(query.iter().count(), query_check.iter().count());
     }
     fn test_trait1_query4(
         query: Query<&Self::TestType, With<Self>>,
         query_check: Query<&Self::TestType>,
     ) {
-        Self::test_trait1_query4.system();
+        assert_is_system(Self::test_trait1_query4);
         assert_eq!(query.iter().count(), query_check.iter().count());
     }
 }
@@ -334,7 +338,7 @@ trait TestTrait2: Component + Sized {
         query: Query<&Self::TestType1, With<Self::TestType2>>,
         query_check: Query<&Self::TestType1>,
     ) {
-        Self::test_trait2_query1.system();
+        assert_is_system(Self::test_trait2_query1);
         let _ = query;
         let _ = query_check;
     }
@@ -348,7 +352,7 @@ impl TestTrait2 for A {
         query: Query<&Self::TestType1, With<Self::TestType2>>,
         query_check: Query<&Self::TestType1>,
     ) {
-        Self::test_trait2_query1.system();
+        assert_is_system(Self::test_trait2_query1);
         assert_eq!(query.iter().count(), query_check.iter().count());
     }
 }
@@ -361,14 +365,14 @@ impl<T: Component> TestTrait2 for D<T> {
         query: Query<&Self::TestType1, With<Self::TestType2>>,
         query_check: Query<&Self::TestType1>,
     ) {
-        Self::test_trait2_query1.system();
+        assert_is_system(Self::test_trait2_query1);
         assert_eq!(query.iter().count(), query_check.iter().count());
     }
 }
 
 trait TestTrait3: Component + Sized {
     fn test_trait3_query1(query: Query<&A, With<Self>>, query_check: Query<&A>) {
-        Self::test_trait3_query1.system();
+        assert_is_system(Self::test_trait3_query1);
         let _ = query;
         let _ = query_check;
     }
@@ -376,14 +380,14 @@ trait TestTrait3: Component + Sized {
 
 impl TestTrait3 for A {
     fn test_trait3_query1(query: Query<&A, With<Self>>, query_check: Query<&A>) {
-        Self::test_trait3_query1.system();
+        assert_is_system(Self::test_trait3_query1);
         assert_eq!(query.iter().count(), query_check.iter().count());
     }
 }
 
 impl TestTrait3 for B {
     fn test_trait3_query1(query: Query<&A, With<Self>>, query_check: Query<&A>) {
-        Self::test_trait3_query1.system();
+        assert_is_system(Self::test_trait3_query1);
         assert_ne!(query.iter().count(), query_check.iter().count());
     }
 }

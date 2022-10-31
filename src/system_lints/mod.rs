@@ -83,14 +83,13 @@ impl<'tcx> LateLintPass<'tcx> for SystemLintPass {
 }
 
 fn lint_function_signature<'tcx>(ctx: &LateContext<'tcx>, inputs: &[MixedTy<'tcx>]) {
-    let system_params: Vec<_> = inputs
+    let system_params = inputs
         .iter()
         .filter_map(|mixed_ty| recursively_resolve_system_param(ctx, mixed_ty))
         .map(|mut system_param| {
             system_param.remove_substitutions();
             system_param
-        })
-        .collect();
+        });
 
     for system_param in system_params {
         recursively_lint_system_param(ctx, system_param);
