@@ -58,7 +58,7 @@ impl<'tcx> LateLintPass<'tcx> for AppLintPass {
                 };
 
                 if_chain! {
-                    if let rustc_middle::ty::TyKind::Adt(adt, _) = cxt.typeck_results().expr_ty(&object).peel_refs().kind();
+                    if let rustc_middle::ty::TyKind::Adt(adt, _) = cxt.typeck_results().expr_ty(object).peel_refs().kind();
                     if let Some(variant) = adt.variants().iter().next();
                     if variant.ident(cxt.tcx).name == Symbol::intern("App");
                     if let ExprKind::Call(func_expr, _) = &func_args[0].kind;

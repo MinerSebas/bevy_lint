@@ -321,7 +321,7 @@ impl<'tcx> QueryData<'tcx> {
                     meta: QueryDataMeta::Option,
                     ..Default::default()
                 };
-                world.fill_with_world_query(ctx, &*world_query.0);
+                world.fill_with_world_query(ctx, &world_query.0);
                 self.option.push((world, *span));
             }
             WorldQuery::Filter(filter_query, span) => {

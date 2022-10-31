@@ -247,23 +247,23 @@ impl<'tcx> LateLintPass<'tcx> for LabelLintPass {
 
                 if imp_stage {
                     connector(&mut string);
-                    string.push_str(*STAGE_LABEL.last().unwrap());
+                    string.push_str(STAGE_LABEL.last().unwrap());
                 }
                 if imp_system {
                     connector(&mut string);
-                    string.push_str(*SYSTEM_LABEL.last().unwrap());
+                    string.push_str(SYSTEM_LABEL.last().unwrap());
                 }
                 if imp_criteria {
                     connector(&mut string);
-                    string.push_str(*RUN_CRITERIA_LABEL.last().unwrap());
+                    string.push_str(RUN_CRITERIA_LABEL.last().unwrap());
                 }
                 if imp_ambiguity {
                     connector(&mut string);
-                    string.push_str(*AMBIGUITY_SET_LABEL.last().unwrap());
+                    string.push_str(AMBIGUITY_SET_LABEL.last().unwrap());
                 }
                 if imp_app {
                     connector(&mut string);
-                    string.push_str(*APP_LABEL.last().unwrap());
+                    string.push_str(APP_LABEL.last().unwrap());
                 }
                 string
             };
@@ -273,7 +273,7 @@ impl<'tcx> LateLintPass<'tcx> for LabelLintPass {
                 MULTIPLE_LABELS_ON_TYPE,
                 item.span,
                 format!("Type implements the following Labels: {}", labels).as_str(),
-            )
+            );
         }
     }
 }
@@ -325,7 +325,7 @@ fn check_for_label(
                     for expr in expressions {
                         if let rustc_hir::ExprKind::Lit(ref lit) = expr.kind {
                             if let rustc_ast::LitKind::Str(_, _) = lit.node {
-                                span_lint(ctx, STR_LABEL, lit.span, "String used as Label")
+                                span_lint(ctx, STR_LABEL, lit.span, "String used as Label");
                             }
                         }
                     }
