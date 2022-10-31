@@ -2,6 +2,7 @@
 pkgs.mkShell rec {
   buildInputs = with pkgs; [
     rustup
+    # For installing cargo-dylint
     pkg-config
     openssl
   ];
