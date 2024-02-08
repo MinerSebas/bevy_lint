@@ -5,6 +5,7 @@ LL | fn test_query1(query: Query<Option<&A>, With<A>>) {
    |                             ^^^^^^^^^^
    |
    = note: `-D unnecessary-option` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(unnecessary_option)]`
 
 error: `Option` Query is always `Some`
   --> $DIR/unnecessary_option.rs:25:33
@@ -133,6 +134,7 @@ LL | fn test_query22(mut query: Query<(&A, &B, Option<(&A, Without<B>)>)>) {
    |                                                       ^^^^^^^^^^
    |
    = note: `-D filter-in-world-query` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(filter_in_world_query)]`
 
 error: `Option` Query is always `None`
   --> $DIR/unnecessary_option.rs:185:43
@@ -219,6 +221,7 @@ LL | fn negativ_test_query3(query: Query<Option<&A>, (With<A>, Without<A>)>) {
    |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
    |
    = note: `-D empty-query` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(empty_query)]`
 
 error: `Option` Query is always `Some`
   --> $DIR/unnecessary_option.rs:320:27

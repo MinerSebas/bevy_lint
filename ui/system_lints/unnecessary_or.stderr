@@ -5,6 +5,7 @@ LL | fn test_query1(query: Query<&A, Or<()>>) {
    |                                 ^^^^^^
    |
    = note: `-D unnecessary-option` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(unnecessary_option)]`
 
 error: Unnecessary `Or` Filter
   --> $DIR/unnecessary_or.rs:22:33
@@ -58,6 +59,7 @@ LL | fn test_query9(mut query: Query<(&A, Or<(With<B>,)>)>, query_check: Query<&
    |                                      ^^^^^^^^^^^^^^
    |
    = note: `-D filter-in-world-query` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(filter_in_world_query)]`
 
 error: Unnecessary `Or` Filter
   --> $DIR/unnecessary_or.rs:75:38

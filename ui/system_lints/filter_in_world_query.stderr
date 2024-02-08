@@ -5,6 +5,7 @@ LL | fn test_query1(mut query: Query<(&A, With<A>)>) {
    |                                      ^^^^^^^
    |
    = note: `-D filter-in-world-query` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(filter_in_world_query)]`
 
 error: Unnecessary `With` Filter
   --> $DIR/filter_in_world_query.rs:14:38
@@ -13,6 +14,7 @@ LL | fn test_query1(mut query: Query<(&A, With<A>)>) {
    |                                      ^^^^^^^
    |
    = note: `-D unnecessary-with` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(unnecessary_with)]`
 
 error: Usage of Filter in first Part of Query.
   --> $DIR/filter_in_world_query.rs:19:38
@@ -27,6 +29,7 @@ LL | fn test_query2(mut query: Query<(&A, Without<A>)>) {
    |                           ^^^^^^^^^^^^^^^^^^^^^^^
    |
    = note: `-D empty-query` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(empty_query)]`
 
 error: Usage of Filter in first Part of Query.
   --> $DIR/filter_in_world_query.rs:24:38

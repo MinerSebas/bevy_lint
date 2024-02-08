@@ -5,6 +5,7 @@ LL | fn test_query1(query: Query<&A, With<A>>, query_check: Query<&A>) {
    |                                 ^^^^^^^
    |
    = note: `-D unnecessary-with` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(unnecessary_with)]`
 
 error: Unnecessary `With` Filter
   --> $DIR/unnecessary_with.rs:28:39
@@ -157,6 +158,7 @@ LL | fn test_query22(mut query: Query<Option<(&A, With<A>)>>, query_check: Query
    |                                              ^^^^^^^
    |
    = note: `-D filter-in-world-query` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(filter_in_world_query)]`
 
 error: Unnecessary `With` Filter
   --> $DIR/unnecessary_with.rs:194:46

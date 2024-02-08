@@ -59,8 +59,8 @@ impl<'tcx> WorldQuery<'tcx> {
                 }
             }
             WorldQuery::Data(kind, _, _) => {
-                if let rustc_middle::ty::TyKind::Projection(projection) = kind {
-                    let target = projection.substs.get(0).unwrap().expect_ty().kind();
+                if let rustc_middle::ty::TyKind::Alias(_, projection) = kind {
+                    let target = projection.args.get(0).unwrap().expect_ty().kind();
 
                     match target {
                         rustc_middle::ty::TyKind::Param(param)
@@ -107,8 +107,8 @@ impl<'tcx> FilterQuery<'tcx> {
             | FilterQuery::Without(kind, _)
             | FilterQuery::Added(kind, _)
             | FilterQuery::Changed(kind, _) => {
-                if let rustc_middle::ty::TyKind::Projection(projection) = kind {
-                    let target = projection.substs.get(0).unwrap().expect_ty().kind();
+                if let rustc_middle::ty::TyKind::Alias(_, projection) = kind {
+                    let target = projection.args.get(0).unwrap().expect_ty().kind();
 
                     match target {
                         rustc_middle::ty::TyKind::Param(param)

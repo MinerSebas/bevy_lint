@@ -5,6 +5,7 @@ LL |         .add_sub_app("AppLabel", App::new(), |_, _| {});
    |                      ^^^^^^^^^^
    |
    = note: `-D str-label` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(str_label)]`
 
 error: String used as Label
   --> $DIR/str_label.rs:85:42

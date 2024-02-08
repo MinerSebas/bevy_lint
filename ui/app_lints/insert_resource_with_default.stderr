@@ -5,6 +5,7 @@ LL |             .insert_resource(B::default());
    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using: `init_resource::<B>()`
    |
    = note: `-D insert-resource-with-default` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(insert_resource_with_default)]`
 
 error: initializing a Resource of type `T` with `T::default()` is better expressed using `init_resource`
   --> $DIR/insert_resource_with_default.rs:13:13

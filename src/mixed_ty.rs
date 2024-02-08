@@ -17,11 +17,11 @@ impl<'tcx> MixedTy<'tcx> {
     ) -> Option<Vec<Self>> {
         match item.kind {
             rustc_hir::ItemKind::Struct(
-                rustc_hir::VariantData::Struct(hir_fields, _)
-                | rustc_hir::VariantData::Tuple(hir_fields, _),
+                rustc_hir::VariantData::Struct{fields: hir_fields, .. }
+                | rustc_hir::VariantData::Tuple(hir_fields, _, _),
                 _,
             ) => {
-                let middle: rustc_middle::ty::Ty = ctx.tcx.type_of(item.def_id);
+                let middle: rustc_middle::ty::Ty = ctx.tcx.type_of(item.owner_id.def_id).skip_binder();
 
                 let middle_fields = match middle.kind() {
                     rustc_middle::ty::TyKind::Adt(def, _) => {
@@ -42,7 +42,7 @@ impl<'tcx> MixedTy<'tcx> {
                     .zip(middle_fields)
                     .map(|item| Self {
                         hir: Either::Left(item.0),
-                        middle: item.1,
+                        middle: item.1.skip_binder(),
                     })
                     .collect();
                 Some(vec)
@@ -59,7 +59,7 @@ impl<'tcx> MixedTy<'tcx> {
             rustc_hir::ItemKind::Fn(rustc_hir::FnSig { decl, .. }, _, _) => {
                 // rust-analyzer doesn't find `type_of`.
                 // The return type is manually specified to still get autocompletion.
-                let middle: rustc_middle::ty::Ty = ctx.tcx.type_of(item.def_id);
+                let middle: rustc_middle::ty::Ty = ctx.tcx.type_of(item.owner_id.def_id).skip_binder();
 
                 let inputs = middle.fn_sig(ctx.tcx).skip_binder().inputs();
 
@@ -87,7 +87,7 @@ impl<'tcx> MixedTy<'tcx> {
             rustc_hir::ImplItemKind::Fn(rustc_hir::FnSig { decl, .. }, _) => {
                 // rust-analyzer doesn't find `type_of`.
                 // The return type is manually specified to still get autocompletion.
-                let middle: rustc_middle::ty::Ty = ctx.tcx.type_of(item.def_id);
+                let middle: rustc_middle::ty::Ty = ctx.tcx.type_of(item.owner_id.def_id).skip_binder();
 
                 let inputs = middle.fn_sig(ctx.tcx).skip_binder().inputs();
 
@@ -115,7 +115,7 @@ impl<'tcx> MixedTy<'tcx> {
             rustc_hir::TraitItemKind::Fn(rustc_hir::FnSig { decl, .. }, _) => {
                 // rust-analyzer doesn't find `type_of`.
                 // The return type is manually specified to still get autocompletion.
-                let middle: rustc_middle::ty::Ty = ctx.tcx.type_of(item.def_id);
+                let middle: rustc_middle::ty::Ty = ctx.tcx.type_of(item.owner_id.def_id).skip_binder();
 
                 let inputs = middle.fn_sig(ctx.tcx).skip_binder().inputs();
 
@@ -169,7 +169,7 @@ impl<'tcx> MixedTy<'tcx> {
             rustc_middle::ty::TyKind::Adt(_, generics) => generics
                 .iter()
                 .filter_map(|generic| {
-                    if let rustc_middle::ty::subst::GenericArgKind::Type(ty) = generic.unpack() {
+                    if let rustc_middle::ty::GenericArgKind::Type(ty) = generic.unpack() {
                         Some(ty)
                     } else {
                         None
@@ -208,7 +208,7 @@ impl<'tcx> MixedTy<'tcx> {
     pub(crate) fn strip_reference(&self) -> Option<(Self, rustc_ast::Mutability)> {
         let hir_data = match self.hir {
             Either::Left(hir_ty) => match hir_ty.kind {
-                rustc_hir::TyKind::Rptr(_, rustc_hir::MutTy { ty, .. }) => Either::Left(ty),
+                rustc_hir::TyKind::Ref(_, rustc_hir::MutTy { ty, .. }) => Either::Left(ty),
                 _ => return None,
             },
             Either::Right(_) => self.hir,

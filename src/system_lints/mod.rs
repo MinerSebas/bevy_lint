@@ -33,14 +33,14 @@ impl<'tcx> LateLintPass<'tcx> for SystemLintPass {
     fn check_item(&mut self, ctx: &LateContext<'tcx>, item: &'tcx rustc_hir::Item<'tcx>) {
         if let Some(system_params) = match &item.kind {
             rustc_hir::ItemKind::Fn(_, _, _) => MixedTy::fn_inputs_from_fn_item(ctx, item),
-            rustc_hir::ItemKind::Struct(rustc_hir::VariantData::Struct(_, _), _) => {
+            rustc_hir::ItemKind::Struct(rustc_hir::VariantData::Struct{..}, _) => {
                 let Some(system_param_def_id) = clippy_utils::get_trait_def_id(ctx, bevy_paths::SYSTEM_PARAM) else {
                     return;
                 };
 
                 if !clippy_utils::ty::implements_trait(
                     ctx,
-                    ctx.tcx.type_of(item.def_id),
+                    ctx.tcx.type_of(item.owner_id.def_id).skip_binder(),
                     system_param_def_id,
                     &[],
                 ) {
@@ -160,7 +160,7 @@ fn recursively_resolve_world_query<'tcx>(
             WorldQuery::Tuple(vec, world.span())
         }),
         rustc_middle::ty::TyKind::Adt(_, _) => {
-            if clippy_utils::ty::match_type(ctx, world.middle, &clippy_utils::paths::OPTION) {
+            if clippy_utils::ty::match_type(ctx, world.middle, &["core", "option", "Option"]) {
                 let generics = world.extract_generics_from_struct().unwrap();
                 assert_eq!(generics.len(), 1);
                 recursively_resolve_world_query(ctx, &generics[0]).map(|world_query| {

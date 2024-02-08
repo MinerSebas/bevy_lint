@@ -5,6 +5,7 @@ LL | struct AllLables;
    | ^^^^^^^^^^^^^^^^^
    |
    = note: `-D multiple-labels-on-type` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(multiple_labels_on_type)]`
 
 error: Type implements the following Labels: StageLabel, SystemLabel, RunCriteriaLabel and AmbiguitySetLabel
   --> $DIR/multiple_labels_on_type.rs:31:1
