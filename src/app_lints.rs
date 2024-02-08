@@ -23,7 +23,8 @@ declare_lint! {
     /// **Example:**
     /// ```rust
     /// # use bevy::app::App;
-    /// #[derive(Default)]
+    /// # use bevy::ecs::system::Resource;
+    /// #[derive(Default, Resource)]
     /// struct MyResource;
     ///
     /// App::new().insert_resource(MyResource::default());
@@ -31,7 +32,8 @@ declare_lint! {
     /// Is better expressed with:
     /// ```rust
     /// # use bevy::app::App;
-    /// #[derive(Default)]
+    /// # use bevy::ecs::system::Resource;
+    /// #[derive(Default, Resource)]
     /// struct MyResource;
     ///
     /// App::new().init_resource::<MyResource>();

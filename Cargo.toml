@@ -20,7 +20,7 @@ itertools = "0.12.1"
 
 [dev-dependencies]
 dylint_testing = "2.6.1"
-bevy = { version = "0.8.1", default-features = false }
+bevy = { version = "0.12.1", default-features = false }
 
 [package.metadata.rust-analyzer]
 rustc_private = true
@@ -32,14 +32,6 @@ path = "ui/app_lints/insert_resource_with_default.rs"
 [[example]]
 name = "bundle_with_incomplete_transforms"
 path = "ui/bundle_lints/bundle_with_incomplete_transforms.rs"
-
-[[example]]
-name = "multiple_labels_on_type"
-path = "ui/label_lints/multiple_labels_on_type.rs"
-
-[[example]]
-name = "str_label"
-path = "ui/label_lints/str_label.rs"
 
 [[example]]
 name = "empty_query"

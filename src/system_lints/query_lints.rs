@@ -308,7 +308,7 @@ impl<'tcx> QueryData<'tcx> {
                     self.fill_with_world_query(ctx, world_query);
                 }
             }
-            WorldQuery::Data(ty_kind, mutbl, span) => match self.data.entry(ty_kind.clone()) {
+            WorldQuery::Data(ty_kind, mutbl, span) => match self.data.entry(*ty_kind) {
                 Entry::Vacant(e) => {
                     e.insert(vec![(*mutbl, *span)]);
                 }
@@ -369,7 +369,7 @@ impl<'tcx> QueryData<'tcx> {
                 }
                 self.or.push((vec, *span));
             }
-            FilterQuery::With(ty_kind, span) => match self.with.entry(ty_kind.clone()) {
+            FilterQuery::With(ty_kind, span) => match self.with.entry(*ty_kind) {
                 Entry::Vacant(e) => {
                     e.insert(vec![*span]);
                 }
@@ -377,7 +377,7 @@ impl<'tcx> QueryData<'tcx> {
                     e.get_mut().push(*span);
                 }
             },
-            FilterQuery::Without(ty_kind, span) => match self.without.entry(ty_kind.clone()) {
+            FilterQuery::Without(ty_kind, span) => match self.without.entry(*ty_kind) {
                 Entry::Vacant(e) => {
                     e.insert(vec![*span]);
                 }
@@ -385,7 +385,7 @@ impl<'tcx> QueryData<'tcx> {
                     e.get_mut().push(*span);
                 }
             },
-            FilterQuery::Added(ty_kind, span) => match self.added.entry(ty_kind.clone()) {
+            FilterQuery::Added(ty_kind, span) => match self.added.entry(*ty_kind) {
                 Entry::Vacant(e) => {
                     e.insert(vec![*span]);
                 }
@@ -393,7 +393,7 @@ impl<'tcx> QueryData<'tcx> {
                     e.get_mut().push(*span);
                 }
             },
-            FilterQuery::Changed(ty_kind, span) => match self.changed.entry(ty_kind.clone()) {
+            FilterQuery::Changed(ty_kind, span) => match self.changed.entry(*ty_kind) {
                 Entry::Vacant(e) => {
                     e.insert(vec![*span]);
                 }

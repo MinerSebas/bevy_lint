@@ -60,13 +60,13 @@ impl<'tcx> WorldQuery<'tcx> {
             }
             WorldQuery::Data(kind, _, _) => {
                 if let rustc_middle::ty::TyKind::Alias(_, projection) = kind {
-                    let target = projection.args.get(0).unwrap().expect_ty().kind();
+                    let target = projection.args.first().unwrap().expect_ty().kind();
 
                     match target {
                         rustc_middle::ty::TyKind::Param(param)
                             if param.name == Symbol::intern("Self") =>
                         { /* Do nothing here, to avoid turning associative types into self. */ }
-                        _ => *kind = target.clone(),
+                        _ => *kind = *target,
                     }
                 }
             }
@@ -108,13 +108,13 @@ impl<'tcx> FilterQuery<'tcx> {
             | FilterQuery::Added(kind, _)
             | FilterQuery::Changed(kind, _) => {
                 if let rustc_middle::ty::TyKind::Alias(_, projection) = kind {
-                    let target = projection.args.get(0).unwrap().expect_ty().kind();
+                    let target = projection.args.first().unwrap().expect_ty().kind();
 
                     match target {
                         rustc_middle::ty::TyKind::Param(param)
                             if param.name == Symbol::intern("Self") =>
                         { /* Do nothing here, to avoid turning associative types into self. */ }
-                        _ => *kind = target.clone(),
+                        _ => *kind = *target,
                     }
                 }
             }

@@ -75,7 +75,7 @@ impl<'tcx> LateLintPass<'tcx> for BundleLintPass {
         let mut contains_transform = false;
         let mut contains_global_transform = false;
 
-        for field in MixedTy::fields_from_struct_item(ctx, item).unwrap() {
+        for field in MixedTy::fields_from_struct_item(ctx, item).iter().flatten() {
             if match_type(ctx, field.middle, TRANSFORM) {
                 contains_transform = true;
             } else if match_type(ctx, field.middle, GLOBAL_TRANSFORM) {

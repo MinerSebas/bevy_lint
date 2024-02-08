@@ -1,5 +1,5 @@
 error: initializing a Resource of type `T` with `T::default()` is better expressed using `init_resource`
-  --> $DIR/insert_resource_with_default.rs:14:14
+  --> $DIR/insert_resource_with_default.rs:17:14
    |
 LL |             .insert_resource(B::default());
    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using: `init_resource::<B>()`
@@ -8,91 +8,91 @@ LL |             .insert_resource(B::default());
    = help: to override `-D warnings` add `#[allow(insert_resource_with_default)]`
 
 error: initializing a Resource of type `T` with `T::default()` is better expressed using `init_resource`
-  --> $DIR/insert_resource_with_default.rs:13:13
+  --> $DIR/insert_resource_with_default.rs:16:13
    |
 LL |         app.insert_resource(A::default())
    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using: `init_resource::<A>()`
 
 error: initializing a Resource of type `T` with `T::default()` is better expressed using `init_resource`
-  --> $DIR/insert_resource_with_default.rs:16:14
+  --> $DIR/insert_resource_with_default.rs:19:14
    |
 LL |             .insert_non_send_resource(B::default());
    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using: `init_non_send_resource::<B>()`
 
 error: initializing a Resource of type `T` with `T::default()` is better expressed using `init_resource`
-  --> $DIR/insert_resource_with_default.rs:15:13
+  --> $DIR/insert_resource_with_default.rs:18:13
    |
 LL |         app.insert_non_send_resource(A::default())
    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using: `init_non_send_resource::<A>()`
 
 error: initializing a Resource of type `T` with `T::default()` is better expressed using `init_resource`
-  --> $DIR/insert_resource_with_default.rs:21:16
+  --> $DIR/insert_resource_with_default.rs:24:16
    |
 LL |     App::new().insert_resource(A::default());
    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using: `init_resource::<A>()`
 
 error: initializing a Resource of type `T` with `T::default()` is better expressed using `init_resource`
-  --> $DIR/insert_resource_with_default.rs:22:16
+  --> $DIR/insert_resource_with_default.rs:25:16
    |
 LL |     App::new().insert_resource(B::default());
    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using: `init_resource::<B>()`
 
 error: initializing a Resource of type `T` with `T::default()` is better expressed using `init_resource`
-  --> $DIR/insert_resource_with_default.rs:26:10
+  --> $DIR/insert_resource_with_default.rs:29:10
    |
 LL |         .insert_resource(B::default());
    |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using: `init_resource::<B>()`
 
 error: initializing a Resource of type `T` with `T::default()` is better expressed using `init_resource`
-  --> $DIR/insert_resource_with_default.rs:25:10
+  --> $DIR/insert_resource_with_default.rs:28:10
    |
 LL |         .insert_resource(A::default())
    |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using: `init_resource::<A>()`
 
 error: initializing a Resource of type `T` with `T::default()` is better expressed using `init_resource`
-  --> $DIR/insert_resource_with_default.rs:27:16
+  --> $DIR/insert_resource_with_default.rs:31:10
    |
-LL |     App::new().insert_resource(A::default()).insert_resource(B);
-   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using: `init_resource::<A>()`
+LL |         .insert_resource(A::default())
+   |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using: `init_resource::<A>()`
 
 error: initializing a Resource of type `T` with `T::default()` is better expressed using `init_resource`
-  --> $DIR/insert_resource_with_default.rs:28:35
+  --> $DIR/insert_resource_with_default.rs:35:10
    |
-LL |     App::new().insert_resource(A).insert_resource(B::default());
-   |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using: `init_resource::<B>()`
+LL |         .insert_resource(B::default());
+   |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using: `init_resource::<B>()`
 
 error: initializing a Resource of type `T` with `T::default()` is better expressed using `init_resource`
-  --> $DIR/insert_resource_with_default.rs:30:16
+  --> $DIR/insert_resource_with_default.rs:37:16
    |
 LL |     App::new().insert_non_send_resource(A::default());
    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using: `init_non_send_resource::<A>()`
 
 error: initializing a Resource of type `T` with `T::default()` is better expressed using `init_resource`
-  --> $DIR/insert_resource_with_default.rs:31:16
+  --> $DIR/insert_resource_with_default.rs:38:16
    |
 LL |     App::new().insert_non_send_resource(B::default());
    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using: `init_non_send_resource::<B>()`
 
 error: initializing a Resource of type `T` with `T::default()` is better expressed using `init_resource`
-  --> $DIR/insert_resource_with_default.rs:37:10
+  --> $DIR/insert_resource_with_default.rs:44:10
    |
 LL |         .insert_non_send_resource(B::default());
    |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using: `init_non_send_resource::<B>()`
 
 error: initializing a Resource of type `T` with `T::default()` is better expressed using `init_resource`
-  --> $DIR/insert_resource_with_default.rs:36:10
-   |
-LL |         .insert_non_send_resource(A::default())
-   |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using: `init_non_send_resource::<A>()`
-
-error: initializing a Resource of type `T` with `T::default()` is better expressed using `init_resource`
-  --> $DIR/insert_resource_with_default.rs:39:10
-   |
-LL |         .insert_non_send_resource(A::default())
-   |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using: `init_non_send_resource::<A>()`
-
-error: initializing a Resource of type `T` with `T::default()` is better expressed using `init_resource`
   --> $DIR/insert_resource_with_default.rs:43:10
+   |
+LL |         .insert_non_send_resource(A::default())
+   |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using: `init_non_send_resource::<A>()`
+
+error: initializing a Resource of type `T` with `T::default()` is better expressed using `init_resource`
+  --> $DIR/insert_resource_with_default.rs:46:10
+   |
+LL |         .insert_non_send_resource(A::default())
+   |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using: `init_non_send_resource::<A>()`
+
+error: initializing a Resource of type `T` with `T::default()` is better expressed using `init_resource`
+  --> $DIR/insert_resource_with_default.rs:50:10
    |
 LL |         .insert_non_send_resource(B::default());
    |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using: `init_non_send_resource::<B>()`

@@ -183,7 +183,7 @@ fn recursively_resolve_world_query<'tcx>(
         }
         rustc_middle::ty::TyKind::Ref(_, _, _) => world
             .strip_reference()
-            .map(|(ty, mutbl)| WorldQuery::Data(ty.middle.kind().clone(), mutbl, world.span())),
+            .map(|(ty, mutbl)| WorldQuery::Data(*ty.middle.kind(), mutbl, world.span())),
         _ => None,
     }
 }
@@ -230,7 +230,7 @@ fn recursively_resolve_filter_query<'tcx>(
             let generics = filter.extract_generics_from_struct().unwrap();
             assert_eq!(generics.len(), 1);
 
-            let filter_query = constructor(generics[0].middle.kind().clone(), filter.span());
+            let filter_query = constructor(*generics[0].middle.kind(), filter.span());
 
             filter_query
         })

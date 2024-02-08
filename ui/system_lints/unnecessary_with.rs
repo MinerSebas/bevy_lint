@@ -1,6 +1,6 @@
 #![allow(clippy::type_complexity)]
 use bevy::{
-    app::App,
+    app::{App, Startup, Update},
     ecs::{
         component::Component,
         prelude::*,
@@ -394,65 +394,65 @@ impl TestTrait3 for B {
 
 fn main() {
     App::new()
-        .add_startup_system(setup)
-        .add_system(test_query1)
-        .add_system(test_query2)
-        .add_system(test_query3)
-        .add_system(test_query4)
-        .add_system(test_query5)
-        .add_system(test_query6)
-        .add_system(test_query7)
-        .add_system(test_query8)
-        .add_system(test_query9)
-        .add_system(test_query10)
-        .add_system(test_query11)
-        .add_system(test_query12)
-        .add_system(test_query13)
-        .add_system(test_query14)
-        .add_system(test_query15)
-        .add_system(test_query16)
-        .add_system(test_query17)
-        .add_system(test_query18)
-        .add_system(test_query19)
-        .add_system(test_query20)
-        .add_system(test_query21::<A>)
-        .add_system(test_query22)
-        .add_system(SystemParamTest::system_param_test)
-        .add_system(A::test_trait1_query1)
-        .add_system(A::test_trait1_query2)
-        .add_system(A::test_trait1_query3)
-        .add_system(A::test_trait1_query4)
-        .add_system(B::test_trait1_query1)
-        .add_system(B::test_trait1_query2)
-        .add_system(B::test_trait1_query3)
-        .add_system(B::test_trait1_query4)
-        .add_system(C::test_trait1_query1)
-        .add_system(C::test_trait1_query2)
-        .add_system(C::test_trait1_query3)
-        .add_system(C::test_trait1_query4)
-        .add_system(A::test_trait2_query1)
-        .add_system(A::test_trait3_query1)
-        .add_system(B::test_trait3_query1)
-        .add_system(D::<C>::test_trait2_query1)
+        .add_systems(Startup, setup)
+        .add_systems(Update, test_query1)
+        .add_systems(Update, test_query2)
+        .add_systems(Update, test_query3)
+        .add_systems(Update, test_query4)
+        .add_systems(Update, test_query5)
+        .add_systems(Update, test_query6)
+        .add_systems(Update, test_query7)
+        .add_systems(Update, test_query8)
+        .add_systems(Update, test_query9)
+        .add_systems(Update, test_query10)
+        .add_systems(Update, test_query11)
+        .add_systems(Update, test_query12)
+        .add_systems(Update, test_query13)
+        .add_systems(Update, test_query14)
+        .add_systems(Update, test_query15)
+        .add_systems(Update, test_query16)
+        .add_systems(Update, test_query17)
+        .add_systems(Update, test_query18)
+        .add_systems(Update, test_query19)
+        .add_systems(Update, test_query20)
+        .add_systems(Update, test_query21::<A>)
+        .add_systems(Update, test_query22)
+        .add_systems(Update, SystemParamTest::system_param_test)
+        .add_systems(Update, A::test_trait1_query1)
+        .add_systems(Update, A::test_trait1_query2)
+        .add_systems(Update, A::test_trait1_query3)
+        .add_systems(Update, A::test_trait1_query4)
+        .add_systems(Update, B::test_trait1_query1)
+        .add_systems(Update, B::test_trait1_query2)
+        .add_systems(Update, B::test_trait1_query3)
+        .add_systems(Update, B::test_trait1_query4)
+        .add_systems(Update, C::test_trait1_query1)
+        .add_systems(Update, C::test_trait1_query2)
+        .add_systems(Update, C::test_trait1_query3)
+        .add_systems(Update, C::test_trait1_query4)
+        .add_systems(Update, A::test_trait2_query1)
+        .add_systems(Update, A::test_trait3_query1)
+        .add_systems(Update, B::test_trait3_query1)
+        .add_systems(Update, D::<C>::test_trait2_query1)
         .run();
 }
 
 fn setup(mut commands: Commands) {
     let d: D<A> = D::default();
 
-    commands.spawn_bundle((A,));
-    commands.spawn_bundle((B,));
-    commands.spawn_bundle((C,));
-    commands.spawn_bundle((d,));
-    commands.spawn_bundle((A, B));
-    commands.spawn_bundle((B, C));
-    commands.spawn_bundle((C, d));
-    commands.spawn_bundle((A, C));
-    commands.spawn_bundle((B, d));
-    commands.spawn_bundle((A, d));
-    commands.spawn_bundle((A, B, C));
-    commands.spawn_bundle((B, C, d));
-    commands.spawn_bundle((A, C, d));
-    commands.spawn_bundle((A, B, d));
-    commands.spawn_bundle((A, B, C, d));
+    commands.spawn((A,));
+    commands.spawn((B,));
+    commands.spawn((C,));
+    commands.spawn((d,));
+    commands.spawn((A, B));
+    commands.spawn((B, C));
+    commands.spawn((C, d));
+    commands.spawn((A, C));
+    commands.spawn((B, d));
+    commands.spawn((A, d));
+    commands.spawn((A, B, C));
+    commands.spawn((B, C, d));
+    commands.spawn((A, C, d));
+    commands.spawn((A, B, d));
+    commands.spawn((A, B, C, d));
 }

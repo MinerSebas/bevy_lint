@@ -1,6 +1,6 @@
 #![allow(clippy::type_complexity)]
 use bevy::{
-    app::App,
+    app::{App, Startup, Update},
     ecs::{
         prelude::*,
         system::{assert_is_system, SystemParam},
@@ -109,24 +109,24 @@ impl<'w, 's> SystemParamTest<'w, 's> {
 
 fn main() {
     App::new()
-        .add_startup_system(setup)
-        .add_system(test_query1)
-        .add_system(test_query2)
-        .add_system(test_query3)
-        .add_system(test_query4)
-        .add_system(test_query5)
-        .add_system(test_query6)
-        .add_system(test_query7)
-        .add_system(SystemParamTest::system_param_test)
+        .add_systems(Startup, setup)
+        .add_systems(Update, test_query1)
+        .add_systems(Update, test_query2)
+        .add_systems(Update, test_query3)
+        .add_systems(Update, test_query4)
+        .add_systems(Update, test_query5)
+        .add_systems(Update, test_query6)
+        .add_systems(Update, test_query7)
+        .add_systems(Update, SystemParamTest::system_param_test)
         .run();
 }
 
 fn setup(mut commands: Commands) {
-    commands.spawn_bundle((A,));
-    commands.spawn_bundle((B,));
-    commands.spawn_bundle((C,));
-    commands.spawn_bundle((A, B));
-    commands.spawn_bundle((B, C));
-    commands.spawn_bundle((A, C));
-    commands.spawn_bundle((A, B, C));
+    commands.spawn((A,));
+    commands.spawn((B,));
+    commands.spawn((C,));
+    commands.spawn((A, B));
+    commands.spawn((B, C));
+    commands.spawn((A, C));
+    commands.spawn((A, B, C));
 }
