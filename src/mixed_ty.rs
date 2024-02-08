@@ -17,11 +17,14 @@ impl<'tcx> MixedTy<'tcx> {
     ) -> Option<Vec<Self>> {
         match item.kind {
             rustc_hir::ItemKind::Struct(
-                rustc_hir::VariantData::Struct{fields: hir_fields, .. }
+                rustc_hir::VariantData::Struct {
+                    fields: hir_fields, ..
+                }
                 | rustc_hir::VariantData::Tuple(hir_fields, _, _),
                 _,
             ) => {
-                let middle: rustc_middle::ty::Ty = ctx.tcx.type_of(item.owner_id.def_id).skip_binder();
+                let middle: rustc_middle::ty::Ty =
+                    ctx.tcx.type_of(item.owner_id.def_id).skip_binder();
 
                 let middle_fields = match middle.kind() {
                     rustc_middle::ty::TyKind::Adt(def, _) => {
@@ -59,7 +62,8 @@ impl<'tcx> MixedTy<'tcx> {
             rustc_hir::ItemKind::Fn(rustc_hir::FnSig { decl, .. }, _, _) => {
                 // rust-analyzer doesn't find `type_of`.
                 // The return type is manually specified to still get autocompletion.
-                let middle: rustc_middle::ty::Ty = ctx.tcx.type_of(item.owner_id.def_id).skip_binder();
+                let middle: rustc_middle::ty::Ty =
+                    ctx.tcx.type_of(item.owner_id.def_id).skip_binder();
 
                 let inputs = middle.fn_sig(ctx.tcx).skip_binder().inputs();
 
@@ -87,7 +91,8 @@ impl<'tcx> MixedTy<'tcx> {
             rustc_hir::ImplItemKind::Fn(rustc_hir::FnSig { decl, .. }, _) => {
                 // rust-analyzer doesn't find `type_of`.
                 // The return type is manually specified to still get autocompletion.
-                let middle: rustc_middle::ty::Ty = ctx.tcx.type_of(item.owner_id.def_id).skip_binder();
+                let middle: rustc_middle::ty::Ty =
+                    ctx.tcx.type_of(item.owner_id.def_id).skip_binder();
 
                 let inputs = middle.fn_sig(ctx.tcx).skip_binder().inputs();
 
@@ -115,7 +120,8 @@ impl<'tcx> MixedTy<'tcx> {
             rustc_hir::TraitItemKind::Fn(rustc_hir::FnSig { decl, .. }, _) => {
                 // rust-analyzer doesn't find `type_of`.
                 // The return type is manually specified to still get autocompletion.
-                let middle: rustc_middle::ty::Ty = ctx.tcx.type_of(item.owner_id.def_id).skip_binder();
+                let middle: rustc_middle::ty::Ty =
+                    ctx.tcx.type_of(item.owner_id.def_id).skip_binder();
 
                 let inputs = middle.fn_sig(ctx.tcx).skip_binder().inputs();
 

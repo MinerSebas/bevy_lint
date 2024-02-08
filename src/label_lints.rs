@@ -216,14 +216,37 @@ impl<'tcx> LateLintPass<'tcx> for LabelLintPass {
 
         let app_def_id = get_trait_def_id(ctx, APP_LABEL);
 
-        let imp_stage = implements_trait(ctx, ctx.tcx.type_of(item.owner_id.def_id).skip_binder(), stage_def_id, &[]);
-        let imp_system = implements_trait(ctx, ctx.tcx.type_of(item.owner_id.def_id).skip_binder(), system_def_id, &[]);
-        let imp_criteria =
-            implements_trait(ctx, ctx.tcx.type_of(item.owner_id.def_id).skip_binder(), criteria_def_id, &[]);
-        let imp_ambiguity =
-            implements_trait(ctx, ctx.tcx.type_of(item.owner_id.def_id).skip_binder(), ambiguity_def_id, &[]);
+        let imp_stage = implements_trait(
+            ctx,
+            ctx.tcx.type_of(item.owner_id.def_id).skip_binder(),
+            stage_def_id,
+            &[],
+        );
+        let imp_system = implements_trait(
+            ctx,
+            ctx.tcx.type_of(item.owner_id.def_id).skip_binder(),
+            system_def_id,
+            &[],
+        );
+        let imp_criteria = implements_trait(
+            ctx,
+            ctx.tcx.type_of(item.owner_id.def_id).skip_binder(),
+            criteria_def_id,
+            &[],
+        );
+        let imp_ambiguity = implements_trait(
+            ctx,
+            ctx.tcx.type_of(item.owner_id.def_id).skip_binder(),
+            ambiguity_def_id,
+            &[],
+        );
         let imp_app = app_def_id.is_some()
-            && implements_trait(ctx, ctx.tcx.type_of(item.owner_id.def_id).skip_binder(), app_def_id.unwrap(), &[]);
+            && implements_trait(
+                ctx,
+                ctx.tcx.type_of(item.owner_id.def_id).skip_binder(),
+                app_def_id.unwrap(),
+                &[],
+            );
 
         let imp_count = imp_stage as usize
             + imp_system as usize

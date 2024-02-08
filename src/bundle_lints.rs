@@ -63,7 +63,12 @@ impl<'tcx> LateLintPass<'tcx> for BundleLintPass {
             return;
         };
 
-        if !implements_trait(ctx, ctx.tcx.type_of(item.owner_id.def_id).skip_binder(), bundle_def_id, &[]) {
+        if !implements_trait(
+            ctx,
+            ctx.tcx.type_of(item.owner_id.def_id).skip_binder(),
+            bundle_def_id,
+            &[],
+        ) {
             return;
         }
 
