@@ -5,7 +5,6 @@ use rustc_lint::LateContext;
 use rustc_middle::ty::TyKind;
 use rustc_session::declare_lint;
 use rustc_span::Span;
-use std::collections::{hash_map::Entry, HashMap};
 
 use super::model::{FilterQuery, Query, WorldQuery};
 
@@ -290,12 +289,12 @@ declare_lint! {
 #[allow(clippy::type_complexity)]
 #[derive(Debug, Default, Clone)]
 struct QueryData<'tcx> {
-    data: HashMap<TyKind<'tcx>, Vec<(Mutability, Span)>>,
+    data: Vec<(TyKind<'tcx>, Vec<(Mutability, Span)>)>,
     option: Vec<(QueryData<'tcx>, Span)>,
-    with: HashMap<TyKind<'tcx>, Vec<Span>>,
-    without: HashMap<TyKind<'tcx>, Vec<Span>>,
-    added: HashMap<TyKind<'tcx>, Vec<Span>>,
-    changed: HashMap<TyKind<'tcx>, Vec<Span>>,
+    with: Vec<(TyKind<'tcx>, Vec<Span>)>,
+    without: Vec<(TyKind<'tcx>, Vec<Span>)>,
+    added: Vec<(TyKind<'tcx>, Vec<Span>)>,
+    changed: Vec<(TyKind<'tcx>, Vec<Span>)>,
     or: Vec<(Vec<QueryData<'tcx>>, Span)>,
     meta: QueryDataMeta,
 }
@@ -308,14 +307,16 @@ impl<'tcx> QueryData<'tcx> {
                     self.fill_with_world_query(ctx, world_query);
                 }
             }
-            WorldQuery::Data(ty_kind, mutbl, span) => match self.data.entry(*ty_kind) {
-                Entry::Vacant(e) => {
-                    e.insert(vec![(*mutbl, *span)]);
+            WorldQuery::Data(ty_kind, mutbl, span) => {
+                for (kind, vec) in &mut self.data {
+                    if ty_kind == kind {
+                        vec.push((*mutbl, *span));
+                        return;
+                    }
                 }
-                Entry::Occupied(mut e) => {
-                    e.get_mut().push((*mutbl, *span));
-                }
-            },
+
+                self.data.push((*ty_kind, vec![(*mutbl, *span)]));
+            }
             WorldQuery::Option(world_query, span) => {
                 let mut world = QueryData {
                     meta: QueryDataMeta::Option,
@@ -369,38 +370,46 @@ impl<'tcx> QueryData<'tcx> {
                 }
                 self.or.push((vec, *span));
             }
-            FilterQuery::With(ty_kind, span) => match self.with.entry(*ty_kind) {
-                Entry::Vacant(e) => {
-                    e.insert(vec![*span]);
+            FilterQuery::With(ty_kind, span) => {
+                for (kind, vec) in &mut self.with {
+                    if ty_kind == kind {
+                        vec.push(*span);
+                        return;
+                    }
                 }
-                Entry::Occupied(mut e) => {
-                    e.get_mut().push(*span);
+
+                self.with.push((*ty_kind, vec![*span]));
+            }
+            FilterQuery::Without(ty_kind, span) => {
+                for (kind, vec) in &mut self.without {
+                    if ty_kind == kind {
+                        vec.push(*span);
+                        return;
+                    }
                 }
-            },
-            FilterQuery::Without(ty_kind, span) => match self.without.entry(*ty_kind) {
-                Entry::Vacant(e) => {
-                    e.insert(vec![*span]);
+
+                self.without.push((*ty_kind, vec![*span]));
+            }
+            FilterQuery::Added(ty_kind, span) => {
+                for (kind, vec) in &mut self.added {
+                    if ty_kind == kind {
+                        vec.push(*span);
+                        return;
+                    }
                 }
-                Entry::Occupied(mut e) => {
-                    e.get_mut().push(*span);
+
+                self.added.push((*ty_kind, vec![*span]));
+            }
+            FilterQuery::Changed(ty_kind, span) => {
+                for (kind, vec) in &mut self.changed {
+                    if ty_kind == kind {
+                        vec.push(*span);
+                        return;
+                    }
                 }
-            },
-            FilterQuery::Added(ty_kind, span) => match self.added.entry(*ty_kind) {
-                Entry::Vacant(e) => {
-                    e.insert(vec![*span]);
-                }
-                Entry::Occupied(mut e) => {
-                    e.get_mut().push(*span);
-                }
-            },
-            FilterQuery::Changed(ty_kind, span) => match self.changed.entry(*ty_kind) {
-                Entry::Vacant(e) => {
-                    e.insert(vec![*span]);
-                }
-                Entry::Occupied(mut e) => {
-                    e.get_mut().push(*span);
-                }
-            },
+
+                self.changed.push((*ty_kind, vec![*span]));
+            }
         }
     }
 
@@ -409,10 +418,10 @@ impl<'tcx> QueryData<'tcx> {
         new_facts.push(self);
         self.check_for_unnecessary_or(ctx, &new_facts);
 
-        for (def_id, data) in self.with.iter() {
-            if self.data.contains_key(def_id)
-                || self.added.contains_key(def_id)
-                || self.changed.contains_key(def_id)
+        for (ty_kind, data) in self.with.iter() {
+            if contains_ty_kind(&self.data, ty_kind)
+                || contains_ty_kind(&self.added, ty_kind)
+                || contains_ty_kind(&self.changed, ty_kind)
             {
                 for inst in data {
                     diagnostics::span_lint(
@@ -425,8 +434,8 @@ impl<'tcx> QueryData<'tcx> {
             }
         }
 
-        for (def_id, data) in self.changed.iter() {
-            if self.added.contains_key(def_id) {
+        for (ty_kind, data) in self.changed.iter() {
+            if contains_ty_kind(&self.added, ty_kind) {
                 for inst in data {
                     diagnostics::span_lint(
                         ctx,
@@ -441,11 +450,11 @@ impl<'tcx> QueryData<'tcx> {
         if QueryDataMeta::Default == self.meta {
             let mut contradiction = false;
 
-            for (def_id, data) in self.without.iter() {
-                if self.data.contains_key(def_id)
-                    || self.added.contains_key(def_id)
-                    || self.changed.contains_key(def_id)
-                    || self.with.contains_key(def_id)
+            for (ty_kind, data) in self.without.iter() {
+                if contains_ty_kind(&self.data, ty_kind)
+                    || contains_ty_kind(&self.added, ty_kind)
+                    || contains_ty_kind(&self.changed, ty_kind)
+                    || contains_ty_kind(&self.with, ty_kind)
                 {
                     contradiction = true;
 
@@ -486,18 +495,15 @@ impl<'tcx> QueryData<'tcx> {
         let mut vec_change = Vec::new();
 
         for fact in facts {
-            vec_with.extend(fact.data.keys().chain(fact.with.keys()));
-            vec_without.extend(fact.without.keys());
-            vec_change.extend(fact.added.keys().chain(fact.changed.keys()));
+            vec_with.extend(keys(&fact.data).chain(keys(&fact.with)));
+            vec_without.extend(keys(&fact.without));
+            vec_change.extend(keys(&fact.added).chain(keys(&fact.changed)));
         }
 
-        let option_fact: Vec<_> = option.0.data.keys().chain(option.0.with.keys()).collect();
+        let option_fact: Vec<_> = keys(&option.0.data).chain(keys(&option.0.with)).collect();
 
-        let option_change: Vec<_> = option
-            .0
-            .added
-            .keys()
-            .chain(option.0.changed.keys())
+        let option_change: Vec<_> = keys(&option.0.added)
+            .chain(keys(&option.0.changed))
             .collect();
 
         if (!option_fact
@@ -506,11 +512,7 @@ impl<'tcx> QueryData<'tcx> {
             && !option_change
                 .iter()
                 .any(|ty_kind| !vec_change.contains(ty_kind))
-            && !option
-                .0
-                .without
-                .keys()
-                .any(|ty_kind| vec_with.contains(&ty_kind)))
+            && !keys(&option.0.without).any(|ty_kind| vec_with.contains(&ty_kind)))
             || (option.0.count() - option.0.option.len() == 0)
         {
             diagnostics::span_lint(
@@ -520,12 +522,8 @@ impl<'tcx> QueryData<'tcx> {
                 "`Option` Query is always `Some`",
             );
         } else if option_fact.iter().any(|ty_kind| {
-            vec_without.contains(ty_kind) || option.0.without.keys().contains(*ty_kind)
-        }) || option
-            .0
-            .without
-            .keys()
-            .any(|ty_kind| vec_with.contains(&ty_kind))
+            vec_without.contains(ty_kind) || keys(&option.0.without).contains(ty_kind)
+        }) || keys(&option.0.without).any(|ty_kind| vec_with.contains(&ty_kind))
         {
             diagnostics::span_lint(
                 ctx,
@@ -554,25 +552,18 @@ impl<'tcx> QueryData<'tcx> {
             let mut vec_change = Vec::new();
 
             for fact in facts {
-                vec_with.extend(fact.data.keys().chain(fact.with.keys()));
-                vec_without.extend(fact.without.keys());
-                vec_change.extend(fact.added.keys().chain(fact.changed.keys()));
+                vec_with.extend(keys(&fact.data).chain(keys(&fact.with)));
+                vec_without.extend(keys(&fact.without));
+                vec_change.extend(keys(&fact.added).chain(keys(&fact.changed)));
             }
 
             for part in &concrete_or.0 {
-                if !part
-                    .with
-                    .keys()
+                if !keys(&part.with)
                     .any(|ty_kind| !vec_with.contains(&ty_kind) && !vec_change.contains(&ty_kind))
-                    && !part
-                        .added
-                        .keys()
-                        .chain(part.changed.keys())
+                    && !keys(&part.added)
+                        .chain(keys(&part.changed))
                         .any(|ty_kind| !vec_change.contains(&ty_kind))
-                    && !part
-                        .without
-                        .keys()
-                        .any(|ty_kind| !vec_without.contains(&ty_kind))
+                    && !keys(&part.without).any(|ty_kind| !vec_without.contains(&ty_kind))
                 {
                     diagnostics::span_lint(
                         ctx,
@@ -599,7 +590,7 @@ impl<'tcx> QueryData<'tcx> {
                     .map(|(_, data)| &data.changed)
                 {
                     for (ty_kind, spans) in added {
-                        if changed.contains_key(ty_kind) {
+                        if contains_ty_kind(changed, ty_kind) {
                             for span in spans {
                                 diagnostics::span_lint(
                                     ctx,
@@ -624,6 +615,19 @@ impl<'tcx> QueryData<'tcx> {
             + self.changed.len()
             + self.or.len()
     }
+}
+
+fn contains_ty_kind<'tcx, T>(vec: &Vec<(TyKind<'tcx>, T)>, ty_kind: &TyKind<'tcx>) -> bool {
+    for (kind, _) in vec {
+        if kind == ty_kind {
+            return true;
+        }
+    }
+    false
+}
+
+fn keys<'t, 'tcx, T>(vec: &'t Vec<(TyKind<'tcx>, T)>) -> impl Iterator<Item = TyKind<'tcx>> + 't {
+    vec.into_iter().map(|(ty_kind, _)| *ty_kind)
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
