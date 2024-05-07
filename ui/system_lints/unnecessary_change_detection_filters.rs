@@ -21,21 +21,11 @@ fn test_query2(_query: Query<(), Or<(Added<A>, Changed<A>)>>) {
     assert_is_system(test_query2);
 }
 
-fn test_query3(_query: Query<(Added<A>, Changed<A>)>) {
-    assert_is_system(test_query3);
-}
-
-fn test_query4(_query: Query<Or<(Added<A>, Changed<A>)>>) {
-    assert_is_system(test_query4);
-}
-
 fn main() {
     App::new()
         .add_systems(Startup, setup)
         .add_systems(Update, test_query1)
         .add_systems(Update, test_query2)
-        .add_systems(Update, test_query3)
-        .add_systems(Update, test_query4)
         .run();
 }
 

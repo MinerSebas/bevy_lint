@@ -159,51 +159,6 @@ declare_lint! {
 
 declare_lint! {
     /// **What it does:**
-    /// Detects Filters in the Data part of a Query.
-    ///
-    /// **Why is this bad?**
-    ///
-    ///
-    /// **Known problems:** None.
-    ///
-    /// **Example:**
-    ///
-    /// ```rust
-    /// # use bevy::ecs::{prelude::*, system::{assert_is_system, SystemParam}};
-    /// #
-    /// # #[derive(Component)]
-    /// # struct A;
-    /// # #[derive(Component)]
-    /// # struct B;
-    /// #
-    /// fn system(mut query: Query<(&A, With<B>)>) {
-    ///     for (component, filter) in query.iter_mut() {}
-    /// }
-    ///
-    /// # assert_is_system(system);
-    /// ```
-    /// Instead do:
-    /// ```rust
-    /// # use bevy::ecs::{prelude::*, system::{assert_is_system, SystemParam}};
-    /// #
-    /// # #[derive(Component)]
-    /// # struct A;
-    /// # #[derive(Component)]
-    /// # struct B;
-    /// #
-    /// fn system(query: Query<&A, With<B>>) {
-    ///     for component in query.iter() {}
-    /// }
-    ///
-    /// # assert_is_system(system);
-    /// ```
-    pub FILTER_IN_WORLD_QUERY,
-    Warn,
-    "Detects Filters in the Data part of a Query."
-}
-
-declare_lint! {
-    /// **What it does:**
     /// Detects unnecessary `Added` filters in Bevy query parameters."
     ///
     /// **Why is this bad?**
@@ -325,22 +280,12 @@ impl<'tcx> QueryData<'tcx> {
                 world.fill_with_world_query(ctx, &world_query.0);
                 self.option.push((world, *span));
             }
-            WorldQuery::Filter(filter_query, span) => {
-                diagnostics::span_lint(
-                    ctx,
-                    FILTER_IN_WORLD_QUERY,
-                    *span,
-                    "Usage of Filter in first Part of Query.",
-                );
-
-                self.fill_with_filter_query(filter_query);
-            }
         }
     }
 
     fn fill_with_filter_query(&mut self, filter_query: &FilterQuery<'tcx>) {
         match filter_query {
-            FilterQuery::Tuple(filter_querys, _) => {
+            FilterQuery::Tuple(filter_querys) => {
                 for filter_query in filter_querys {
                     self.fill_with_filter_query(filter_query);
                 }
@@ -357,7 +302,7 @@ impl<'tcx> QueryData<'tcx> {
                                 vec.push(data);
                             }
                         }
-                        FilterQuery::Tuple(_, _)
+                        FilterQuery::Tuple(_)
                         | FilterQuery::With(_, _)
                         | FilterQuery::Without(_, _)
                         | FilterQuery::Added(_, _)

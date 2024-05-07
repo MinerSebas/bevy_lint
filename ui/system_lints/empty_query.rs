@@ -44,11 +44,6 @@ fn test_query6(query: Query<(), (Changed<A>, Without<A>)>) {
     assert_eq!(query.iter().count(), 0);
 }
 
-fn test_query7(mut query: Query<(&A, Without<A>)>) {
-    assert_is_system(test_query7);
-    assert_eq!(query.iter_mut().count(), 0);
-}
-
 #[derive(SystemParam)]
 struct SystemParamTest<'w, 's> {
     query1: Query<'w, 's, &'static A, Without<A>>,
@@ -116,7 +111,6 @@ fn main() {
         .add_systems(Update, test_query4)
         .add_systems(Update, test_query5)
         .add_systems(Update, test_query6)
-        .add_systems(Update, test_query7)
         .add_systems(Update, SystemParamTest::system_param_test)
         .run();
 }

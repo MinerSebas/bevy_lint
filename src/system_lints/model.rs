@@ -47,7 +47,6 @@ pub enum WorldQuery<'tcx> {
     Tuple(Vec<WorldQuery<'tcx>>, Span),
     Data(rustc_middle::ty::TyKind<'tcx>, rustc_ast::Mutability, Span),
     Option((Box<WorldQuery<'tcx>>, Span), Span),
-    Filter(FilterQuery<'tcx>, Span),
 }
 
 impl<'tcx> WorldQuery<'tcx> {
@@ -71,7 +70,6 @@ impl<'tcx> WorldQuery<'tcx> {
                 }
             }
             WorldQuery::Option(world_query, _) => world_query.0.remove_substitutions(),
-            WorldQuery::Filter(filter, _) => filter.remove_substitutions(),
         }
     }
 
@@ -80,14 +78,13 @@ impl<'tcx> WorldQuery<'tcx> {
             WorldQuery::Tuple(_, span)
             | WorldQuery::Data(_, _, span)
             | WorldQuery::Option(_, span) => span,
-            WorldQuery::Filter(filter, _) => filter.span(),
         }
     }
 }
 
 #[derive(Debug, Clone)]
 pub enum FilterQuery<'tcx> {
-    Tuple(Vec<FilterQuery<'tcx>>, Span),
+    Tuple(Vec<FilterQuery<'tcx>>),
     Or(Vec<FilterQuery<'tcx>>, Span),
     With(rustc_middle::ty::TyKind<'tcx>, Span),
     Without(rustc_middle::ty::TyKind<'tcx>, Span),
@@ -98,7 +95,7 @@ pub enum FilterQuery<'tcx> {
 impl<'tcx> FilterQuery<'tcx> {
     pub fn remove_substitutions(&mut self) {
         match self {
-            FilterQuery::Tuple(filter_querys, _) | FilterQuery::Or(filter_querys, _) => {
+            FilterQuery::Tuple(filter_querys) | FilterQuery::Or(filter_querys, _) => {
                 for filter_query in filter_querys {
                     filter_query.remove_substitutions();
                 }
@@ -118,17 +115,6 @@ impl<'tcx> FilterQuery<'tcx> {
                     }
                 }
             }
-        }
-    }
-
-    pub fn span(&self) -> &Span {
-        match self {
-            FilterQuery::Tuple(_, span)
-            | FilterQuery::Or(_, span)
-            | FilterQuery::With(_, span)
-            | FilterQuery::Without(_, span)
-            | FilterQuery::Added(_, span)
-            | FilterQuery::Changed(_, span) => span,
         }
     }
 }

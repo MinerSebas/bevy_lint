@@ -36,28 +36,14 @@ warning: Empty Query
 LL | fn test_query6(query: Query<(), (Changed<A>, Without<A>)>) {
    |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-warning: Usage of Filter in first Part of Query.
-  --> $DIR/empty_query.rs:47:38
-   |
-LL | fn test_query7(mut query: Query<(&A, Without<A>)>) {
-   |                                      ^^^^^^^^^^
-   |
-   = note: `#[warn(filter_in_world_query)]` on by default
-
 warning: Empty Query
-  --> $DIR/empty_query.rs:47:27
-   |
-LL | fn test_query7(mut query: Query<(&A, Without<A>)>) {
-   |                           ^^^^^^^^^^^^^^^^^^^^^^^
-
-warning: Empty Query
-  --> $DIR/empty_query.rs:54:13
+  --> $DIR/empty_query.rs:49:13
    |
 LL |     query1: Query<'w, 's, &'static A, Without<A>>,
    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 warning: Empty Query
-  --> $DIR/empty_query.rs:62:25
+  --> $DIR/empty_query.rs:57:25
    |
 LL | /                         Query<
 LL | |                             'w,
@@ -68,7 +54,7 @@ LL | |                         >,
    | |_________________________^
 
 warning: Empty Query
-  --> $DIR/empty_query.rs:73:21
+  --> $DIR/empty_query.rs:68:21
    |
 LL | /                     Query<
 LL | |                         'w,
@@ -78,5 +64,5 @@ LL | |                         ((), ((((), ((((With<A>,), ()),),), (), (Without<
 LL | |                     >,
    | |_____________________^
 
-warning: 11 warnings emitted
+warning: 9 warnings emitted
 

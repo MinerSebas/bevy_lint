@@ -191,14 +191,6 @@ fn test_query21<E: Component>(query: Query<&E, With<E>>, query_check: Query<&E>)
     assert_eq!(query.iter().count(), query_check.iter().count());
 }
 
-fn test_query22(mut query: Query<Option<(&A, With<A>)>>, query_check: Query<&A>) {
-    assert_is_system(test_query22);
-    assert_eq!(
-        query.iter_mut().filter(Option::is_some).count(),
-        query_check.iter().count()
-    );
-}
-
 #[derive(SystemParam)]
 struct SystemParamTest<'w, 's> {
     query1: Query<'w, 's, &'static A, With<A>>,
@@ -416,7 +408,6 @@ fn main() {
         .add_systems(Update, test_query19)
         .add_systems(Update, test_query20)
         .add_systems(Update, test_query21::<A>)
-        .add_systems(Update, test_query22)
         .add_systems(Update, SystemParamTest::system_param_test)
         .add_systems(Update, A::test_trait1_query1)
         .add_systems(Update, A::test_trait1_query2)

@@ -8,8 +8,8 @@ pub mod query_lints;
 use self::{
     model::{FilterQuery, Query, SystemParamType, WorldQuery},
     query_lints::{
-        lint_query, EMPTY_QUERY, FILTER_IN_WORLD_QUERY, UNNECESSARY_ADDED, UNNECESSARY_CHANGED,
-        UNNECESSARY_OPTION, UNNECESSARY_OR, UNNECESSARY_WITH,
+        lint_query, EMPTY_QUERY, UNNECESSARY_ADDED, UNNECESSARY_CHANGED, UNNECESSARY_OPTION,
+        UNNECESSARY_OR, UNNECESSARY_WITH,
     },
 };
 use super::{bevy_paths, mixed_ty::MixedTy};
@@ -17,7 +17,6 @@ use super::{bevy_paths, mixed_ty::MixedTy};
 declare_lint_pass!(SystemLintPass =>
     [
         EMPTY_QUERY,
-        FILTER_IN_WORLD_QUERY,
         UNNECESSARY_ADDED,
         UNNECESSARY_CHANGED,
         UNNECESSARY_OPTION,
@@ -136,7 +135,7 @@ fn resolve_query<'tcx>(ctx: &LateContext<'tcx>, ty: &MixedTy<'tcx>) -> Option<Qu
         let resolved_filter = filter
             .and_then(|filter| recursively_resolve_filter_query(ctx, &filter))
             .map_or_else(
-                || FilterQuery::Tuple(Vec::new(), ty.span()),
+                || FilterQuery::Tuple(Vec::new()),
                 |resolved_filter| resolved_filter,
             );
 
@@ -169,14 +168,6 @@ fn recursively_resolve_world_query<'tcx>(
                     let span = *world_query.span();
                     WorldQuery::Option((Box::new(world_query), span), world.span())
                 })
-            } else if clippy_utils::ty::match_type(ctx, world.middle, bevy_paths::OR)
-                || clippy_utils::ty::match_type(ctx, world.middle, bevy_paths::ADDED)
-                || clippy_utils::ty::match_type(ctx, world.middle, bevy_paths::CHANGED)
-                || clippy_utils::ty::match_type(ctx, world.middle, bevy_paths::WITH)
-                || clippy_utils::ty::match_type(ctx, world.middle, bevy_paths::WITHOUT)
-            {
-                recursively_resolve_filter_query(ctx, world)
-                    .map(|filter| WorldQuery::Filter(filter, world.span()))
             } else {
                 None
             }
@@ -198,7 +189,7 @@ fn recursively_resolve_filter_query<'tcx>(
             .filter_map(|ty| recursively_resolve_filter_query(ctx, ty))
             .collect();
 
-        Some(FilterQuery::Tuple(vec, filter.span()))
+        Some(FilterQuery::Tuple(vec))
     } else if clippy_utils::ty::match_type(ctx, filter.middle, bevy_paths::OR) {
         let generics = filter.extract_generics_from_struct().unwrap();
         assert_eq!(generics.len(), 1);

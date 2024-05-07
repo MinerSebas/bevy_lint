@@ -14,37 +14,5 @@ LL | fn test_query2(_query: Query<(), Or<(Added<A>, Changed<A>)>>) {
    |
    = note: `#[warn(unnecessary_added)]` on by default
 
-warning: Usage of Filter in first Part of Query.
-  --> $DIR/unnecessary_change_detection_filters.rs:24:31
-   |
-LL | fn test_query3(_query: Query<(Added<A>, Changed<A>)>) {
-   |                               ^^^^^^^^
-   |
-   = note: `#[warn(filter_in_world_query)]` on by default
-
-warning: Usage of Filter in first Part of Query.
-  --> $DIR/unnecessary_change_detection_filters.rs:24:41
-   |
-LL | fn test_query3(_query: Query<(Added<A>, Changed<A>)>) {
-   |                                         ^^^^^^^^^^
-
-warning: Unnecessary `Changed` Filter
-  --> $DIR/unnecessary_change_detection_filters.rs:24:41
-   |
-LL | fn test_query3(_query: Query<(Added<A>, Changed<A>)>) {
-   |                                         ^^^^^^^^^^
-
-warning: Usage of Filter in first Part of Query.
-  --> $DIR/unnecessary_change_detection_filters.rs:28:30
-   |
-LL | fn test_query4(_query: Query<Or<(Added<A>, Changed<A>)>>) {
-   |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-warning: Unnecessary `Added` Filter
-  --> $DIR/unnecessary_change_detection_filters.rs:28:34
-   |
-LL | fn test_query4(_query: Query<Or<(Added<A>, Changed<A>)>>) {
-   |                                  ^^^^^^^^
-
-warning: 7 warnings emitted
+warning: 2 warnings emitted
 

@@ -51,49 +51,23 @@ warning: Unnecessary `Or` Filter
 LL |     query: Query<(), (Or<(Without<A>, With<B>)>, Without<A>)>,
    |                       ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-warning: Usage of Filter in first Part of Query.
-  --> $DIR/unnecessary_or.rs:75:38
-   |
-LL | fn test_query9(mut query: Query<(&A, Or<(With<B>,)>)>, query_check: Query<&A, With<B>>) {
-   |                                      ^^^^^^^^^^^^^^
-   |
-   = note: `#[warn(filter_in_world_query)]` on by default
-
 warning: Unnecessary `Or` Filter
-  --> $DIR/unnecessary_or.rs:75:38
-   |
-LL | fn test_query9(mut query: Query<(&A, Or<(With<B>,)>)>, query_check: Query<&A, With<B>>) {
-   |                                      ^^^^^^^^^^^^^^
-
-warning: Usage of Filter in first Part of Query.
-  --> $DIR/unnecessary_or.rs:80:39
-   |
-LL | fn test_query10(mut query: Query<(&A, Or<(With<A>, With<B>)>)>, query_check: Query<&A>) {
-   |                                       ^^^^^^^^^^^^^^^^^^^^^^
-
-warning: Unnecessary `Or` Filter
-  --> $DIR/unnecessary_or.rs:80:39
-   |
-LL | fn test_query10(mut query: Query<(&A, Or<(With<A>, With<B>)>)>, query_check: Query<&A>) {
-   |                                       ^^^^^^^^^^^^^^^^^^^^^^
-
-warning: Unnecessary `Or` Filter
-  --> $DIR/unnecessary_or.rs:100:39
+  --> $DIR/unnecessary_or.rs:90:39
    |
 LL |     query1: Query<'w, 's, &'static A, Or<()>>,
    |                                       ^^^^^^
 
 warning: Unnecessary `Or` Filter
-  --> $DIR/unnecessary_or.rs:106:52
+  --> $DIR/unnecessary_or.rs:96:52
    |
 LL |                 ((((Query<'w, 's, (), (Changed<A>, Or<(With<A>,)>)>,), ()),),),
    |                                                    ^^^^^^^^^^^^^^
 
 warning: Unnecessary `Or` Filter
-  --> $DIR/unnecessary_or.rs:108:45
+  --> $DIR/unnecessary_or.rs:98:45
    |
 LL |                 (Query<'w, 's, &'static A, (Or<(With<B>,)>, With<C>)>, ()),
    |                                             ^^^^^^^^^^^^^^
 
-warning: 15 warnings emitted
+warning: 11 warnings emitted
 
