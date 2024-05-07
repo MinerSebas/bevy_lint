@@ -1,4 +1,5 @@
 #![allow(clippy::type_complexity)]
+#![allow(dead_code)]
 use bevy::{
     app::{App, Plugin},
     ecs::system::Resource,

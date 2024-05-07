@@ -1,37 +1,36 @@
-error: Unnecessary `Or` Filter
+warning: Unnecessary `Or` Filter
   --> $DIR/unnecessary_or.rs:17:33
    |
 LL | fn test_query1(query: Query<&A, Or<()>>) {
    |                                 ^^^^^^
    |
-   = note: `-D unnecessary-option` implied by `-D warnings`
-   = help: to override `-D warnings` add `#[allow(unnecessary_option)]`
+   = note: `#[warn(unnecessary_option)]` on by default
 
-error: Unnecessary `Or` Filter
+warning: Unnecessary `Or` Filter
   --> $DIR/unnecessary_or.rs:22:33
    |
 LL | fn test_query2(query: Query<&A, Or<(With<B>,)>>, query_check: Query<&A, With<B>>) {
    |                                 ^^^^^^^^^^^^^^
 
-error: Unnecessary `Or` Filter
+warning: Unnecessary `Or` Filter
   --> $DIR/unnecessary_or.rs:27:33
    |
 LL | fn test_query3(query: Query<&A, Or<(With<A>, With<B>)>>, query_check: Query<&A>) {
    |                                 ^^^^^^^^^^^^^^^^^^^^^^
 
-error: Unnecessary `Or` Filter
+warning: Unnecessary `Or` Filter
   --> $DIR/unnecessary_or.rs:33:28
    |
 LL |     query: Query<(&A, &C), Or<((With<A>, With<B>), With<C>)>>,
    |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-error: Unnecessary `Or` Filter
+warning: Unnecessary `Or` Filter
   --> $DIR/unnecessary_or.rs:40:33
    |
 LL | fn test_query5(query: Query<&A, Or<(Or<(With<A>, With<B>)>, With<C>)>>, query_check: Query<&A>) {
    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-error: Unnecessary `Or` Filter
+warning: Unnecessary `Or` Filter
   --> $DIR/unnecessary_or.rs:48:9
    |
 LL | /         Or<(
@@ -40,62 +39,61 @@ LL | |             With<C>,
 LL | |         )>,
    | |__________^
 
-error: Unnecessary `Or` Filter
+warning: Unnecessary `Or` Filter
   --> $DIR/unnecessary_or.rs:60:23
    |
 LL |     query: Query<(), (Or<(With<A>, With<B>)>, Added<A>)>,
    |                       ^^^^^^^^^^^^^^^^^^^^^^
 
-error: Unnecessary `Or` Filter
+warning: Unnecessary `Or` Filter
   --> $DIR/unnecessary_or.rs:68:23
    |
 LL |     query: Query<(), (Or<(Without<A>, With<B>)>, Without<A>)>,
    |                       ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-error: Usage of Filter in first Part of Query.
+warning: Usage of Filter in first Part of Query.
   --> $DIR/unnecessary_or.rs:75:38
    |
 LL | fn test_query9(mut query: Query<(&A, Or<(With<B>,)>)>, query_check: Query<&A, With<B>>) {
    |                                      ^^^^^^^^^^^^^^
    |
-   = note: `-D filter-in-world-query` implied by `-D warnings`
-   = help: to override `-D warnings` add `#[allow(filter_in_world_query)]`
+   = note: `#[warn(filter_in_world_query)]` on by default
 
-error: Unnecessary `Or` Filter
+warning: Unnecessary `Or` Filter
   --> $DIR/unnecessary_or.rs:75:38
    |
 LL | fn test_query9(mut query: Query<(&A, Or<(With<B>,)>)>, query_check: Query<&A, With<B>>) {
    |                                      ^^^^^^^^^^^^^^
 
-error: Usage of Filter in first Part of Query.
+warning: Usage of Filter in first Part of Query.
   --> $DIR/unnecessary_or.rs:80:39
    |
 LL | fn test_query10(mut query: Query<(&A, Or<(With<A>, With<B>)>)>, query_check: Query<&A>) {
    |                                       ^^^^^^^^^^^^^^^^^^^^^^
 
-error: Unnecessary `Or` Filter
+warning: Unnecessary `Or` Filter
   --> $DIR/unnecessary_or.rs:80:39
    |
 LL | fn test_query10(mut query: Query<(&A, Or<(With<A>, With<B>)>)>, query_check: Query<&A>) {
    |                                       ^^^^^^^^^^^^^^^^^^^^^^
 
-error: Unnecessary `Or` Filter
+warning: Unnecessary `Or` Filter
   --> $DIR/unnecessary_or.rs:100:39
    |
 LL |     query1: Query<'w, 's, &'static A, Or<()>>,
    |                                       ^^^^^^
 
-error: Unnecessary `Or` Filter
+warning: Unnecessary `Or` Filter
   --> $DIR/unnecessary_or.rs:106:52
    |
 LL |                 ((((Query<'w, 's, (), (Changed<A>, Or<(With<A>,)>)>,), ()),),),
    |                                                    ^^^^^^^^^^^^^^
 
-error: Unnecessary `Or` Filter
+warning: Unnecessary `Or` Filter
   --> $DIR/unnecessary_or.rs:108:45
    |
 LL |                 (Query<'w, 's, &'static A, (Or<(With<B>,)>, With<C>)>, ()),
    |                                             ^^^^^^^^^^^^^^
 
-error: aborting due to 15 previous errors
+warning: 15 warnings emitted
 

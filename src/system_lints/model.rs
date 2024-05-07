@@ -4,8 +4,8 @@ use rustc_span::{Span, Symbol};
 pub enum SystemParamType<'tcx> {
     //Alias(Vec<SystemParamType>, Span),
     //Derive(Vec<SystemParamType>, Span),
-    Tuple(Vec<SystemParamType<'tcx>>, Span),
-    Query(Query<'tcx>, Span),
+    Tuple(Vec<SystemParamType<'tcx>>),
+    Query(Query<'tcx>),
     //QuerySet(Vec<(Query, Span)>, Span),
     //Resource(Resource),
     //Option(Resource),
@@ -18,12 +18,12 @@ pub enum SystemParamType<'tcx> {
 impl<'tcx> SystemParamType<'tcx> {
     pub fn remove_substitutions(&mut self) {
         match self {
-            SystemParamType::Tuple(system_params, _) => {
+            SystemParamType::Tuple(system_params) => {
                 for system_param in system_params {
                     system_param.remove_substitutions();
                 }
             }
-            SystemParamType::Query(query, _) => query.remove_substitutions(),
+            SystemParamType::Query(query) => query.remove_substitutions(),
         }
     }
 }

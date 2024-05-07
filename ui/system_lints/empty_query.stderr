@@ -1,64 +1,62 @@
-error: Empty Query
+warning: Empty Query
   --> $DIR/empty_query.rs:17:23
    |
 LL | fn test_query1(query: Query<&A, Without<A>>) {
    |                       ^^^^^^^^^^^^^^^^^^^^^
    |
-   = note: `-D empty-query` implied by `-D warnings`
-   = help: to override `-D warnings` add `#[allow(empty_query)]`
+   = note: `#[warn(empty_query)]` on by default
 
-error: Empty Query
+warning: Empty Query
   --> $DIR/empty_query.rs:22:27
    |
 LL | fn test_query2(mut query: Query<&mut A, Without<A>>) {
    |                           ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-error: Empty Query
+warning: Empty Query
   --> $DIR/empty_query.rs:27:23
    |
 LL | fn test_query3(query: Query<&A, (Without<A>, With<B>)>) {
    |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-error: Empty Query
+warning: Empty Query
   --> $DIR/empty_query.rs:32:23
    |
 LL | fn test_query4(query: Query<&B, (With<A>, Without<B>)>) {
    |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-error: Empty Query
+warning: Empty Query
   --> $DIR/empty_query.rs:37:23
    |
 LL | fn test_query5(query: Query<(), (Without<A>, Added<A>)>) {
    |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-error: Empty Query
+warning: Empty Query
   --> $DIR/empty_query.rs:42:23
    |
 LL | fn test_query6(query: Query<(), (Changed<A>, Without<A>)>) {
    |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-error: Usage of Filter in first Part of Query.
+warning: Usage of Filter in first Part of Query.
   --> $DIR/empty_query.rs:47:38
    |
 LL | fn test_query7(mut query: Query<(&A, Without<A>)>) {
    |                                      ^^^^^^^^^^
    |
-   = note: `-D filter-in-world-query` implied by `-D warnings`
-   = help: to override `-D warnings` add `#[allow(filter_in_world_query)]`
+   = note: `#[warn(filter_in_world_query)]` on by default
 
-error: Empty Query
+warning: Empty Query
   --> $DIR/empty_query.rs:47:27
    |
 LL | fn test_query7(mut query: Query<(&A, Without<A>)>) {
    |                           ^^^^^^^^^^^^^^^^^^^^^^^
 
-error: Empty Query
+warning: Empty Query
   --> $DIR/empty_query.rs:54:13
    |
 LL |     query1: Query<'w, 's, &'static A, Without<A>>,
    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-error: Empty Query
+warning: Empty Query
   --> $DIR/empty_query.rs:62:25
    |
 LL | /                         Query<
@@ -69,7 +67,7 @@ LL | |                             (Without<C>, Without<B>),
 LL | |                         >,
    | |_________________________^
 
-error: Empty Query
+warning: Empty Query
   --> $DIR/empty_query.rs:73:21
    |
 LL | /                     Query<
@@ -80,5 +78,5 @@ LL | |                         ((), ((((), ((((With<A>,), ()),),), (), (Without<
 LL | |                     >,
    | |_____________________^
 
-error: aborting due to 11 previous errors
+warning: 11 warnings emitted
 

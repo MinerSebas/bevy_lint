@@ -100,12 +100,12 @@ fn lint_function_signature<'tcx>(ctx: &LateContext<'tcx>, inputs: &[MixedTy<'tcx
 
 fn recursively_lint_system_param(ctx: &LateContext, system_param: SystemParamType) {
     match system_param {
-        SystemParamType::Tuple(system_params, _) => {
+        SystemParamType::Tuple(system_params) => {
             for system_param in system_params {
                 recursively_lint_system_param(ctx, system_param);
             }
         }
-        SystemParamType::Query(query, _) => {
+        SystemParamType::Query(query) => {
             lint_query(ctx, query);
         }
     }
@@ -121,9 +121,9 @@ fn recursively_resolve_system_param<'tcx>(
             .filter_map(|ty| recursively_resolve_system_param(ctx, ty))
             .collect();
 
-        Some(SystemParamType::Tuple(vec, ty.span()))
+        Some(SystemParamType::Tuple(vec))
     } else if clippy_utils::ty::match_type(ctx, ty.middle, bevy_paths::QUERY) {
-        resolve_query(ctx, ty).map(|query| SystemParamType::Query(query, ty.span()))
+        resolve_query(ctx, ty).map(|query| SystemParamType::Query(query))
     } else {
         None
     }

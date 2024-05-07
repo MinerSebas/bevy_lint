@@ -409,7 +409,7 @@ impl<'tcx> QueryData<'tcx> {
         new_facts.push(self);
         self.check_for_unnecessary_or(ctx, &new_facts);
 
-        for (def_id, data) in self.with.iter().sorted() {
+        for (def_id, data) in self.with.iter() {
             if self.data.contains_key(def_id)
                 || self.added.contains_key(def_id)
                 || self.changed.contains_key(def_id)
@@ -425,7 +425,7 @@ impl<'tcx> QueryData<'tcx> {
             }
         }
 
-        for (def_id, data) in self.changed.iter().sorted() {
+        for (def_id, data) in self.changed.iter() {
             if self.added.contains_key(def_id) {
                 for inst in data {
                     diagnostics::span_lint(
@@ -441,7 +441,7 @@ impl<'tcx> QueryData<'tcx> {
         if QueryDataMeta::Default == self.meta {
             let mut contradiction = false;
 
-            for (def_id, data) in self.without.iter().sorted() {
+            for (def_id, data) in self.without.iter() {
                 if self.data.contains_key(def_id)
                     || self.added.contains_key(def_id)
                     || self.changed.contains_key(def_id)
