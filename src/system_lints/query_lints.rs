@@ -255,11 +255,11 @@ struct QueryData<'tcx> {
 }
 
 impl<'tcx> QueryData<'tcx> {
-    fn fill_with_world_query(&mut self, ctx: &LateContext, world_query: &WorldQuery<'tcx>) {
+    fn fill_with_world_query(&mut self, world_query: &WorldQuery<'tcx>) {
         match world_query {
             WorldQuery::Tuple(world_querys, _) => {
                 for world_query in world_querys {
-                    self.fill_with_world_query(ctx, world_query);
+                    self.fill_with_world_query(world_query);
                 }
             }
             WorldQuery::Data(ty_kind, mutbl, span) => {
@@ -277,7 +277,7 @@ impl<'tcx> QueryData<'tcx> {
                     meta: QueryDataMeta::Option,
                     ..Default::default()
                 };
-                world.fill_with_world_query(ctx, &world_query.0);
+                world.fill_with_world_query(&world_query.0);
                 self.option.push((world, *span));
             }
         }
@@ -571,8 +571,8 @@ fn contains_ty_kind<'tcx, T>(vec: &Vec<(TyKind<'tcx>, T)>, ty_kind: &TyKind<'tcx
     false
 }
 
-fn keys<'t, 'tcx, T>(vec: &'t Vec<(TyKind<'tcx>, T)>) -> impl Iterator<Item = TyKind<'tcx>> + 't {
-    vec.into_iter().map(|(ty_kind, _)| *ty_kind)
+fn keys<'t, 'tcx, T>(vec: &'t [(TyKind<'tcx>, T)]) -> impl Iterator<Item = TyKind<'tcx>> + 't {
+    vec.iter().map(|(ty_kind, _)| *ty_kind)
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -590,7 +590,7 @@ impl Default for QueryDataMeta {
 pub(super) fn lint_query(ctx: &LateContext, query: Query) {
     let query_data = {
         let mut query_data = QueryData::default();
-        query_data.fill_with_world_query(ctx, &query.world_query);
+        query_data.fill_with_world_query(&query.world_query);
         query_data.fill_with_filter_query(&query.filter_query);
         query_data
     };

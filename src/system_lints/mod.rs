@@ -122,7 +122,7 @@ fn recursively_resolve_system_param<'tcx>(
 
         Some(SystemParamType::Tuple(vec))
     } else if clippy_utils::ty::match_type(ctx, ty.middle, bevy_paths::QUERY) {
-        resolve_query(ctx, ty).map(|query| SystemParamType::Query(query))
+        resolve_query(ctx, ty).map(SystemParamType::Query)
     } else {
         None
     }
