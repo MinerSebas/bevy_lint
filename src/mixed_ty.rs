@@ -185,7 +185,7 @@ impl<'tcx> MixedTy<'tcx> {
             _ => return None,
         };
 
-        let hir_generics: Vec<_> = match self.hir {
+        let mut hir_generics: Vec<_> = match self.hir {
             Either::Left(ty) => match &ty.kind {
                 rustc_hir::TyKind::Path(q_path) => clippy_utils::qpath_generic_tys(q_path)
                     .map(Either::Left)
@@ -197,7 +197,12 @@ impl<'tcx> MixedTy<'tcx> {
                 .collect(),
         };
 
-        assert_eq!(hir_generics.len(), middle_generics.len());
+        // Fix for aliases
+        if hir_generics.len() == 0 && middle_generics.len() != 0 {
+            hir_generics = std::iter::repeat(Either::Right(self.span()))
+                .take(middle_generics.len())
+                .collect();
+        }
 
         let vec = hir_generics
             .iter()
