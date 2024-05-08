@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use std::marker::PhantomData;
 
 use bevy::{
@@ -48,6 +49,11 @@ struct ComplexBundleWithoutTransform {
     global_transform: GlobalTransform,
     a: A,
     b: B,
+}
+
+#[derive(Component)]
+struct ComponentWithTransform {
+    a: Transform,
 }
 
 fn main() {

@@ -8,7 +8,7 @@ use rustc_lint::{LateContext, LateLintPass};
 use rustc_session::{declare_lint, declare_lint_pass};
 
 use crate::{
-    bevy_paths::{BUNDLE, GLOBAL_TRANSFORM, TRANSFORM},
+    bevy_paths::{BUNDLE, COMPONENT, GLOBAL_TRANSFORM, TRANSFORM},
     mixed_ty::MixedTy,
 };
 
@@ -63,10 +63,24 @@ impl<'tcx> LateLintPass<'tcx> for BundleLintPass {
             return;
         };
 
+        let Some(component_def_id) = get_trait_def_id(ctx, COMPONENT) else {
+            return;
+        };
+
         if !implements_trait(
             ctx,
             ctx.tcx.type_of(item.owner_id.def_id).skip_binder(),
             bundle_def_id,
+            &[],
+        ) {
+            return;
+        }
+
+        // Components are also unconditonally Bundles and should not be linted
+        if implements_trait(
+            ctx,
+            ctx.tcx.type_of(item.owner_id.def_id).skip_binder(),
+            component_def_id,
             &[],
         ) {
             return;
