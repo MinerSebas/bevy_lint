@@ -198,7 +198,7 @@ impl<'tcx> MixedTy<'tcx> {
         };
 
         // Fix for aliases
-        if hir_generics.len() == 0 && middle_generics.len() != 0 {
+        if hir_generics.is_empty() && !middle_generics.is_empty() {
             hir_generics = std::iter::repeat(Either::Right(self.span()))
                 .take(middle_generics.len())
                 .collect();
