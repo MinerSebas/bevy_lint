@@ -1,5 +1,5 @@
 warning: This Bundle contains the "GlobalTransform" Component, but is missing the "Transform" Component.
-  --> $DIR/bundle_with_incomplete_transforms.rs:20:1
+  --> $DIR/bundle_with_incomplete_transforms.rs:21:1
    |
 LL | / struct BundleWithoutGlobalTransform {
 LL | |     transform: Transform,
@@ -9,7 +9,7 @@ LL | | }
    = note: `#[warn(bundle_with_incomplete_transforms)]` on by default
 
 warning: This Bundle contains the "Transform" Component, but is missing the "GlobalTransform" Component.
-  --> $DIR/bundle_with_incomplete_transforms.rs:25:1
+  --> $DIR/bundle_with_incomplete_transforms.rs:26:1
    |
 LL | / struct BundleWithoutTransform {
 LL | |     global_transform: GlobalTransform,
@@ -17,7 +17,7 @@ LL | | }
    | |_^
 
 warning: This Bundle contains the "GlobalTransform" Component, but is missing the "Transform" Component.
-  --> $DIR/bundle_with_incomplete_transforms.rs:36:1
+  --> $DIR/bundle_with_incomplete_transforms.rs:37:1
    |
 LL | / struct ComplexBundleWithoutGlobalTransform {
 LL | |     transform: Transform,
@@ -29,7 +29,7 @@ LL | | }
    | |_^
 
 warning: This Bundle contains the "Transform" Component, but is missing the "GlobalTransform" Component.
-  --> $DIR/bundle_with_incomplete_transforms.rs:45:1
+  --> $DIR/bundle_with_incomplete_transforms.rs:46:1
    |
 LL | / struct ComplexBundleWithoutTransform {
 LL | |     d: D<Transform>,
